@@ -45,7 +45,7 @@ if (-not (Test-Path $clasprcPath)) {
 Write-Host "`n✅ [成功] 已成功取得 Google 官方授權憑證！" -ForegroundColor Green
 Write-Host "正在將憑證安全加密上傳至 GitHub Secrets (CLASPRC_JSON)..."
 
-$clasprcContent = Get-Content $clasprcPath -Raw -Encoding UTF8
+$clasprcContent = [System.IO.File]::ReadAllText($clasprcPath, [System.Text.Encoding]::UTF8).TrimStart([char]0xFEFF)
 $clasprcContent | gh secret set CLASPRC_JSON --repo oscarmark2007-bot/oscarmark2007
 
 Write-Host "✅ GitHub Secrets (CLASPRC_JSON) 加密設定完成！`n" -ForegroundColor Green
