@@ -1,0 +1,16 @@
+{
+  "name": "OSCARMARK2007 雙核心學習站",
+  "short_name": "學英語聽音樂",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#6366f1",
+  "description": "專業級英語聽說訓練、A-B循環跟讀、動態LRC歌詞音樂播放器與專注白噪音伴讀站",
+  "icons": [
+    {
+      "src": "assets/icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}

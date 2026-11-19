@@ -1,0 +1,2257 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>OSCARMARK | VoiceTube 英語學習 ＆ 智慧生字卡 ＆ Spotify 音樂館</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ==================== SPOTIFY DARK DESIGN SYSTEM ==================== */
+    :root {
+      --sp-black: #121212;
+      --sp-dark-gray: #181818;
+      --sp-card-gray: #242424;
+      --sp-card-hover: #2e2e2e;
+      --sp-light-gray: #b3b3b3;
+      --sp-white: #ffffff;
+      --sp-green: #1db954;
+      --sp-green-hover: #1ed760;
+      --sp-green-glow: rgba(29, 185, 84, 0.35);
+      --sp-border: rgba(255, 255, 255, 0.08);
+      --vt-gold: #f59e0b;
+      --vt-blue: #3b82f6;
+      --danger: #ef4444;
+      --font-main: 'Plus Jakarta Sans', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --sidebar-width: 250px;
+      --bottom-bar-height: 86px;
+      --transition: all 0.25s cubic-bezier(0.3, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: var(--sp-black);
+      color: var(--sp-white);
+      font-family: var(--font-main);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Layout Shell */
+    .app-shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-width) 1fr;
+      grid-template-rows: 1fr var(--bottom-bar-height);
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* ==================== LEFT SIDEBAR ==================== */
+    .sidebar {
+      background-color: #000000;
+      padding: 20px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      border-right: 1px solid var(--sp-border);
+      overflow-y: auto;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px;
+    }
+    .brand-logo-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--sp-green) 0%, #10b981 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 4px 15px var(--sp-green-glow);
+    }
+    .brand-name {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+    .brand-sub {
+      font-size: 10px;
+      color: var(--sp-green);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .nav-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .nav-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--sp-light-gray);
+      padding: 4px 12px;
+      margin-top: 8px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      color: var(--sp-light-gray);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      border: none;
+      background: transparent;
+      width: 100%;
+      text-align: left;
+    }
+    .nav-item:hover {
+      color: var(--sp-white);
+      background-color: rgba(255, 255, 255, 0.06);
+    }
+    .nav-item.active {
+      color: var(--sp-white);
+      background-color: var(--sp-card-gray);
+    }
+    .nav-item.active .nav-icon {
+      color: var(--sp-green);
+    }
+    .nav-icon {
+      font-size: 18px;
+      width: 22px;
+      text-align: center;
+    }
+
+    .sidebar-divider {
+      height: 1px;
+      background: var(--sp-border);
+      margin: 8px 10px;
+    }
+
+    .sidebar-ambient-card {
+      margin-top: auto;
+      background: var(--sp-dark-gray);
+      border: 1px solid var(--sp-border);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .sidebar-ambient-card h4 {
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .sidebar-ambient-card p {
+      font-size: 11px;
+      color: var(--sp-light-gray);
+      line-height: 1.4;
+    }
+    .ambient-open-btn {
+      background: var(--sp-card-gray);
+      color: var(--sp-white);
+      border: 1px solid var(--sp-border);
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .ambient-open-btn:hover {
+      background: var(--sp-green);
+      color: #000;
+      border-color: var(--sp-green);
+    }
+
+    /* ==================== MAIN VIEWPORT ==================== */
+    .main-view {
+      background: linear-gradient(180deg, #18281e 0%, var(--sp-black) 280px);
+      overflow-y: auto;
+      padding: 24px 32px 30px 32px;
+      position: relative;
+    }
+
+    .view-pane {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    .view-pane.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ==================== 1. VOICETUBE ENGLISH HUB ==================== */
+    .vt-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .vt-title-box h1 {
+      font-size: 26px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .vt-title-box p {
+      color: var(--sp-light-gray);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+    .vt-lesson-picker {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .vt-select {
+      background: var(--sp-card-gray);
+      color: var(--sp-white);
+      border: 1px solid var(--sp-border);
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .vt-layout {
+      display: grid;
+      grid-template-columns: 1.1fr 1.3fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .vt-media-box {
+      background: var(--sp-dark-gray);
+      border-radius: 16px;
+      border: 1px solid var(--sp-border);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .video-frame-container {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .audio-poster {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #1e3a29 0%, #0f172a 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+      padding: 20px;
+    }
+    .audio-poster-icon {
+      font-size: 42px;
+      animation: pulse 2s infinite ease-in-out;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .audio-poster h3 {
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .audio-poster span {
+      font-size: 12px;
+      color: var(--sp-green);
+    }
+
+    .vt-controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: var(--sp-card-gray);
+      padding: 10px 14px;
+      border-radius: 12px;
+    }
+    .vt-btn {
+      background: transparent;
+      border: 1px solid var(--sp-border);
+      color: var(--sp-light-gray);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .vt-btn:hover {
+      color: var(--sp-white);
+      border-color: var(--sp-white);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .vt-btn.active {
+      background: var(--sp-green);
+      color: #000;
+      border-color: var(--sp-green);
+      font-weight: 700;
+    }
+    .vt-btn.gold {
+      background: var(--vt-gold);
+      color: #000;
+      border-color: var(--vt-gold);
+      font-weight: 700;
+    }
+
+    /* Subtitles Stream */
+    .vt-subtitles-card {
+      background: var(--sp-dark-gray);
+      border-radius: 16px;
+      border: 1px solid var(--sp-border);
+      display: flex;
+      flex-direction: column;
+      height: 600px;
+      overflow: hidden;
+      position: relative;
+    }
+    .subtitles-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--sp-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .subtitles-header h3 {
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .subtitles-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .sub-row {
+      padding: 14px 16px;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: rgba(255, 255, 255, 0.02);
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+    .sub-row:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.1);
+    }
+    .sub-row.active {
+      background: rgba(29, 185, 84, 0.12);
+      border-color: var(--sp-green);
+      box-shadow: 0 4px 20px rgba(29, 185, 84, 0.2);
+    }
+    .sub-time {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--sp-green);
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sub-time .repeat-tag {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--vt-gold);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+      display: none;
+    }
+    .sub-row.looping .sub-time .repeat-tag {
+      display: inline-block;
+    }
+    .sub-en {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.6;
+      color: #ffffff;
+      margin-bottom: 6px;
+      user-select: text;
+    }
+    .sub-zh {
+      font-size: 13px;
+      color: var(--sp-light-gray);
+      line-height: 1.5;
+    }
+
+    /* Word token in VoiceTube mode */
+    .vt-word {
+      display: inline-block;
+      padding: 0 2px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+    .vt-word:hover {
+      background: var(--sp-green);
+      color: #000000;
+      font-weight: 700;
+    }
+    .vt-word.saved {
+      border-bottom: 2px solid var(--vt-gold);
+    }
+
+    /* Floating selection tooltip */
+    #selection-tooltip {
+      position: absolute;
+      background: var(--sp-green);
+      color: #000;
+      font-weight: 700;
+      font-size: 12px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      cursor: pointer;
+      display: none;
+      z-index: 100;
+      transition: transform 0.15s ease;
+    }
+    #selection-tooltip:hover {
+      transform: scale(1.05);
+      background: var(--sp-green-hover);
+    }
+
+    /* Shadowing Box */
+    .shadowing-box {
+      margin-top: 14px;
+      background: var(--sp-card-gray);
+      border-radius: 12px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .shadowing-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .shadowing-top h4 {
+      font-size: 13px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .match-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--sp-light-gray);
+    }
+    .match-badge.good {
+      background: var(--sp-green);
+      color: #000;
+    }
+    .shadowing-act {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .record-btn {
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+    }
+    .record-btn.recording {
+      animation: pulseRecord 1.2s infinite;
+    }
+    @keyframes pulseRecord {
+      0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); }
+      70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .shadowing-transcript {
+      font-size: 12px;
+      color: var(--sp-light-gray);
+      font-style: italic;
+    }
+
+    /* ==================== 2. FLASHCARDS REVIEW VIEW ==================== */
+    .flashcard-view-wrapper {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .fc-header-box {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .fc-progress-pill {
+      background: var(--sp-card-gray);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: var(--sp-green);
+      font-weight: 700;
+      border: 1px solid var(--sp-border);
+    }
+
+    /* 3D Flip Card Container */
+    .fc-scene {
+      width: 100%;
+      height: 380px;
+      perspective: 1200px;
+    }
+    .fc-card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+      cursor: pointer;
+    }
+    .fc-card.is-flipped {
+      transform: rotateY(180deg);
+    }
+
+    .fc-face {
+      position: absolute;
+      inset: 0;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      border: 1px solid var(--sp-border);
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+    }
+    .fc-front {
+      background: linear-gradient(145deg, #18281e 0%, #1e1e1e 100%);
+      border-color: rgba(29, 185, 84, 0.3);
+      text-align: center;
+      align-items: center;
+    }
+    .fc-back {
+      background: linear-gradient(145deg, #1f232b 0%, #16181f 100%);
+      transform: rotateY(180deg);
+      border-color: rgba(99, 102, 241, 0.3);
+      text-align: left;
+    }
+
+    .fc-badge {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 10px;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--sp-light-gray);
+    }
+
+    .fc-front-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .fc-word {
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--vt-gold);
+      letter-spacing: 0.5px;
+    }
+    .fc-ipa {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      color: var(--sp-light-gray);
+    }
+
+    .fc-hint {
+      font-size: 13px;
+      color: var(--sp-light-gray);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Back Face Content */
+    .fc-back-meaning {
+      font-size: 18px;
+      font-weight: 700;
+      color: #ffffff;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+    .fc-example-card {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      padding: 16px;
+      border-left: 4px solid var(--sp-green);
+      margin: 14px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .fc-example-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--sp-green);
+      letter-spacing: 0.5px;
+    }
+    .fc-example-en {
+      font-size: 15px;
+      font-weight: 500;
+      color: #e2e8f0;
+      line-height: 1.6;
+    }
+    .fc-example-en b {
+      color: var(--vt-gold);
+      text-decoration: underline;
+    }
+    .fc-example-zh {
+      font-size: 13px;
+      color: var(--sp-light-gray);
+      line-height: 1.5;
+    }
+
+    .fc-audio-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Controls Below Flashcard */
+    .fc-controls-bar {
+      display: flex;
+      gap: 14px;
+      width: 100%;
+      justify-content: center;
+      margin-top: 10px;
+    }
+    .fc-btn {
+      padding: 12px 24px;
+      border-radius: 30px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition);
+      border: 1px solid var(--sp-border);
+    }
+    .fc-btn-flip {
+      background: var(--sp-card-gray);
+      color: #fff;
+    }
+    .fc-btn-flip:hover {
+      background: #333;
+    }
+    .fc-btn-master {
+      background: var(--sp-green);
+      color: #000;
+      border: none;
+    }
+    .fc-btn-master:hover {
+      background: var(--sp-green-hover);
+      transform: scale(1.04);
+    }
+    .fc-btn-next {
+      background: var(--sp-card-gray);
+      color: #fff;
+    }
+    .fc-btn-next:hover {
+      background: #333;
+    }
+
+    /* ==================== 3. DICTIONARY POPUP ==================== */
+    .vt-dict-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 480px;
+      background: #1e1e1e;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      display: none;
+      animation: popupScale 0.2s cubic-bezier(0.3, 0, 0.2, 1);
+    }
+    @keyframes popupScale {
+      from { transform: translate(-50%, -50%) scale(0.92); opacity: 0; }
+      to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+    .dict-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .dict-word-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--vt-gold);
+    }
+    .dict-phonetic {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      color: var(--sp-light-gray);
+      margin-top: 2px;
+    }
+    .dict-close {
+      background: transparent;
+      border: none;
+      color: var(--sp-light-gray);
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .dict-body {
+      margin: 14px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .dict-meaning {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #e2e8f0;
+      background: var(--sp-card-gray);
+      padding: 12px 14px;
+      border-radius: 8px;
+    }
+    .dict-example-preview {
+      background: rgba(0,0,0,0.3);
+      padding: 10px 14px;
+      border-radius: 8px;
+      border-left: 3px solid var(--sp-green);
+    }
+    .dict-example-label {
+      font-size: 11px;
+      color: var(--sp-green);
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .dict-context {
+      font-size: 13px;
+      color: var(--sp-light-gray);
+      font-style: italic;
+      line-height: 1.5;
+    }
+    .dict-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .dict-btn-voice {
+      background: var(--sp-card-gray);
+      color: #fff;
+      border: 1px solid var(--sp-border);
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .dict-btn-save {
+      flex: 1;
+      background: var(--sp-green);
+      color: #000;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .dict-btn-save:hover {
+      background: var(--sp-green-hover);
+    }
+
+    .popup-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 999;
+      display: none;
+    }
+
+    /* ==================== 4. SPOTIFY MUSIC LOUNGE ==================== */
+    .sp-hero { margin-bottom: 24px; }
+    .sp-hero h1 { font-size: 30px; font-weight: 800; margin-bottom: 6px; }
+    .sp-hero p { color: var(--sp-light-gray); font-size: 14px; }
+    .sp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    .sp-card {
+      background: var(--sp-dark-gray);
+      border-radius: 10px;
+      padding: 14px;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+    .sp-card:hover { background: var(--sp-card-gray); transform: translateY(-4px); }
+    .sp-card-img-wrap {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 12px;
+      position: relative;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    }
+    .sp-card-img { width: 100%; height: 100%; object-fit: cover; }
+    .sp-card-play {
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--sp-green);
+      color: #000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: var(--transition);
+    }
+    .sp-card:hover .sp-card-play { opacity: 1; transform: translateY(0); }
+    .sp-card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .sp-card-desc { font-size: 12px; color: var(--sp-light-gray); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.4; }
+
+    .sp-lyrics-section {
+      background: #18281e;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      height: 450px;
+      overflow: hidden;
+      border: 1px solid var(--sp-border);
+    }
+    .sp-lyrics-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; display: flex; justify-content: space-between; }
+    .sp-lyrics-scroll { flex: 1; overflow-y: auto; padding: 20px 0; display: flex; flex-direction: column; gap: 18px; scroll-behavior: smooth; }
+    .sp-lrc-line { font-size: 20px; font-weight: 700; color: rgba(255, 255, 255, 0.35); transition: var(--transition); cursor: pointer; line-height: 1.5; }
+    .sp-lrc-line:hover { color: rgba(255, 255, 255, 0.7); }
+    .sp-lrc-line.active { font-size: 26px; color: #ffffff; transform: scale(1.02); transform-origin: left center; }
+
+    /* ==================== 5. VOCABULARY VAULT ==================== */
+    .vault-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+    .vault-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .vault-card {
+      background: var(--sp-dark-gray);
+      border: 1px solid var(--sp-border);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: var(--transition);
+    }
+    .vault-card:hover { background: var(--sp-card-gray); border-color: rgba(255, 255, 255, 0.15); }
+    .vault-top { display: flex; justify-content: space-between; align-items: center; }
+    .vault-word { font-size: 20px; font-weight: 800; color: var(--vt-gold); }
+    .vault-phonetic { font-family: var(--font-mono); font-size: 12px; color: var(--sp-light-gray); }
+    .vault-meaning { font-size: 13px; line-height: 1.5; color: #e2e8f0; }
+    .vault-ctx { font-size: 12px; color: var(--sp-light-gray); font-style: italic; border-left: 2px solid var(--sp-green); padding-left: 8px; }
+
+    /* ==================== BOTTOM SPOTIFY BAR ==================== */
+    .bottom-bar {
+      grid-column: 1 / -1;
+      background-color: var(--sp-dark-gray);
+      border-top: 1px solid var(--sp-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      z-index: 100;
+    }
+    .bar-left { display: flex; align-items: center; gap: 14px; width: 280px; min-width: 180px; }
+    .bar-cover { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; }
+    .bar-meta { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+    .bar-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-artist { font-size: 12px; color: var(--sp-light-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-center { flex: 1; max-width: 650px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .center-buttons { display: flex; align-items: center; gap: 18px; }
+    .player-btn { background: transparent; border: none; color: var(--sp-light-gray); font-size: 16px; cursor: pointer; transition: var(--transition); }
+    .player-btn:hover { color: var(--sp-white); transform: scale(1.1); }
+    .player-btn.play-circle { width: 38px; height: 38px; background: var(--sp-white); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .player-btn.play-circle:hover { background: var(--sp-green); transform: scale(1.08); }
+    .playback-bar { width: 100%; display: flex; align-items: center; gap: 10px; font-family: var(--font-mono); font-size: 11px; color: var(--sp-light-gray); }
+    .progress-track { flex: 1; height: 4px; background: rgba(255, 255, 255, 0.2); border-radius: 4px; position: relative; cursor: pointer; }
+    .progress-track:hover { height: 6px; }
+    .progress-fill { height: 100%; background: var(--sp-white); border-radius: 4px; width: 0%; transition: width 0.1s linear; }
+    .progress-track:hover .progress-fill { background: var(--sp-green); }
+    .bar-right { display: flex; align-items: center; gap: 14px; width: 240px; justify-content: flex-end; }
+    .vol-slider { width: 90px; accent-color: var(--sp-green); cursor: pointer; }
+
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .vt-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Backdrop for Modals -->
+  <div id="dict-backdrop" class="popup-backdrop"></div>
+
+  <!-- Floating Selection Tooltip -->
+  <div id="selection-tooltip">➕ 放入生字卡</div>
+
+  <!-- VoiceTube Click-to-Translate & Add to Flashcard Modal -->
+  <div id="dict-popup" class="vt-dict-popup">
+    <div class="dict-header">
+      <div>
+        <div class="dict-word-title" id="dict-title">Shrinkflation</div>
+        <div class="dict-phonetic" id="dict-phonetic">/ˈʃrɪŋk.fleɪ.ʃən/</div>
+      </div>
+      <button class="dict-close" id="dict-close-btn">✕</button>
+    </div>
+    <div class="dict-body">
+      <div class="dict-meaning" id="dict-meaning">
+        【名】縮水式通膨（售價維持不變，但包裝或份量實質縮小）
+      </div>
+      <div class="dict-example-preview">
+        <div class="dict-example-label">📌 自動收錄文章例句：</div>
+        <div class="dict-context" id="dict-context">
+          “Shrinkflation occurs when the price of a product remains the same...”
+        </div>
+      </div>
+    </div>
+    <div class="dict-actions">
+      <button class="dict-btn-voice" id="dict-voice-btn">🔊 單字發音</button>
+      <button class="dict-btn-save" id="dict-save-btn">
+        <span>📇 存為生字卡 (含例句)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- App Shell -->
+  <div class="app-shell">
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside class="sidebar">
+      <div class="brand-logo">
+        <div class="brand-logo-icon">🎧</div>
+        <div>
+          <div class="brand-name">OSCARMARK</div>
+          <div class="brand-sub">Studio Pro</div>
+        </div>
+      </div>
+
+      <nav class="nav-group">
+        <div class="nav-label">主要模式</div>
+        <button class="nav-item active" data-view="english-view">
+          <span class="nav-icon">📚</span>
+          <span>VoiceTube 英語精讀</span>
+        </button>
+        <button class="nav-item" data-view="flashcards-view">
+          <span class="nav-icon">📇</span>
+          <span>生字卡複習 (<span id="sidebar-fc-count">0</span>)</span>
+        </button>
+        <button class="nav-item" data-view="music-view">
+          <span class="nav-icon">🎵</span>
+          <span>Spotify 音樂館</span>
+        </button>
+        <button class="nav-item" data-view="vault-view">
+          <span class="nav-icon">⭐</span>
+          <span>生詞資料庫</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="sidebar-ambient-card">
+        <h4>🌧️ 專注白噪音伴讀</h4>
+        <p>在學習或聽歌時疊加自然雨聲與咖啡館環境音。</p>
+        <button class="ambient-open-btn" id="ambient-toggle-btn">開啟混音器</button>
+      </div>
+    </aside>
+
+    <!-- ==================== MAIN VIEWPORT ==================== -->
+    <main class="main-view">
+
+      <!-- PANE 1: VOICETUBE ENGLISH HUB -->
+      <section id="english-view" class="view-pane active">
+        <div class="vt-header">
+          <div class="vt-title-box">
+            <h1>📚 VoiceTube 沉浸式英語學習</h1>
+            <p>在文章中點選單字或用滑鼠圈選片語，自動將單字與<strong>當前句子收錄為生字卡與例句</strong>。</p>
+          </div>
+          <div class="vt-lesson-picker">
+            <select class="vt-select" id="lesson-selector">
+              <option value="lesson-1">01. Mixed Conditionals & Modern Business (通膨術語與混合假設)</option>
+              <option value="lesson-2">02. Study Abroad & International Zoom Presentation (海外留學簡報)</option>
+              <option value="lesson-3">03. The Power of Habit & Daily Deep Work (習慣的力量與深度工作)</option>
+            </select>
+            <button class="vt-btn gold" id="jump-to-fc-btn">📇 查看生字卡</button>
+          </div>
+        </div>
+
+        <div class="vt-layout">
+          <!-- Left: Player & VoiceTube Controls -->
+          <div class="vt-media-box">
+            <div class="video-frame-container">
+              <div class="audio-poster">
+                <div class="audio-poster-icon">🎙️</div>
+                <h3 id="current-lesson-title">Mixed Conditionals & Modern Business</h3>
+                <span>VoiceTube Interactive Masterclass</span>
+              </div>
+            </div>
+
+            <!-- VoiceTube Action Buttons -->
+            <div class="vt-controls-bar">
+              <button class="vt-btn" id="vt-repeat-sentence-btn" title="循環重複當前句子">
+                <span>🔁 單句循環</span>
+              </button>
+              <button class="vt-btn" id="vt-speed-btn" title="慢速模式">
+                <span id="speed-indicator">🐢 1.0x</span>
+              </button>
+              <button class="vt-btn active" id="vt-toggle-zh-btn" title="切換中英對照">
+                <span>雙語字幕</span>
+              </button>
+              <button class="vt-btn" id="vt-jump-prev-btn">⏮️ 上一句</button>
+              <button class="vt-btn" id="vt-jump-next-btn">下一句 ⏭️</button>
+            </div>
+
+            <!-- Shadowing Section -->
+            <div class="shadowing-box">
+              <div class="shadowing-top">
+                <h4>🎙️ 影子跟讀 (Shadowing) 即時口說評測</h4>
+                <span class="match-badge" id="shadow-score">等待朗讀</span>
+              </div>
+              <div class="shadowing-act">
+                <button class="record-btn" id="vt-record-btn">
+                  <span>🎤 開始跟讀</span>
+                </button>
+                <div class="shadowing-transcript" id="shadow-result">
+                  點選句子後，按住麥克風跟讀原句...
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Interactive Subtitle Stream -->
+          <div class="vt-subtitles-card">
+            <div class="subtitles-header">
+              <h3><span>📜</span> 互動字幕（點擊單字即查即存生字卡）</h3>
+              <small style="color: var(--sp-light-gray);">選取字詞立即收錄例句</small>
+            </div>
+            <div class="subtitles-scroll" id="subtitles-container">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANE 2: FLASHCARDS REVIEW (生字卡 3D 翻面模式) -->
+      <section id="flashcards-view" class="view-pane">
+        <div class="flashcard-view-wrapper">
+          <div class="fc-header-box">
+            <div>
+              <h1 style="font-size: 26px; font-weight: 800;">📇 智慧生字卡複習 (Flashcard Mode)</h1>
+              <p style="color: var(--sp-light-gray); font-size: 13px; margin-top: 4px;">Anki 雙面翻卡記憶法，包含您在文章中點選的字詞與自動關聯的原句例句。</p>
+            </div>
+            <div class="fc-progress-pill" id="fc-progress-display">
+              進度: 1 / 1
+            </div>
+          </div>
+
+          <!-- 3D Flip Card -->
+          <div class="fc-scene">
+            <div class="fc-card" id="active-fc-card">
+              <!-- FRONT -->
+              <div class="fc-face fc-front">
+                <span class="fc-badge">FRONT 正面 (單字)</span>
+                <div class="fc-front-content">
+                  <div class="fc-word" id="fc-word-front">Shrinkflation</div>
+                  <div class="fc-ipa" id="fc-ipa-front">/ˈʃrɪŋk.fleɪ.ʃən/</div>
+                  <button class="vt-btn" id="fc-speak-word-btn" style="margin-top: 10px;">🔊 朗讀發音</button>
+                </div>
+                <div class="fc-hint">
+                  <span>🔄 點擊卡片或按「空白鍵」翻面查看例句與釋義</span>
+                </div>
+              </div>
+
+              <!-- BACK -->
+              <div class="fc-face fc-back">
+                <span class="fc-badge" style="background: rgba(99, 102, 241, 0.2); color: #818cf8;">BACK 背面 (釋義與原句例句)</span>
+                <div class="fc-back-meaning" id="fc-meaning-back">
+                  【名】縮水式通膨（售價維持不變，但包裝或份量實質縮小）
+                </div>
+                
+                <div class="fc-example-card">
+                  <div class="fc-example-label">📌 文章原句例句 (Context Example)：</div>
+                  <div class="fc-example-en" id="fc-example-en-back">
+                    "<b>Shrinkflation</b> occurs when the price of a product remains the same, but the packaging size gets smaller."
+                  </div>
+                  <div class="fc-example-zh" id="fc-example-zh-back">
+                    縮水式通膨是指產品價格保持不變，但包裝份量卻變小了。
+                  </div>
+                </div>
+
+                <div class="fc-audio-group">
+                  <button class="vt-btn" id="fc-speak-example-btn">🔊 朗讀例句</button>
+                  <button class="vt-btn" id="fc-speak-word-back-btn">🔊 朗讀單字</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls Bar -->
+          <div class="fc-controls-bar">
+            <button class="fc-btn fc-btn-next" id="fc-prev-btn">⏮️ 上一張</button>
+            <button class="fc-btn fc-btn-flip" id="fc-flip-btn">🔄 翻轉卡片</button>
+            <button class="fc-btn fc-btn-master" id="fc-master-btn">✅ 標記已掌握</button>
+            <button class="fc-btn fc-btn-next" id="fc-next-btn">下一張 ⏭️</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- PANE 3: SPOTIFY MUSIC LOUNGE -->
+      <section id="music-view" class="view-pane">
+        <div class="sp-hero">
+          <h1 id="greeting-text">Good Evening, oscarmark</h1>
+          <p>Spotify 質感沉浸音樂館，支援動態同步滾動歌詞與專注背景伴讀。</p>
+        </div>
+
+        <div class="sp-grid">
+          <div class="sp-card" data-track="0">
+            <div class="sp-card-img-wrap">
+              <img class="sp-card-img" src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=300&auto=format&fit=crop" alt="Rainy Lofi">
+              <div class="sp-card-play">▶</div>
+            </div>
+            <div class="sp-card-title">Rainy Night Lofi Study</div>
+            <div class="sp-card-desc">Chillhop Beats • 深度學習專注白噪音伴讀</div>
+          </div>
+
+          <div class="sp-card" data-track="1">
+            <div class="sp-card-img-wrap">
+              <img class="sp-card-img" src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop" alt="Cafe Study">
+              <div class="sp-card-play">▶</div>
+            </div>
+            <div class="sp-card-title">Warm Coffee Acoustic</div>
+            <div class="sp-card-desc">Acoustic Morning • 舒適午後咖啡館吉他</div>
+          </div>
+
+          <div class="sp-card" data-track="2">
+            <div class="sp-card-img-wrap">
+              <img class="sp-card-img" src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=300&auto=format&fit=crop" alt="Forest Dawn">
+              <div class="sp-card-play">▶</div>
+            </div>
+            <div class="sp-card-title">Forest Birds Meditation</div>
+            <div class="sp-card-desc">Nature Soundscapes • 晨曦森林鳥鳴與清泉</div>
+          </div>
+        </div>
+
+        <!-- Spotify Synchronized Lyrics Mode -->
+        <div class="sp-lyrics-section">
+          <div class="sp-lyrics-title">
+            <span>🎤 Spotify 動態同步即時歌詞 (Live Lyrics)</span>
+            <span style="font-size: 13px; color: var(--sp-green); font-weight: 600;">LRC Auto-Scroll</span>
+          </div>
+          <div class="sp-lyrics-scroll" id="sp-lyrics-box">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </section>
+
+      <!-- PANE 4: VOCABULARY VAULT -->
+      <section id="vault-view" class="view-pane">
+        <div class="vault-header">
+          <div>
+            <h1 style="font-size: 26px; font-weight: 800;">⭐ 生詞資料庫 (Vocabulary Vault)</h1>
+            <p style="color: var(--sp-light-gray); font-size: 13px; margin-top: 4px;">所有在文章中收錄的生字卡清單與例句彙整。</p>
+          </div>
+          <div style="display: flex; gap: 10px;">
+            <button class="vt-btn" id="export-csv-btn">匯出 Anki CSV</button>
+            <button class="vt-btn" id="clear-vault-btn" style="color: var(--danger);">清空生詞</button>
+          </div>
+        </div>
+
+        <div class="vault-grid" id="vault-items-grid">
+          <!-- Rendered dynamically -->
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ==================== BOTTOM SPOTIFY BAR ==================== -->
+    <footer class="bottom-bar">
+      <!-- Left Track Info -->
+      <div class="bar-left">
+        <img class="bar-cover" id="bar-cover-img" src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=300&auto=format&fit=crop" alt="Cover">
+        <div class="bar-meta">
+          <div class="bar-title" id="bar-title-text">01. Mixed Conditionals</div>
+          <div class="bar-artist" id="bar-artist-text">VoiceTube Masterclass</div>
+        </div>
+        <button class="heart-btn" id="like-btn" title="收藏歌曲">💚</button>
+      </div>
+
+      <!-- Center Player Controls -->
+      <div class="bar-center">
+        <div class="center-buttons">
+          <button class="player-btn" id="player-prev" title="上一曲 / 上一句">⏮</button>
+          <button class="player-btn play-circle" id="player-play" title="播放 / 暫停">▶</button>
+          <button class="player-btn" id="player-next" title="下一曲 / 下一句">⏭</button>
+          <button class="player-btn" id="player-repeat" title="循環模式">🔁</button>
+        </div>
+        <div class="playback-bar">
+          <span id="time-current">00:00</span>
+          <div class="progress-track" id="bar-progress-track">
+            <div class="progress-fill" id="bar-progress-fill"></div>
+          </div>
+          <span id="time-duration">00:00</span>
+        </div>
+      </div>
+
+      <!-- Right Utilities -->
+      <div class="bar-right">
+        <span style="font-size: 16px; cursor: pointer;" title="動態歌詞">🎤</span>
+        <span style="font-size: 16px; cursor: pointer;">🔊</span>
+        <input type="range" class="vol-slider" id="bar-volume" min="0" max="1" step="0.05" value="0.85">
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Audio Player -->
+  <audio id="core-audio" preload="metadata"></audio>
+
+  <!-- ==================== APPLICATION SCRIPTS ==================== -->
+  <script>
+    // Embedded Lessons & Track Data
+    const DATA_LESSONS = {
+      'lesson-1': {
+        title: 'Mixed Conditionals & Modern Business',
+        artist: 'VoiceTube Masterclass',
+        audio: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
+        sentences: [
+          {
+            start: 0, end: 5.2,
+            en: "Shrinkflation occurs when the price of a product remains the same, but the packaging size gets smaller.",
+            zh: "縮水式通膨是指產品價格保持不變，但包裝份量卻變小了（縮水＋通膨）。"
+          },
+          {
+            start: 5.3, end: 11.5,
+            en: "Skimpflation happens when a company uses cheaper ingredients to make the same product in order to keep the price steady.",
+            zh: "偷工減料型通膨是指企業為了維持價格，改用更廉價的原料來製造相同產品。"
+          },
+          {
+            start: 11.6, end: 18.2,
+            en: "Greedflation describes when corporations raise prices excessively under the guise of general inflation to boost profits.",
+            zh: "貪婪通膨則描述企業藉口整體物價通膨，趁機過度哄抬價格以擴大利潤。"
+          },
+          {
+            start: 18.3, end: 25.8,
+            en: "If consumers had been more vigilant, companies would not be employing these deceptive pricing tactics today.",
+            zh: "如果消費者當初更加警惕，企業今天就不會採用這些欺騙性的定價策略。（混合假設語氣）"
+          },
+          {
+            start: 25.9, end: 35.0,
+            en: "Mastering these nuances empowers international scholars to articulate economic phenomena with precision.",
+            zh: "掌握這些微妙差異，能讓國際學者更精準地闡述現代經濟現象。"
+          }
+        ]
+      },
+      'lesson-2': {
+        title: 'Study Abroad & International Presentation',
+        artist: 'Academic English Series',
+        audio: 'https://actions.google.com/sounds/v1/ambiences/outdoor_morning.ogg',
+        sentences: [
+          {
+            start: 0, end: 6.0,
+            en: "Welcome everyone to our cross-border academic conference on global curriculum normalization.",
+            zh: "歡迎大家參加我們關於全球課程規範化的跨國學術會議。"
+          },
+          {
+            start: 6.1, end: 13.0,
+            en: "Before we delve into the transcript data verification, please ensure your microphone remains muted.",
+            zh: "在我們深入探討成績單數據驗證之前，請先確認您的麥克風保持靜音。"
+          },
+          {
+            start: 13.1, end: 21.0,
+            en: "Clear articulation and structured logic are paramount when defending your thesis in international symposiums.",
+            zh: "在國際研討會上為論文答辯時，清晰的咬字與嚴謹的邏輯是至關重要的。"
+          }
+        ]
+      },
+      'lesson-3': {
+        title: 'The Power of Habit & Daily Deep Work',
+        artist: 'Mindset Mastery',
+        audio: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg',
+        sentences: [
+          {
+            start: 0, end: 6.5,
+            en: "Success is not an overnight breakthrough; it is the cumulative result of daily micro-habits executed with intention.",
+            zh: "成功絕非一朝一夕的突破，而是每天帶著專注覺知所累積的微小習慣成效。"
+          },
+          {
+            start: 6.6, end: 14.0,
+            en: "When you immerse yourself in focused listening, your auditory cortex adapts to recognize subtle phoneme boundaries.",
+            zh: "當您沉浸於專注聆聽時，您的大腦聽覺皮質會逐漸調適並精準辨識微小的音素邊界。"
+          }
+        ]
+      }
+    };
+
+    const DATA_TRACKS = [
+      {
+        title: 'Rainy Night Lofi Study',
+        artist: 'Chillhop Beats',
+        cover: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=300&auto=format&fit=crop',
+        audio: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg',
+        lrc: `[00:00.00]🎵 Rainy Night Lofi Study Beats
+[00:04.00]Soft rain falling outside the window
+[00:09.50]Quiet thoughts drifting into peaceful focus
+[00:15.00]Let the rhythm steady your breathing
+[00:22.00]Every second of practice sharpens the mind
+[00:29.00]Deep in the zone, calm and serene`
+      },
+      {
+        title: 'Warm Coffee Acoustic Groove',
+        artist: 'Acoustic Morning Trio',
+        cover: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop',
+        audio: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
+        lrc: `[00:00.00]☕ Warm Coffee Shop Acoustic Groove
+[00:05.00]The steam rises from a fresh cup of espresso
+[00:11.00]Words and melodies intertwine seamlessly
+[00:17.00]Mastering English one sentence at a time
+[00:24.00]Stay present, enjoy the journey of wisdom`
+      },
+      {
+        title: 'Forest Birds Dawn Meditation',
+        artist: 'Nature Soundscapes',
+        cover: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=300&auto=format&fit=crop',
+        audio: 'https://actions.google.com/sounds/v1/ambiences/outdoor_morning.ogg',
+        lrc: `[00:00.00]🌲 Forest Birds Dawn Meditation
+[00:06.00]Morning light breaks through the pine canopy
+[00:13.00]The mind settles into natural clarity
+[00:20.00]Effortless concentration and boundless memory`
+      }
+    ];
+
+    const QUICK_DICT = {
+      'shrinkflation': { ipa: '/ˈʃrɪŋk.fleɪ.ʃən/', meaning: '【名】縮水式通膨（售價維持不變，但包裝或份量實質縮小）' },
+      'skimpflation': { ipa: '/ˈskɪmp.fleɪ.ʃən/', meaning: '【名】偷工減料型通膨（售價維持不變，但改用廉價低劣原料製造）' },
+      'greedflation': { ipa: '/ˈɡriːd.fleɪ.ʃən/', meaning: '【名】貪婪通膨（企業以整體通膨為藉口惡意過度哄抬價格）' },
+      'vigilant': { ipa: '/ˈvɪdʒ.əl.ənt/', meaning: '【形】警惕的、警覺的' },
+      'deceptive': { ipa: '/dɪˈsep.tɪv/', meaning: '【形】欺騙性的、令人誤解的' },
+      'tactics': { ipa: '/ˈtæk.tɪks/', meaning: '【名】戰術、策略手段' },
+      'nuances': { ipa: '/ˈnjuː.ɑːnsɪz/', meaning: '【名】細微差別、精妙之處' },
+      'empowers': { ipa: '/ɪmˈpaʊ.ərz/', meaning: '【動】使能夠、賦予力量' },
+      'articulate': { ipa: '/ɑːˈtɪk.jə.lət/', meaning: '【動】清晰闡明、表達；【形】咬字清晰的' },
+      'normalization': { ipa: '/ˌnɔː.mə.laɪˈzeɪ.ʃən/', meaning: '【名】常規化、標準化、規範化' },
+      'transcript': { ipa: '/ˈtræn.skrɪpt/', meaning: '【名】成績單、官方逐字稿' },
+      'paramount': { ipa: '/ˈpær.ə.maʊnt/', meaning: '【形】至高無上的、最重要的' },
+      'symposiums': { ipa: '/sɪmˈpəʊ.zi.əmz/', meaning: '【名】學術研討會、座談會' }
+    };
+
+    // Main App Core
+    class AppManager {
+      constructor() {
+        this.audio = document.getElementById('core-audio');
+        this.currentMode = 'english';
+        this.currentLesson = 'lesson-1';
+        this.currentTrackIndex = 0;
+        this.activeSentenceIndex = 0;
+        this.isLoopingSentence = false;
+        this.playbackSpeed = 1.0;
+        this.showChinese = true;
+        this.vocab = [];
+        this.activeFcIndex = 0;
+        this.activeSelectionSentence = null;
+
+        this.initDOM();
+        this.initEvents();
+        this.loadVocabFromStorage();
+        this.renderLesson(this.currentLesson);
+        this.renderLyrics(DATA_TRACKS[0].lrc);
+      }
+
+      initDOM() {
+        // Nav
+        this.navItems = document.querySelectorAll('.nav-item');
+        this.viewPanes = document.querySelectorAll('.view-pane');
+        
+        // Player Bar
+        this.playBtn = document.getElementById('player-play');
+        this.prevBtn = document.getElementById('player-prev');
+        this.nextBtn = document.getElementById('player-next');
+        this.barProgressTrack = document.getElementById('bar-progress-track');
+        this.barProgressFill = document.getElementById('bar-progress-fill');
+        this.timeCurrent = document.getElementById('time-current');
+        this.timeDuration = document.getElementById('time-duration');
+        this.barCover = document.getElementById('bar-cover-img');
+        this.barTitle = document.getElementById('bar-title-text');
+        this.barArtist = document.getElementById('bar-artist-text');
+        this.barVolume = document.getElementById('bar-volume');
+
+        // VoiceTube Pane
+        this.lessonSelector = document.getElementById('lesson-selector');
+        this.subtitlesContainer = document.getElementById('subtitles-container');
+        this.vtRepeatBtn = document.getElementById('vt-repeat-sentence-btn');
+        this.vtSpeedBtn = document.getElementById('vt-speed-btn');
+        this.speedIndicator = document.getElementById('speed-indicator');
+        this.vtToggleZhBtn = document.getElementById('vt-toggle-zh-btn');
+        this.vtJumpPrevBtn = document.getElementById('vt-jump-prev-btn');
+        this.vtJumpNextBtn = document.getElementById('vt-jump-next-btn');
+        this.jumpToFcBtn = document.getElementById('jump-to-fc-btn');
+
+        // Shadowing
+        this.recordBtn = document.getElementById('vt-record-btn');
+        this.shadowScore = document.getElementById('shadow-score');
+        this.shadowResult = document.getElementById('shadow-result');
+
+        // Selection Tooltip
+        this.selectionTooltip = document.getElementById('selection-tooltip');
+
+        // Dictionary Popup
+        this.dictPopup = document.getElementById('dict-popup');
+        this.dictBackdrop = document.getElementById('dict-backdrop');
+        this.dictCloseBtn = document.getElementById('dict-close-btn');
+        this.dictTitle = document.getElementById('dict-title');
+        this.dictPhonetic = document.getElementById('dict-phonetic');
+        this.dictMeaning = document.getElementById('dict-meaning');
+        this.dictContext = document.getElementById('dict-context');
+        this.dictVoiceBtn = document.getElementById('dict-voice-btn');
+        this.dictSaveBtn = document.getElementById('dict-save-btn');
+
+        // Flashcards
+        this.activeFcCard = document.getElementById('active-fc-card');
+        this.fcProgressDisplay = document.getElementById('fc-progress-display');
+        this.fcWordFront = document.getElementById('fc-word-front');
+        this.fcIpaFront = document.getElementById('fc-ipa-front');
+        this.fcMeaningBack = document.getElementById('fc-meaning-back');
+        this.fcExampleEnBack = document.getElementById('fc-example-en-back');
+        this.fcExampleZhBack = document.getElementById('fc-example-zh-back');
+        this.fcSpeakWordBtn = document.getElementById('fc-speak-word-btn');
+        this.fcSpeakWordBackBtn = document.getElementById('fc-speak-word-back-btn');
+        this.fcSpeakExampleBtn = document.getElementById('fc-speak-example-btn');
+        this.fcPrevBtn = document.getElementById('fc-prev-btn');
+        this.fcNextBtn = document.getElementById('fc-next-btn');
+        this.fcFlipBtn = document.getElementById('fc-flip-btn');
+        this.fcMasterBtn = document.getElementById('fc-master-btn');
+
+        // Vault
+        this.vaultGrid = document.getElementById('vault-items-grid');
+        this.sidebarFcCount = document.getElementById('sidebar-fc-count');
+      }
+
+      initEvents() {
+        // Nav switching
+        this.navItems.forEach((btn) => {
+          btn.addEventListener('click', () => {
+            this.switchView(btn.getAttribute('data-view'));
+          });
+        });
+
+        this.jumpToFcBtn.addEventListener('click', () => {
+          this.switchView('flashcards-view');
+        });
+
+        // Audio Events
+        this.audio.addEventListener('timeupdate', () => this.onTimeUpdate());
+        this.audio.addEventListener('play', () => { this.playBtn.textContent = '⏸'; });
+        this.audio.addEventListener('pause', () => { this.playBtn.textContent = '▶'; });
+        this.audio.addEventListener('loadedmetadata', () => {
+          this.timeDuration.textContent = this.formatTime(this.audio.duration || 0);
+        });
+
+        // Player Controls
+        this.playBtn.addEventListener('click', () => {
+          if (this.audio.paused) this.audio.play(); else this.audio.pause();
+        });
+
+        this.barProgressTrack.addEventListener('click', (e) => {
+          const rect = this.barProgressTrack.getBoundingClientRect();
+          const pos = (e.clientX - rect.left) / rect.width;
+          if (this.audio.duration) this.audio.currentTime = pos * this.audio.duration;
+        });
+
+        this.barVolume.addEventListener('input', (e) => {
+          this.audio.volume = parseFloat(e.target.value);
+        });
+
+        // Lesson selector
+        this.lessonSelector.addEventListener('change', (e) => {
+          this.currentLesson = e.target.value;
+          this.renderLesson(this.currentLesson, true);
+        });
+
+        // VoiceTube Loop Current Sentence
+        this.vtRepeatBtn.addEventListener('click', () => {
+          this.isLoopingSentence = !this.isLoopingSentence;
+          this.vtRepeatBtn.classList.toggle('active', this.isLoopingSentence);
+          this.updateLoopTag();
+        });
+
+        // VoiceTube Speed
+        this.vtSpeedBtn.addEventListener('click', () => {
+          const speeds = [0.75, 0.9, 1.0, 1.25];
+          let idx = speeds.indexOf(this.playbackSpeed);
+          idx = (idx + 1) % speeds.length;
+          this.playbackSpeed = speeds[idx];
+          this.audio.playbackRate = this.playbackSpeed;
+          this.speedIndicator.textContent = `🐢 ${this.playbackSpeed}x`;
+        });
+
+        // Bilingual Toggle
+        this.vtToggleZhBtn.addEventListener('click', () => {
+          this.showChinese = !this.showChinese;
+          this.vtToggleZhBtn.classList.toggle('active', this.showChinese);
+          document.querySelectorAll('.sub-zh').forEach((el) => {
+            el.style.display = this.showChinese ? 'block' : 'none';
+          });
+        });
+
+        // Jumps
+        this.vtJumpPrevBtn.addEventListener('click', () => this.jumpSentence(-1));
+        this.vtJumpNextBtn.addEventListener('click', () => this.jumpSentence(1));
+        this.prevBtn.addEventListener('click', () => this.jumpSentence(-1));
+        this.nextBtn.addEventListener('click', () => this.jumpSentence(1));
+
+        // Spotify Cards Click
+        document.querySelectorAll('.sp-card').forEach((card) => {
+          card.addEventListener('click', () => {
+            const idx = parseInt(card.dataset.track);
+            this.loadTrack(idx, true);
+          });
+        });
+
+        // Dict Popup Close
+        this.dictCloseBtn.addEventListener('click', () => this.closeDict());
+        this.dictBackdrop.addEventListener('click', () => this.closeDict());
+        this.dictVoiceBtn.addEventListener('click', () => {
+          this.speak(this.dictTitle.textContent);
+        });
+
+        // Save into Flashcards with sentence as example
+        this.dictSaveBtn.addEventListener('click', () => {
+          const item = {
+            word: this.dictTitle.textContent,
+            phonetic: this.dictPhonetic.textContent,
+            meaning: this.dictMeaning.textContent,
+            example_en: this.currentExampleEn || this.dictContext.textContent,
+            example_zh: this.currentExampleZh || ''
+          };
+          this.saveWord(item);
+        });
+
+        // In-Text Drag Selection Tooltip
+        this.initTextSelection();
+
+        // Flashcards Controls
+        this.activeFcCard.addEventListener('click', () => this.flipFlashcard());
+        this.fcFlipBtn.addEventListener('click', () => this.flipFlashcard());
+        this.fcPrevBtn.addEventListener('click', () => this.jumpFlashcard(-1));
+        this.fcNextBtn.addEventListener('click', () => this.jumpFlashcard(1));
+        this.fcMasterBtn.addEventListener('click', () => this.toggleMasterActiveCard());
+
+        this.fcSpeakWordBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.speak(this.fcWordFront.textContent);
+        });
+        this.fcSpeakWordBackBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.speak(this.fcWordFront.textContent);
+        });
+        this.fcSpeakExampleBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const cleanText = this.fcExampleEnBack.textContent.replace(/["”]/g, '');
+          this.speak(cleanText);
+        });
+
+        // Spacebar flips card
+        window.addEventListener('keydown', (e) => {
+          if (e.code === 'Space' && document.getElementById('flashcards-view').classList.contains('active')) {
+            e.preventDefault();
+            this.flipFlashcard();
+          }
+        });
+
+        // Shadowing Microphone
+        this.initShadowing();
+
+        // Export Anki CSV
+        document.getElementById('export-csv-btn').addEventListener('click', () => this.exportAnkiCSV());
+        document.getElementById('clear-vault-btn').addEventListener('click', () => {
+          if (confirm('確定要清空所有收藏的生字卡嗎？')) {
+            this.vocab = [];
+            this.syncVocabToStorage();
+            this.renderVault();
+            this.renderFlashcard();
+          }
+        });
+      }
+
+      switchView(viewId) {
+        this.navItems.forEach((b) => b.classList.toggle('active', b.getAttribute('data-view') === viewId));
+        this.viewPanes.forEach((p) => p.classList.remove('active'));
+        document.getElementById(viewId).classList.add('active');
+
+        if (viewId === 'english-view') {
+          this.currentMode = 'english';
+          this.renderLesson(this.currentLesson, false);
+        } else if (viewId === 'music-view') {
+          this.currentMode = 'music';
+          this.loadTrack(this.currentTrackIndex, false);
+        } else if (viewId === 'flashcards-view') {
+          this.renderFlashcard();
+        } else if (viewId === 'vault-view') {
+          this.renderVault();
+        }
+      }
+
+      // ==================== ENGLISH LESSON & WORD SELECTION ====================
+
+      renderLesson(key, autoPlay = false) {
+        const lesson = DATA_LESSONS[key];
+        if (!lesson) return;
+
+        this.barTitle.textContent = lesson.title;
+        this.barArtist.textContent = lesson.artist;
+        document.getElementById('current-lesson-title').textContent = lesson.title;
+
+        this.subtitlesContainer.innerHTML = '';
+        lesson.sentences.forEach((s, idx) => {
+          const row = document.createElement('div');
+          row.className = `sub-row ${idx === 0 ? 'active' : ''}`;
+          row.dataset.index = idx;
+          row.dataset.start = s.start;
+          row.dataset.end = s.end;
+
+          // Tokenize words
+          const words = s.en.split(/\s+/);
+          const tokensHTML = words.map((w) => {
+            const clean = w.replace(/[^a-zA-Z]/g, '').toLowerCase();
+            const isSaved = this.vocab.some((v) => v.word.toLowerCase() === clean);
+            return `<span class="vt-word ${isSaved ? 'saved' : ''}" data-word="${clean}">${w}</span>`;
+          }).join(' ');
+
+          row.innerHTML = `
+            <div class="sub-time">
+              <span>${this.formatTime(s.start)} - ${this.formatTime(s.end)}</span>
+              <span class="repeat-tag">🔁 單句循環中</span>
+            </div>
+            <div class="sub-en">${tokensHTML}</div>
+            <div class="sub-zh" style="display: ${this.showChinese ? 'block' : 'none'};">${s.zh}</div>
+          `;
+
+          row.addEventListener('click', (e) => {
+            if (e.target.classList.contains('vt-word')) {
+              this.handleWordLookup(e.target.dataset.word, s.en, s.zh);
+              return;
+            }
+            this.audio.currentTime = s.start;
+            this.activeSentenceIndex = idx;
+            this.audio.play();
+          });
+
+          this.subtitlesContainer.appendChild(row);
+        });
+
+        if (this.currentMode === 'english') {
+          this.audio.src = lesson.audio;
+          if (autoPlay) this.audio.play();
+        }
+      }
+
+      // Drag selection inside article
+      initTextSelection() {
+        document.addEventListener('mouseup', (e) => {
+          const sel = window.getSelection();
+          const selectedText = sel ? sel.toString().trim() : '';
+
+          if (selectedText && selectedText.length > 1 && !this.dictPopup.contains(e.target)) {
+            // Find parent sentence row
+            const anchorNode = sel.anchorNode;
+            let current = anchorNode ? anchorNode.parentElement : null;
+            let sentenceRow = null;
+            while (current && current !== document.body) {
+              if (current.classList && current.classList.contains('sub-row')) {
+                sentenceRow = current;
+                break;
+              }
+              current = current.parentElement;
+            }
+
+            if (sentenceRow) {
+              const idx = parseInt(sentenceRow.dataset.index);
+              const lesson = DATA_LESSONS[this.currentLesson];
+              const s = lesson ? lesson.sentences[idx] : null;
+
+              if (s) {
+                this.activeSelectionSentence = s;
+                const rect = sel.getRangeAt(0).getBoundingClientRect();
+                this.selectionTooltip.style.top = `${window.scrollY + rect.bottom + 8}px`;
+                this.selectionTooltip.style.left = `${window.scrollX + rect.left + rect.width / 2 - 40}px`;
+                this.selectionTooltip.style.display = 'block';
+                this.pendingSelectedWord = selectedText;
+                return;
+              }
+            }
+          }
+          this.selectionTooltip.style.display = 'none';
+        });
+
+        this.selectionTooltip.addEventListener('click', () => {
+          this.selectionTooltip.style.display = 'none';
+          if (this.pendingSelectedWord && this.activeSelectionSentence) {
+            this.handleWordLookup(
+              this.pendingSelectedWord,
+              this.activeSelectionSentence.en,
+              this.activeSelectionSentence.zh
+            );
+          }
+        });
+      }
+
+      handleWordLookup(word, contextEn, contextZh) {
+        if (!word) return;
+        this.currentExampleEn = contextEn;
+        this.currentExampleZh = contextZh;
+
+        this.dictTitle.textContent = word;
+        this.dictContext.textContent = `“${contextEn}”`;
+        this.dictPhonetic.textContent = '查詢中...';
+        this.dictMeaning.textContent = '正在呼叫即時翻譯引擎...';
+
+        this.dictPopup.style.display = 'block';
+        this.dictBackdrop.style.display = 'block';
+
+        // Check local dictionary
+        const local = QUICK_DICT[word.toLowerCase()];
+        if (local) {
+          this.dictPhonetic.textContent = local.ipa;
+          this.dictMeaning.textContent = local.meaning;
+          return;
+        }
+
+        // Call Google Apps Script LanguageApp
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler((res) => {
+              if (res.success) {
+                this.dictPhonetic.textContent = `/${word}/`;
+                this.dictMeaning.textContent = `【中文釋義】${res.translated}`;
+              } else {
+                this.fetchFreeDictFallback(word);
+              }
+            })
+            .withFailureHandler(() => {
+              this.fetchFreeDictFallback(word);
+            })
+            .apiTranslateText(word);
+        } else {
+          this.fetchFreeDictFallback(word);
+        }
+      }
+
+      fetchFreeDictFallback(word) {
+        fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`)
+          .then((r) => r.json())
+          .then((data) => {
+            if (Array.isArray(data) && data.length > 0) {
+              const entry = data[0];
+              const ipa = entry.phonetic || (entry.phonetics && entry.phonetics[0] ? entry.phonetics[0].text : `/${word}/`);
+              const def = entry.meanings[0].definitions[0].definition;
+              const pos = entry.meanings[0].partOfSpeech;
+              this.dictPhonetic.textContent = ipa;
+              this.dictMeaning.textContent = `[${pos}] ${def}`;
+            } else {
+              this.dictPhonetic.textContent = `/${word}/`;
+              this.dictMeaning.textContent = `【單字】${word}`;
+            }
+          })
+          .catch(() => {
+            this.dictPhonetic.textContent = `/${word}/`;
+            this.dictMeaning.textContent = `【單字】${word}`;
+          });
+      }
+
+      closeDict() {
+        this.dictPopup.style.display = 'none';
+        this.dictBackdrop.style.display = 'none';
+      }
+
+      // ==================== FLASHCARDS 3D ENGINE ====================
+
+      renderFlashcard() {
+        this.sidebarFcCount.textContent = this.vocab.length;
+        if (this.vocab.length === 0) {
+          this.fcProgressDisplay.textContent = '0 / 0';
+          this.fcWordFront.textContent = '尚無生字卡';
+          this.fcIpaFront.textContent = '';
+          this.fcMeaningBack.textContent = '在文章中點選或圈選任何字詞，即可自動存入生字卡與例句！';
+          this.fcExampleEnBack.innerHTML = '';
+          this.fcExampleZhBack.textContent = '';
+          return;
+        }
+
+        if (this.activeFcIndex >= this.vocab.length) this.activeFcIndex = 0;
+        if (this.activeFcIndex < 0) this.activeFcIndex = this.vocab.length - 1;
+
+        const card = this.vocab[this.activeFcIndex];
+        this.activeFcCard.classList.remove('is-flipped');
+
+        this.fcProgressDisplay.textContent = `${this.activeFcIndex + 1} / ${this.vocab.length} ${card.mastered ? '(已掌握 ✅)' : ''}`;
+        this.fcWordFront.textContent = card.word;
+        this.fcIpaFront.textContent = card.phonetic || `/${card.word}/`;
+
+        this.fcMeaningBack.textContent = card.meaning;
+        
+        // Highlight word in example
+        let highlightedExample = card.example_en || '';
+        if (highlightedExample && card.word) {
+          const reg = new RegExp(`(${card.word})`, 'gi');
+          highlightedExample = highlightedExample.replace(reg, '<b>$1</b>');
+        }
+        this.fcExampleEnBack.innerHTML = `“${highlightedExample}”`;
+        this.fcExampleZhBack.textContent = card.example_zh || '';
+        this.fcMasterBtn.textContent = card.mastered ? '🌟 已掌握' : '✅ 標記已掌握';
+      }
+
+      flipFlashcard() {
+        this.activeFcCard.classList.toggle('is-flipped');
+      }
+
+      jumpFlashcard(delta) {
+        if (this.vocab.length === 0) return;
+        this.activeFcIndex += delta;
+        this.renderFlashcard();
+      }
+
+      toggleMasterActiveCard() {
+        if (this.vocab.length === 0) return;
+        const card = this.vocab[this.activeFcIndex];
+        card.mastered = !card.mastered;
+        this.syncVocabToStorage();
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run.apiToggleMastered(card.id);
+        }
+        this.renderFlashcard();
+      }
+
+      // ==================== STORAGE & SYNC ====================
+
+      loadVocabFromStorage() {
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler((res) => {
+              if (res.success && res.data) {
+                this.vocab = res.data;
+                this.sidebarFcCount.textContent = this.vocab.length;
+                this.renderFlashcard();
+              }
+            })
+            .apiGetVocabList();
+        } else {
+          try {
+            const raw = localStorage.getItem('oscarmark_fc_vault');
+            this.vocab = raw ? JSON.parse(raw) : [];
+            this.sidebarFcCount.textContent = this.vocab.length;
+            this.renderFlashcard();
+          } catch {
+            this.vocab = [];
+          }
+        }
+      }
+
+      syncVocabToStorage() {
+        this.sidebarFcCount.textContent = this.vocab.length;
+        try {
+          localStorage.setItem('oscarmark_fc_vault', JSON.stringify(this.vocab));
+        } catch {}
+      }
+
+      saveWord(item) {
+        item.id = Date.now();
+        item.mastered = false;
+
+        // Check if exists
+        const existingIdx = this.vocab.findIndex((v) => v.word.toLowerCase() === item.word.toLowerCase());
+        if (existingIdx >= 0) {
+          this.vocab[existingIdx] = Object.assign(this.vocab[existingIdx], item);
+        } else {
+          this.vocab.unshift(item);
+        }
+
+        this.syncVocabToStorage();
+
+        // Also save to GAS backend
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run.apiSaveVocab(item);
+        }
+
+        // Highlight token
+        document.querySelectorAll(`.vt-word[data-word="${item.word.toLowerCase()}"]`).forEach((el) => {
+          el.classList.add('saved');
+        });
+
+        alert(`🎉 已成功建立生字卡「${item.word}」！\n📌 同步收錄例句：\n"${item.example_en}"`);
+        this.closeDict();
+        this.renderFlashcard();
+      }
+
+      renderVault() {
+        this.sidebarFcCount.textContent = this.vocab.length;
+        this.vaultGrid.innerHTML = '';
+
+        if (this.vocab.length === 0) {
+          this.vaultGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; color: var(--sp-light-gray); padding: 50px;">
+              📖 目前生字卡庫為空。在文章中點選任何單字，即可點擊「存為生字卡」！
+            </div>
+          `;
+          return;
+        }
+
+        this.vocab.forEach((v) => {
+          const card = document.createElement('div');
+          card.className = 'vault-card';
+          card.innerHTML = `
+            <div class="vault-top">
+              <span class="vault-word">${v.word}</span>
+              <div style="display: flex; gap: 8px;">
+                <button class="player-btn speak-v" title="發音">🔊</button>
+                <button class="player-btn del-v" style="color: var(--danger);" title="刪除">✕</button>
+              </div>
+            </div>
+            <div class="vault-phonetic">${v.phonetic || ''}</div>
+            <div class="vault-meaning">${v.meaning}</div>
+            ${v.example_en ? `<div class="vault-ctx">“${v.example_en}”<br><small style="color:var(--sp-light-gray);">${v.example_zh || ''}</small></div>` : ''}
+          `;
+
+          card.querySelector('.speak-v').addEventListener('click', () => this.speak(v.word));
+          card.querySelector('.del-v').addEventListener('click', () => {
+            this.vocab = this.vocab.filter((x) => x.id !== v.id);
+            this.syncVocabToStorage();
+            if (typeof google !== 'undefined' && google.script && google.script.run) {
+              google.script.run.apiDeleteVocab(v.id);
+            }
+            this.renderVault();
+            this.renderFlashcard();
+          });
+
+          this.vaultGrid.appendChild(card);
+        });
+      }
+
+      exportAnkiCSV() {
+        if (this.vocab.length === 0) {
+          alert('生詞庫目前為空。');
+          return;
+        }
+        let csv = 'Front,Back,Example\n';
+        this.vocab.forEach((v) => {
+          const front = `"${v.word} ${v.phonetic || ''}"`;
+          const back = `"${v.meaning.replace(/"/g, '""')}"`;
+          const ex = `"${(v.example_en || '').replace(/"/g, '""')}\n${(v.example_zh || '').replace(/"/g, '""')}"`;
+          csv += `${front},${back},${ex}\n`;
+        });
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `oscarmark_flashcards_${Date.now()}.csv`;
+        a.click();
+      }
+
+      // ==================== AUDIO & UTILS ====================
+
+      onTimeUpdate() {
+        const cur = this.audio.currentTime;
+        const dur = this.audio.duration || 0;
+
+        if (dur > 0) {
+          const pct = (cur / dur) * 100;
+          this.barProgressFill.style.width = `${pct}%`;
+          this.timeCurrent.textContent = this.formatTime(cur);
+        }
+
+        if (this.currentMode === 'english') {
+          const lesson = DATA_LESSONS[this.currentLesson];
+          if (!lesson) return;
+
+          const activeRow = lesson.sentences[this.activeSentenceIndex];
+          if (this.isLoopingSentence && activeRow) {
+            if (cur >= activeRow.end) {
+              this.audio.currentTime = activeRow.start;
+              return;
+            }
+          }
+
+          lesson.sentences.forEach((s, idx) => {
+            if (cur >= s.start && cur <= s.end) {
+              if (this.activeSentenceIndex !== idx) {
+                this.activeSentenceIndex = idx;
+                this.highlightSentence(idx);
+              }
+            }
+          });
+        } else if (this.currentMode === 'music') {
+          this.syncLyrics(cur);
+        }
+      }
+
+      highlightSentence(idx) {
+        const rows = this.subtitlesContainer.querySelectorAll('.sub-row');
+        rows.forEach((r, i) => {
+          r.classList.toggle('active', i === idx);
+          r.classList.toggle('looping', i === idx && this.isLoopingSentence);
+          if (i === idx) {
+            r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        });
+      }
+
+      updateLoopTag() {
+        const rows = this.subtitlesContainer.querySelectorAll('.sub-row');
+        rows.forEach((r, i) => {
+          r.classList.toggle('looping', i === this.activeSentenceIndex && this.isLoopingSentence);
+        });
+      }
+
+      jumpSentence(delta) {
+        const lesson = DATA_LESSONS[this.currentLesson];
+        if (!lesson) return;
+        const targetIdx = Math.max(0, Math.min(lesson.sentences.length - 1, this.activeSentenceIndex + delta));
+        const s = lesson.sentences[targetIdx];
+        if (s) {
+          this.activeSentenceIndex = targetIdx;
+          this.audio.currentTime = s.start;
+          this.audio.play();
+          this.highlightSentence(targetIdx);
+        }
+      }
+
+      speak(text) {
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(text);
+          u.lang = 'en-US';
+          u.rate = 0.9;
+          window.speechSynthesis.speak(u);
+        }
+      }
+
+      formatTime(secs) {
+        const m = Math.floor(secs / 60);
+        const s = Math.floor(secs % 60);
+        return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+      }
+
+      // ==================== SHADOWING ====================
+
+      initShadowing() {
+        const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRec) {
+          this.recordBtn.textContent = '瀏覽器不支援語音';
+          this.recordBtn.disabled = true;
+          return;
+        }
+
+        const recognition = new SpeechRec();
+        recognition.lang = 'en-US';
+        recognition.interimResults = true;
+
+        let recording = false;
+        this.recordBtn.addEventListener('click', () => {
+          if (!recording) {
+            recognition.start();
+            recording = true;
+            this.recordBtn.classList.add('recording');
+            this.recordBtn.textContent = '🔴 錄音中...請朗讀';
+          } else {
+            recognition.stop();
+            recording = false;
+            this.recordBtn.classList.remove('recording');
+            this.recordBtn.textContent = '🎤 開始跟讀';
+          }
+        });
+
+        recognition.onresult = (e) => {
+          const transcript = Array.from(e.results).map((r) => r[0].transcript).join('');
+          this.shadowResult.textContent = `您的發音: "${transcript}"`;
+
+          const lesson = DATA_LESSONS[this.currentLesson];
+          if (!lesson) return;
+          const target = lesson.sentences[this.activeSentenceIndex].en.toLowerCase().replace(/[^a-z0-9\s]/g, '');
+          const user = transcript.toLowerCase().replace(/[^a-z0-9\s]/g, '');
+
+          const targetWords = target.split(/\s+/);
+          const userWords = user.split(/\s+/);
+          const matched = targetWords.filter((w) => userWords.includes(w)).length;
+          const score = Math.round((matched / Math.max(1, targetWords.length)) * 100);
+
+          this.shadowScore.textContent = `準確度: ${score}%`;
+          this.shadowScore.classList.toggle('good', score >= 75);
+        };
+
+        recognition.onend = () => {
+          recording = false;
+          this.recordBtn.classList.remove('recording');
+          this.recordBtn.textContent = '🎤 開始跟讀';
+        };
+      }
+
+      // ==================== MUSIC LYRICS ====================
+
+      loadTrack(index, autoPlay = true) {
+        if (index < 0 || index >= DATA_TRACKS.length) return;
+        this.currentTrackIndex = index;
+        const track = DATA_TRACKS[index];
+
+        this.barTitle.textContent = track.title;
+        this.barArtist.textContent = track.artist;
+        this.barCover.src = track.cover;
+
+        this.renderLyrics(track.lrc);
+
+        if (this.currentMode === 'music') {
+          this.audio.src = track.audio;
+          if (autoPlay) this.audio.play();
+        }
+      }
+
+      renderLyrics(lrcText) {
+        this.lrcLines = [];
+        const box = document.getElementById('sp-lyrics-box');
+        box.innerHTML = '';
+
+        const lines = lrcText.split('\n');
+        const regex = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
+
+        lines.forEach((line) => {
+          const match = line.match(regex);
+          if (match) {
+            const min = parseInt(match[1]);
+            const sec = parseInt(match[2]);
+            const ms = parseInt(match[3]);
+            const time = min * 60 + sec + ms / (match[3].length === 2 ? 100 : 1000);
+            const text = match[4].trim();
+
+            if (text) {
+              const p = document.createElement('p');
+              p.className = 'sp-lrc-line';
+              p.textContent = text;
+              p.dataset.time = time;
+              p.addEventListener('click', () => {
+                this.audio.currentTime = time;
+                this.audio.play();
+              });
+              box.appendChild(p);
+              this.lrcLines.push({ time, el: p });
+            }
+          }
+        });
+      }
+
+      syncLyrics(cur) {
+        if (!this.lrcLines || this.lrcLines.length === 0) return;
+        for (let i = 0; i < this.lrcLines.length; i++) {
+          const curLine = this.lrcLines[i];
+          const nextLine = this.lrcLines[i + 1];
+
+          if (cur >= curLine.time && (!nextLine || cur < nextLine.time)) {
+            this.lrcLines.forEach((l, idx) => {
+              l.el.classList.toggle('active', idx === i);
+              if (idx === i) l.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            });
+            break;
+          }
+        }
+      }
+    }
+
+    // Bootstrap
+    window.addEventListener('DOMContentLoaded', () => {
+      window.app = new AppManager();
+    });
+  </script>
+</body>
+</html>
