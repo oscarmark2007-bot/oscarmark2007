@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>OSCARMARK | VoiceTube 英語學習 ＆ 智慧生字卡 ＆ Spotify 音樂館</title>
+  <title>OSCARMARK | VoiceTube 英語學習 ＆ Google Drive 雲端音樂館</title>
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,7 +59,7 @@
       padding: 20px 14px;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 16px;
       border-right: 1px solid var(--sp-border);
       overflow-y: auto;
     }
@@ -96,7 +96,7 @@
     .nav-group {
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
     }
     .nav-label {
       font-size: 11px;
@@ -105,7 +105,7 @@
       letter-spacing: 1px;
       color: var(--sp-light-gray);
       padding: 4px 12px;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     .nav-item {
       display: flex;
@@ -143,7 +143,29 @@
     .sidebar-divider {
       height: 1px;
       background: var(--sp-border);
-      margin: 8px 10px;
+      margin: 4px 10px;
+    }
+
+    /* Drive Status Pill */
+    .drive-status-card {
+      background: rgba(29, 185, 84, 0.1);
+      border: 1px solid rgba(29, 185, 84, 0.3);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .drive-status-card h4 {
+      font-size: 12px;
+      color: var(--sp-green);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .drive-status-card p {
+      font-size: 11px;
+      color: var(--sp-light-gray);
     }
 
     .sidebar-ambient-card {
@@ -151,21 +173,10 @@
       background: var(--sp-dark-gray);
       border: 1px solid var(--sp-border);
       border-radius: 12px;
-      padding: 14px;
+      padding: 12px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-    }
-    .sidebar-ambient-card h4 {
-      font-size: 13px;
-      display: flex;
-      align-items: center;
       gap: 6px;
-    }
-    .sidebar-ambient-card p {
-      font-size: 11px;
-      color: var(--sp-light-gray);
-      line-height: 1.4;
     }
     .ambient-open-btn {
       background: var(--sp-card-gray);
@@ -181,7 +192,6 @@
     .ambient-open-btn:hover {
       background: var(--sp-green);
       color: #000;
-      border-color: var(--sp-green);
     }
 
     /* ==================== MAIN VIEWPORT ==================== */
@@ -240,6 +250,7 @@
       font-size: 13px;
       outline: none;
       cursor: pointer;
+      max-width: 320px;
     }
 
     .vt-layout {
@@ -428,7 +439,6 @@
       line-height: 1.5;
     }
 
-    /* Word token in VoiceTube mode */
     .vt-word {
       display: inline-block;
       padding: 0 2px;
@@ -445,7 +455,6 @@
       border-bottom: 2px solid var(--vt-gold);
     }
 
-    /* Floating selection tooltip */
     #selection-tooltip {
       position: absolute;
       background: var(--sp-green);
@@ -532,6 +541,48 @@
       font-style: italic;
     }
 
+    /* Article Input Drawer / Modal */
+    .article-drawer {
+      background: var(--sp-card-gray);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 20px;
+      border: 1px solid var(--sp-border);
+      display: none;
+    }
+    .article-drawer.active {
+      display: block;
+    }
+    .article-drawer textarea {
+      width: 100%;
+      height: 140px;
+      background: #111;
+      border: 1px solid var(--sp-border);
+      color: #fff;
+      padding: 12px;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      resize: vertical;
+    }
+    .drawer-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      align-items: center;
+    }
+    .drawer-input {
+      background: #111;
+      border: 1px solid var(--sp-border);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      flex: 1;
+      outline: none;
+    }
+
     /* ==================== 2. FLASHCARDS REVIEW VIEW ==================== */
     .flashcard-view-wrapper {
       max-width: 720px;
@@ -559,7 +610,6 @@
       border: 1px solid var(--sp-border);
     }
 
-    /* 3D Flip Card Container */
     .fc-scene {
       width: 100%;
       height: 380px;
@@ -639,7 +689,6 @@
       gap: 6px;
     }
 
-    /* Back Face Content */
     .fc-back-meaning {
       font-size: 18px;
       font-weight: 700;
@@ -685,7 +734,6 @@
       gap: 10px;
     }
 
-    /* Controls Below Flashcard */
     .fc-controls-bar {
       display: flex;
       gap: 14px;
@@ -877,6 +925,10 @@
       margin-bottom: 12px;
       position: relative;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .sp-card-img { width: 100%; height: 100%; object-fit: cover; }
     .sp-card-play {
@@ -895,6 +947,7 @@
       opacity: 0;
       transform: translateY(8px);
       transition: var(--transition);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     }
     .sp-card:hover .sp-card-play { opacity: 1; transform: translateY(0); }
     .sp-card-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -952,6 +1005,8 @@
     .bar-meta { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
     .bar-title { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .bar-artist { font-size: 12px; color: var(--sp-light-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .heart-btn { background: transparent; border: none; color: var(--sp-light-gray); font-size: 18px; cursor: pointer; }
+    .heart-btn.liked { color: var(--sp-green); }
     .bar-center { flex: 1; max-width: 650px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .center-buttons { display: flex; align-items: center; gap: 18px; }
     .player-btn { background: transparent; border: none; color: var(--sp-light-gray); font-size: 16px; cursor: pointer; transition: var(--transition); }
@@ -979,7 +1034,7 @@
   <div id="dict-backdrop" class="popup-backdrop"></div>
 
   <!-- Floating Selection Tooltip -->
-  <div id="selection-tooltip">➕ 放入生字卡</div>
+  <div id="selection-tooltip">➕ 存為生字卡</div>
 
   <!-- VoiceTube Click-to-Translate & Add to Flashcard Modal -->
   <div id="dict-popup" class="vt-dict-popup">
@@ -995,7 +1050,7 @@
         【名】縮水式通膨（售價維持不變，但包裝或份量實質縮小）
       </div>
       <div class="dict-example-preview">
-        <div class="dict-example-label">📌 自動收錄文章例句：</div>
+        <div class="dict-example-label">📌 自動收錄文章原句為例句：</div>
         <div class="dict-context" id="dict-context">
           “Shrinkflation occurs when the price of a product remains the same...”
         </div>
@@ -1034,7 +1089,7 @@
         </button>
         <button class="nav-item" data-view="music-view">
           <span class="nav-icon">🎵</span>
-          <span>Spotify 音樂館</span>
+          <span>Spotify 音樂館 (<span id="sidebar-music-count">0</span>)</span>
         </button>
         <button class="nav-item" data-view="vault-view">
           <span class="nav-icon">⭐</span>
@@ -1043,6 +1098,13 @@
       </nav>
 
       <div class="sidebar-divider"></div>
+
+      <!-- Drive Sync Status -->
+      <div class="drive-status-card">
+        <h4>☁️ Google 雲端硬碟庫</h4>
+        <p id="drive-stats-text">正在讀取雲端資料庫...</p>
+        <button class="vt-btn" id="refresh-drive-btn" style="padding: 4px 8px; font-size: 11px;">🔄 重新掃描雲端</button>
+      </div>
 
       <div class="sidebar-ambient-card">
         <h4>🌧️ 專注白噪音伴讀</h4>
@@ -1059,15 +1121,24 @@
         <div class="vt-header">
           <div class="vt-title-box">
             <h1>📚 VoiceTube 沉浸式英語學習</h1>
-            <p>在文章中點選單字或用滑鼠圈選片語，自動將單字與<strong>當前句子收錄為生字卡與例句</strong>。</p>
+            <p>點選文章單字或滑鼠圈選片語，自動將單字與<strong>當前句子收錄為生字卡與例句</strong>。</p>
           </div>
           <div class="vt-lesson-picker">
             <select class="vt-select" id="lesson-selector">
-              <option value="lesson-1">01. Mixed Conditionals & Modern Business (通膨術語與混合假設)</option>
-              <option value="lesson-2">02. Study Abroad & International Zoom Presentation (海外留學簡報)</option>
-              <option value="lesson-3">03. The Power of Habit & Daily Deep Work (習慣的力量與深度工作)</option>
+              <option value="">正在掃描雲端文章庫...</option>
             </select>
+            <button class="vt-btn" id="toggle-drawer-btn">📝 貼上新文章</button>
             <button class="vt-btn gold" id="jump-to-fc-btn">📇 查看生字卡</button>
+          </div>
+        </div>
+
+        <!-- Article Input / Save Drawer -->
+        <div class="article-drawer" id="article-drawer">
+          <textarea id="raw-article-input" placeholder="請在此貼上英文文章內容..."></textarea>
+          <div class="drawer-actions">
+            <input type="text" id="article-save-name" class="drawer-input" placeholder="儲存至 Google Drive 的檔名 (例如: Lesson_04)">
+            <button class="vt-btn active" id="parse-article-btn">解析並翻譯文章</button>
+            <button class="vt-btn" id="save-article-drive-btn">儲存到雲端硬碟</button>
           </div>
         </div>
 
@@ -1077,8 +1148,8 @@
             <div class="video-frame-container">
               <div class="audio-poster">
                 <div class="audio-poster-icon">🎙️</div>
-                <h3 id="current-lesson-title">Mixed Conditionals & Modern Business</h3>
-                <span>VoiceTube Interactive Masterclass</span>
+                <h3 id="current-lesson-title">載入中...</h3>
+                <span id="current-lesson-subtitle">VoiceTube Interactive Masterclass</span>
               </div>
             </div>
 
@@ -1136,7 +1207,7 @@
               <p style="color: var(--sp-light-gray); font-size: 13px; margin-top: 4px;">Anki 雙面翻卡記憶法，包含您在文章中點選的字詞與自動關聯的原句例句。</p>
             </div>
             <div class="fc-progress-pill" id="fc-progress-display">
-              進度: 1 / 1
+              進度: 0 / 0
             </div>
           </div>
 
@@ -1191,40 +1262,15 @@
         </div>
       </section>
 
-      <!-- PANE 3: SPOTIFY MUSIC LOUNGE -->
+      <!-- PANE 3: SPOTIFY MUSIC LOUNGE (GOOGLE DRIVE 音樂資料庫) -->
       <section id="music-view" class="view-pane">
         <div class="sp-hero">
           <h1 id="greeting-text">Good Evening, oscarmark</h1>
-          <p>Spotify 質感沉浸音樂館，支援動態同步滾動歌詞與專注背景伴讀。</p>
+          <p>Google Drive 專屬雲端音樂庫 ＆ Spotify 質感沉浸播放館。</p>
         </div>
 
-        <div class="sp-grid">
-          <div class="sp-card" data-track="0">
-            <div class="sp-card-img-wrap">
-              <img class="sp-card-img" src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=300&auto=format&fit=crop" alt="Rainy Lofi">
-              <div class="sp-card-play">▶</div>
-            </div>
-            <div class="sp-card-title">Rainy Night Lofi Study</div>
-            <div class="sp-card-desc">Chillhop Beats • 深度學習專注白噪音伴讀</div>
-          </div>
-
-          <div class="sp-card" data-track="1">
-            <div class="sp-card-img-wrap">
-              <img class="sp-card-img" src="https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop" alt="Cafe Study">
-              <div class="sp-card-play">▶</div>
-            </div>
-            <div class="sp-card-title">Warm Coffee Acoustic</div>
-            <div class="sp-card-desc">Acoustic Morning • 舒適午後咖啡館吉他</div>
-          </div>
-
-          <div class="sp-card" data-track="2">
-            <div class="sp-card-img-wrap">
-              <img class="sp-card-img" src="https://images.unsplash.com/photo-1448375240586-882707db888b?w=300&auto=format&fit=crop" alt="Forest Dawn">
-              <div class="sp-card-play">▶</div>
-            </div>
-            <div class="sp-card-title">Forest Birds Meditation</div>
-            <div class="sp-card-desc">Nature Soundscapes • 晨曦森林鳥鳴與清泉</div>
-          </div>
+        <div class="sp-grid" id="drive-music-grid">
+          <!-- Dynamically populated from Google Drive audio files -->
         </div>
 
         <!-- Spotify Synchronized Lyrics Mode -->
@@ -1261,17 +1307,15 @@
 
     <!-- ==================== BOTTOM SPOTIFY BAR ==================== -->
     <footer class="bottom-bar">
-      <!-- Left Track Info -->
       <div class="bar-left">
         <img class="bar-cover" id="bar-cover-img" src="https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=300&auto=format&fit=crop" alt="Cover">
         <div class="bar-meta">
-          <div class="bar-title" id="bar-title-text">01. Mixed Conditionals</div>
-          <div class="bar-artist" id="bar-artist-text">VoiceTube Masterclass</div>
+          <div class="bar-title" id="bar-title-text">正在連線雲端資料庫...</div>
+          <div class="bar-artist" id="bar-artist-text">OSCARMARK2007</div>
         </div>
         <button class="heart-btn" id="like-btn" title="收藏歌曲">💚</button>
       </div>
 
-      <!-- Center Player Controls -->
       <div class="bar-center">
         <div class="center-buttons">
           <button class="player-btn" id="player-prev" title="上一曲 / 上一句">⏮</button>
@@ -1288,7 +1332,6 @@
         </div>
       </div>
 
-      <!-- Right Utilities -->
       <div class="bar-right">
         <span style="font-size: 16px; cursor: pointer;" title="動態歌詞">🎤</span>
         <span style="font-size: 16px; cursor: pointer;">🔊</span>
@@ -1303,9 +1346,9 @@
 
   <!-- ==================== APPLICATION SCRIPTS ==================== -->
   <script>
-    // Embedded Lessons & Track Data
-    const DATA_LESSONS = {
-      'lesson-1': {
+    // Fallback Sample Lessons for standalone / GitHub Pages mode
+    const FALLBACK_LESSONS = {
+      'sample-1': {
         title: 'Mixed Conditionals & Modern Business',
         artist: 'VoiceTube Masterclass',
         audio: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
@@ -1328,91 +1371,11 @@
           {
             start: 18.3, end: 25.8,
             en: "If consumers had been more vigilant, companies would not be employing these deceptive pricing tactics today.",
-            zh: "如果消費者當初更加警惕，企業今天就不會採用這些欺騙性的定價策略。（混合假設語氣）"
-          },
-          {
-            start: 25.9, end: 35.0,
-            en: "Mastering these nuances empowers international scholars to articulate economic phenomena with precision.",
-            zh: "掌握這些微妙差異，能讓國際學者更精準地闡述現代經濟現象。"
-          }
-        ]
-      },
-      'lesson-2': {
-        title: 'Study Abroad & International Presentation',
-        artist: 'Academic English Series',
-        audio: 'https://actions.google.com/sounds/v1/ambiences/outdoor_morning.ogg',
-        sentences: [
-          {
-            start: 0, end: 6.0,
-            en: "Welcome everyone to our cross-border academic conference on global curriculum normalization.",
-            zh: "歡迎大家參加我們關於全球課程規範化的跨國學術會議。"
-          },
-          {
-            start: 6.1, end: 13.0,
-            en: "Before we delve into the transcript data verification, please ensure your microphone remains muted.",
-            zh: "在我們深入探討成績單數據驗證之前，請先確認您的麥克風保持靜音。"
-          },
-          {
-            start: 13.1, end: 21.0,
-            en: "Clear articulation and structured logic are paramount when defending your thesis in international symposiums.",
-            zh: "在國際研討會上為論文答辯時，清晰的咬字與嚴謹的邏輯是至關重要的。"
-          }
-        ]
-      },
-      'lesson-3': {
-        title: 'The Power of Habit & Daily Deep Work',
-        artist: 'Mindset Mastery',
-        audio: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg',
-        sentences: [
-          {
-            start: 0, end: 6.5,
-            en: "Success is not an overnight breakthrough; it is the cumulative result of daily micro-habits executed with intention.",
-            zh: "成功絕非一朝一夕的突破，而是每天帶著專注覺知所累積的微小習慣成效。"
-          },
-          {
-            start: 6.6, end: 14.0,
-            en: "When you immerse yourself in focused listening, your auditory cortex adapts to recognize subtle phoneme boundaries.",
-            zh: "當您沉浸於專注聆聽時，您的大腦聽覺皮質會逐漸調適並精準辨識微小的音素邊界。"
+            zh: "如果消費者當初更加警惕，企業今天就不會採用這些欺騙性的定價策略。"
           }
         ]
       }
     };
-
-    const DATA_TRACKS = [
-      {
-        title: 'Rainy Night Lofi Study',
-        artist: 'Chillhop Beats',
-        cover: 'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=300&auto=format&fit=crop',
-        audio: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg',
-        lrc: `[00:00.00]🎵 Rainy Night Lofi Study Beats
-[00:04.00]Soft rain falling outside the window
-[00:09.50]Quiet thoughts drifting into peaceful focus
-[00:15.00]Let the rhythm steady your breathing
-[00:22.00]Every second of practice sharpens the mind
-[00:29.00]Deep in the zone, calm and serene`
-      },
-      {
-        title: 'Warm Coffee Acoustic Groove',
-        artist: 'Acoustic Morning Trio',
-        cover: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop',
-        audio: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg',
-        lrc: `[00:00.00]☕ Warm Coffee Shop Acoustic Groove
-[00:05.00]The steam rises from a fresh cup of espresso
-[00:11.00]Words and melodies intertwine seamlessly
-[00:17.00]Mastering English one sentence at a time
-[00:24.00]Stay present, enjoy the journey of wisdom`
-      },
-      {
-        title: 'Forest Birds Dawn Meditation',
-        artist: 'Nature Soundscapes',
-        cover: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=300&auto=format&fit=crop',
-        audio: 'https://actions.google.com/sounds/v1/ambiences/outdoor_morning.ogg',
-        lrc: `[00:00.00]🌲 Forest Birds Dawn Meditation
-[00:06.00]Morning light breaks through the pine canopy
-[00:13.00]The mind settles into natural clarity
-[00:20.00]Effortless concentration and boundless memory`
-      }
-    ];
 
     const QUICK_DICT = {
       'shrinkflation': { ipa: '/ˈʃrɪŋk.fleɪ.ʃən/', meaning: '【名】縮水式通膨（售價維持不變，但包裝或份量實質縮小）' },
@@ -1423,41 +1386,37 @@
       'tactics': { ipa: '/ˈtæk.tɪks/', meaning: '【名】戰術、策略手段' },
       'nuances': { ipa: '/ˈnjuː.ɑːnsɪz/', meaning: '【名】細微差別、精妙之處' },
       'empowers': { ipa: '/ɪmˈpaʊ.ərz/', meaning: '【動】使能夠、賦予力量' },
-      'articulate': { ipa: '/ɑːˈtɪk.jə.lət/', meaning: '【動】清晰闡明、表達；【形】咬字清晰的' },
-      'normalization': { ipa: '/ˌnɔː.mə.laɪˈzeɪ.ʃən/', meaning: '【名】常規化、標準化、規範化' },
-      'transcript': { ipa: '/ˈtræn.skrɪpt/', meaning: '【名】成績單、官方逐字稿' },
-      'paramount': { ipa: '/ˈpær.ə.maʊnt/', meaning: '【形】至高無上的、最重要的' },
-      'symposiums': { ipa: '/sɪmˈpəʊ.zi.əmz/', meaning: '【名】學術研討會、座談會' }
+      'articulate': { ipa: '/ɑːˈtɪk.jə.lət/', meaning: '【動】清晰闡明、表達；【形】咬字清晰的' }
     };
 
-    // Main App Core
     class AppManager {
       constructor() {
         this.audio = document.getElementById('core-audio');
         this.currentMode = 'english';
-        this.currentLesson = 'lesson-1';
-        this.currentTrackIndex = 0;
         this.activeSentenceIndex = 0;
         this.isLoopingSentence = false;
         this.playbackSpeed = 1.0;
         this.showChinese = true;
         this.vocab = [];
         this.activeFcIndex = 0;
-        this.activeSelectionSentence = null;
+
+        // Drive Data Store
+        this.driveAudios = [];
+        this.driveArticles = [];
+        this.currentArticleSentences = [];
+        this.currentAudioIndex = 0;
 
         this.initDOM();
         this.initEvents();
         this.loadVocabFromStorage();
-        this.renderLesson(this.currentLesson);
-        this.renderLyrics(DATA_TRACKS[0].lrc);
+        this.loadDriveAssets();
       }
 
       initDOM() {
-        // Nav
         this.navItems = document.querySelectorAll('.nav-item');
         this.viewPanes = document.querySelectorAll('.view-pane');
         
-        // Player Bar
+        // Bottom Player
         this.playBtn = document.getElementById('player-play');
         this.prevBtn = document.getElementById('player-prev');
         this.nextBtn = document.getElementById('player-next');
@@ -1470,9 +1429,10 @@
         this.barArtist = document.getElementById('bar-artist-text');
         this.barVolume = document.getElementById('bar-volume');
 
-        // VoiceTube Pane
+        // VoiceTube Controls
         this.lessonSelector = document.getElementById('lesson-selector');
         this.subtitlesContainer = document.getElementById('subtitles-container');
+        this.currentLessonTitle = document.getElementById('current-lesson-title');
         this.vtRepeatBtn = document.getElementById('vt-repeat-sentence-btn');
         this.vtSpeedBtn = document.getElementById('vt-speed-btn');
         this.speedIndicator = document.getElementById('speed-indicator');
@@ -1481,15 +1441,21 @@
         this.vtJumpNextBtn = document.getElementById('vt-jump-next-btn');
         this.jumpToFcBtn = document.getElementById('jump-to-fc-btn');
 
+        // Drawer
+        this.toggleDrawerBtn = document.getElementById('toggle-drawer-btn');
+        this.articleDrawer = document.getElementById('article-drawer');
+        this.rawArticleInput = document.getElementById('raw-article-input');
+        this.articleSaveName = document.getElementById('article-save-name');
+        this.parseArticleBtn = document.getElementById('parse-article-btn');
+        this.saveArticleDriveBtn = document.getElementById('save-article-drive-btn');
+
         // Shadowing
         this.recordBtn = document.getElementById('vt-record-btn');
         this.shadowScore = document.getElementById('shadow-score');
         this.shadowResult = document.getElementById('shadow-result');
 
-        // Selection Tooltip
+        // Tooltip & Popups
         this.selectionTooltip = document.getElementById('selection-tooltip');
-
-        // Dictionary Popup
         this.dictPopup = document.getElementById('dict-popup');
         this.dictBackdrop = document.getElementById('dict-backdrop');
         this.dictCloseBtn = document.getElementById('dict-close-btn');
@@ -1516,24 +1482,22 @@
         this.fcFlipBtn = document.getElementById('fc-flip-btn');
         this.fcMasterBtn = document.getElementById('fc-master-btn');
 
-        // Vault
+        // Vault & Drive Status
         this.vaultGrid = document.getElementById('vault-items-grid');
         this.sidebarFcCount = document.getElementById('sidebar-fc-count');
+        this.sidebarMusicCount = document.getElementById('sidebar-music-count');
+        this.driveStatsText = document.getElementById('drive-stats-text');
+        this.refreshDriveBtn = document.getElementById('refresh-drive-btn');
+        this.driveMusicGrid = document.getElementById('drive-music-grid');
       }
 
       initEvents() {
-        // Nav switching
         this.navItems.forEach((btn) => {
-          btn.addEventListener('click', () => {
-            this.switchView(btn.getAttribute('data-view'));
-          });
+          btn.addEventListener('click', () => this.switchView(btn.getAttribute('data-view')));
         });
+        this.jumpToFcBtn.addEventListener('click', () => this.switchView('flashcards-view'));
 
-        this.jumpToFcBtn.addEventListener('click', () => {
-          this.switchView('flashcards-view');
-        });
-
-        // Audio Events
+        // Bottom Player
         this.audio.addEventListener('timeupdate', () => this.onTimeUpdate());
         this.audio.addEventListener('play', () => { this.playBtn.textContent = '⏸'; });
         this.audio.addEventListener('pause', () => { this.playBtn.textContent = '▶'; });
@@ -1541,7 +1505,6 @@
           this.timeDuration.textContent = this.formatTime(this.audio.duration || 0);
         });
 
-        // Player Controls
         this.playBtn.addEventListener('click', () => {
           if (this.audio.paused) this.audio.play(); else this.audio.pause();
         });
@@ -1556,20 +1519,51 @@
           this.audio.volume = parseFloat(e.target.value);
         });
 
-        // Lesson selector
-        this.lessonSelector.addEventListener('change', (e) => {
-          this.currentLesson = e.target.value;
-          this.renderLesson(this.currentLesson, true);
+        // Drawer
+        this.toggleDrawerBtn.addEventListener('click', () => {
+          this.articleDrawer.classList.toggle('active');
         });
 
-        // VoiceTube Loop Current Sentence
+        this.parseArticleBtn.addEventListener('click', () => {
+          const raw = this.rawArticleInput.value.trim();
+          if (!raw) return alert('請先貼上英文文章內容！');
+          this.parseAndRenderRawArticle(raw);
+          this.articleDrawer.classList.remove('active');
+        });
+
+        this.saveArticleDriveBtn.addEventListener('click', () => {
+          this.saveArticleToCloud();
+        });
+
+        // Refresh Drive
+        this.refreshDriveBtn.addEventListener('click', () => {
+          this.loadDriveAssets();
+        });
+
+        // Article selection
+        this.lessonSelector.addEventListener('change', (e) => {
+          const val = e.target.value;
+          if (val.startsWith('drive_art_')) {
+            const idx = parseInt(val.replace('drive_art_', ''));
+            const art = this.driveArticles[idx];
+            if (art) {
+              this.currentLessonTitle.textContent = art.name;
+              this.rawArticleInput.value = art.content;
+              this.articleSaveName.value = art.name;
+              this.parseAndRenderRawArticle(art.content);
+            }
+          } else if (val === 'sample-1') {
+            this.renderSampleLesson('sample-1');
+          }
+        });
+
+        // Loop / Speed / Jumps
         this.vtRepeatBtn.addEventListener('click', () => {
           this.isLoopingSentence = !this.isLoopingSentence;
           this.vtRepeatBtn.classList.toggle('active', this.isLoopingSentence);
           this.updateLoopTag();
         });
 
-        // VoiceTube Speed
         this.vtSpeedBtn.addEventListener('click', () => {
           const speeds = [0.75, 0.9, 1.0, 1.25];
           let idx = speeds.indexOf(this.playbackSpeed);
@@ -1579,7 +1573,6 @@
           this.speedIndicator.textContent = `🐢 ${this.playbackSpeed}x`;
         });
 
-        // Bilingual Toggle
         this.vtToggleZhBtn.addEventListener('click', () => {
           this.showChinese = !this.showChinese;
           this.vtToggleZhBtn.classList.toggle('active', this.showChinese);
@@ -1588,28 +1581,16 @@
           });
         });
 
-        // Jumps
         this.vtJumpPrevBtn.addEventListener('click', () => this.jumpSentence(-1));
         this.vtJumpNextBtn.addEventListener('click', () => this.jumpSentence(1));
         this.prevBtn.addEventListener('click', () => this.jumpSentence(-1));
         this.nextBtn.addEventListener('click', () => this.jumpSentence(1));
 
-        // Spotify Cards Click
-        document.querySelectorAll('.sp-card').forEach((card) => {
-          card.addEventListener('click', () => {
-            const idx = parseInt(card.dataset.track);
-            this.loadTrack(idx, true);
-          });
-        });
-
-        // Dict Popup Close
+        // Popups
         this.dictCloseBtn.addEventListener('click', () => this.closeDict());
         this.dictBackdrop.addEventListener('click', () => this.closeDict());
-        this.dictVoiceBtn.addEventListener('click', () => {
-          this.speak(this.dictTitle.textContent);
-        });
+        this.dictVoiceBtn.addEventListener('click', () => this.speak(this.dictTitle.textContent));
 
-        // Save into Flashcards with sentence as example
         this.dictSaveBtn.addEventListener('click', () => {
           const item = {
             word: this.dictTitle.textContent,
@@ -1621,10 +1602,9 @@
           this.saveWord(item);
         });
 
-        // In-Text Drag Selection Tooltip
         this.initTextSelection();
 
-        // Flashcards Controls
+        // Flashcards 3D
         this.activeFcCard.addEventListener('click', () => this.flipFlashcard());
         this.fcFlipBtn.addEventListener('click', () => this.flipFlashcard());
         this.fcPrevBtn.addEventListener('click', () => this.jumpFlashcard(-1));
@@ -1645,7 +1625,6 @@
           this.speak(cleanText);
         });
 
-        // Spacebar flips card
         window.addEventListener('keydown', (e) => {
           if (e.code === 'Space' && document.getElementById('flashcards-view').classList.contains('active')) {
             e.preventDefault();
@@ -1653,10 +1632,7 @@
           }
         });
 
-        // Shadowing Microphone
         this.initShadowing();
-
-        // Export Anki CSV
         document.getElementById('export-csv-btn').addEventListener('click', () => this.exportAnkiCSV());
         document.getElementById('clear-vault-btn').addEventListener('click', () => {
           if (confirm('確定要清空所有收藏的生字卡嗎？')) {
@@ -1673,38 +1649,203 @@
         this.viewPanes.forEach((p) => p.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
 
-        if (viewId === 'english-view') {
-          this.currentMode = 'english';
-          this.renderLesson(this.currentLesson, false);
-        } else if (viewId === 'music-view') {
-          this.currentMode = 'music';
-          this.loadTrack(this.currentTrackIndex, false);
-        } else if (viewId === 'flashcards-view') {
-          this.renderFlashcard();
-        } else if (viewId === 'vault-view') {
-          this.renderVault();
+        if (viewId === 'flashcards-view') this.renderFlashcard();
+        if (viewId === 'vault-view') this.renderVault();
+      }
+
+      // ==================== GOOGLE DRIVE ASSET LOADER ====================
+
+      loadDriveAssets() {
+        this.driveStatsText.textContent = '⏳ 正在掃描雲端硬碟 (ID: 132cXw...)...';
+
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler((assets) => {
+              this.handleLoadedAssets(assets);
+            })
+            .withFailureHandler((err) => {
+              this.driveStatsText.textContent = '⚠️ 雲端讀取異常，切換至本機備用庫';
+              this.renderSampleLesson('sample-1');
+            })
+            .getFolderAssets();
+        } else {
+          // GitHub Pages mode / Local Preview mode
+          this.driveStatsText.textContent = '☁️ 雲端已連線 (備份示範庫已啟動)';
+          this.handleLoadedAssets({
+            audios: [
+              { name: 'Rainy Night Lofi Study.mp3', id: 'sample_rain', url: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg' },
+              { name: 'Warm Coffee Shop Acoustic.mp3', id: 'sample_cafe', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg' },
+              { name: 'Forest Birds Meditation.mp3', id: 'sample_forest', url: 'https://actions.google.com/sounds/v1/ambiences/outdoor_morning.ogg' }
+            ],
+            articles: [
+              { name: '01. Mixed Conditionals & Modern Business', content: "Shrinkflation occurs when the price of a product remains the same, but the packaging size gets smaller.\nSkimpflation happens when a company uses cheaper ingredients to make the same product.\nGreedflation describes when corporations raise prices excessively under the guise of general inflation." }
+            ]
+          });
         }
       }
 
-      // ==================== ENGLISH LESSON & WORD SELECTION ====================
+      handleLoadedAssets(assets) {
+        this.driveAudios = assets.audios || [];
+        this.driveArticles = assets.articles || [];
 
-      renderLesson(key, autoPlay = false) {
-        const lesson = DATA_LESSONS[key];
-        if (!lesson) return;
+        this.driveStatsText.textContent = `✅ 雲端硬碟：${this.driveAudios.length} 首音樂 / ${this.driveArticles.length} 篇教材`;
+        this.sidebarMusicCount.textContent = this.driveAudios.length;
 
-        this.barTitle.textContent = lesson.title;
-        this.barArtist.textContent = lesson.artist;
-        document.getElementById('current-lesson-title').textContent = lesson.title;
+        // Populate Lesson Selector
+        this.lessonSelector.innerHTML = '';
+        if (this.driveArticles.length > 0) {
+          this.driveArticles.forEach((art, i) => {
+            const opt = document.createElement('option');
+            opt.value = `drive_art_${i}`;
+            opt.textContent = `📄 ${art.name}`;
+            this.lessonSelector.appendChild(opt);
+          });
+          // Auto load first article
+          this.currentLessonTitle.textContent = this.driveArticles[0].name;
+          this.parseAndRenderRawArticle(this.driveArticles[0].content);
+        } else {
+          const opt = document.createElement('option');
+          opt.value = 'sample-1';
+          opt.textContent = '01. Mixed Conditionals (示範教材)';
+          this.lessonSelector.appendChild(opt);
+          this.renderSampleLesson('sample-1');
+        }
+
+        // Populate Spotify Music Grid
+        this.renderSpotifyMusicGrid();
+      }
+
+      renderSpotifyMusicGrid() {
+        this.driveMusicGrid.innerHTML = '';
+        const covers = [
+          'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=300&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1448375240586-882707db888b?w=300&auto=format&fit=crop',
+          'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop'
+        ];
+
+        this.driveAudios.forEach((audio, idx) => {
+          const card = document.createElement('div');
+          card.className = 'sp-card';
+          const coverImg = covers[idx % covers.length];
+          card.innerHTML = `
+            <div class="sp-card-img-wrap">
+              <img class="sp-card-img" src="${coverImg}" alt="Track">
+              <div class="sp-card-play">▶</div>
+            </div>
+            <div class="sp-card-title">${audio.name}</div>
+            <div class="sp-card-desc">Google Drive 雲端音樂 • 點擊播放</div>
+          `;
+
+          card.addEventListener('click', () => {
+            this.playDriveAudio(idx);
+          });
+
+          this.driveMusicGrid.appendChild(card);
+        });
+      }
+
+      playDriveAudio(index) {
+        if (index < 0 || index >= this.driveAudios.length) return;
+        this.currentAudioIndex = index;
+        const track = this.driveAudios[index];
+
+        this.barTitle.textContent = `⏳ 載入音檔: ${track.name}`;
+        this.barArtist.textContent = 'Google Drive 雲端音樂串流';
+        this.audio.src = '';
+
+        if (track.url) {
+          this.audio.src = track.url;
+          this.barTitle.textContent = track.name;
+          this.audio.play();
+          return;
+        }
+
+        // Call GAS getAudioBase64
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler((base64Data) => {
+              if (base64Data && !base64Data.startsWith('ERROR')) {
+                this.barTitle.textContent = track.name;
+                this.audio.src = base64Data;
+                this.audio.play();
+              } else {
+                this.barTitle.textContent = '❌ 音檔讀取失敗';
+              }
+            })
+            .withFailureHandler(() => {
+              this.barTitle.textContent = '❌ 網路連線逾時';
+            })
+            .getAudioBase64(track.id);
+        }
+      }
+
+      // ==================== ARTICLE PARSING & DRIVE SAVE ====================
+
+      parseAndRenderRawArticle(rawText) {
+        this.currentLessonSubtitle = document.getElementById('current-lesson-subtitle');
+        this.currentLessonSubtitle.textContent = 'Google 官方 LanguageApp 即時雙語解析';
+
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler((res) => {
+              this.renderSentenceStream(res.sentences, res.translations);
+            })
+            .processArticle(rawText);
+        } else {
+          // Fallback parser
+          const cleanText = rawText.replace(/\n+/g, ' ');
+          const matches = cleanText.match(/[^.!?]+[.!?]+/g) || [cleanText];
+          this.renderSentenceStream(matches, matches.map(() => ''));
+        }
+      }
+
+      saveArticleToCloud() {
+        const name = this.articleSaveName.value.trim();
+        const content = this.rawArticleInput.value.trim();
+        if (!name || !content) return alert('請先輸入文章檔名與內容！');
+
+        this.saveArticleDriveBtn.textContent = '儲存中...';
+        this.saveArticleDriveBtn.disabled = true;
+
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          google.script.run
+            .withSuccessHandler((msg) => {
+              alert(msg);
+              this.saveArticleDriveBtn.textContent = '儲存到雲端硬碟';
+              this.saveArticleDriveBtn.disabled = false;
+              this.loadDriveAssets();
+            })
+            .saveArticleToDrive(name, content);
+        } else {
+          alert('已在預覽模式下模擬儲存！');
+          this.saveArticleDriveBtn.textContent = '儲存到雲端硬碟';
+          this.saveArticleDriveBtn.disabled = false;
+        }
+      }
+
+      renderSampleLesson(key) {
+        const l = FALLBACK_LESSONS[key];
+        if (!l) return;
+        this.currentLessonTitle.textContent = l.title;
+        const s = l.sentences.map((x) => x.en);
+        const zh = l.sentences.map((x) => x.zh);
+        this.renderSentenceStream(s, zh);
+        this.audio.src = l.audio;
+      }
+
+      renderSentenceStream(sentences, translations) {
+        this.currentArticleSentences = sentences.map((en, i) => ({
+          en: en,
+          zh: translations[i] || ''
+        }));
 
         this.subtitlesContainer.innerHTML = '';
-        lesson.sentences.forEach((s, idx) => {
+        this.currentArticleSentences.forEach((s, idx) => {
           const row = document.createElement('div');
           row.className = `sub-row ${idx === 0 ? 'active' : ''}`;
           row.dataset.index = idx;
-          row.dataset.start = s.start;
-          row.dataset.end = s.end;
 
-          // Tokenize words
           const words = s.en.split(/\s+/);
           const tokensHTML = words.map((w) => {
             const clean = w.replace(/[^a-zA-Z]/g, '').toLowerCase();
@@ -1714,7 +1855,7 @@
 
           row.innerHTML = `
             <div class="sub-time">
-              <span>${this.formatTime(s.start)} - ${this.formatTime(s.end)}</span>
+              <span>第 ${idx + 1} 句</span>
               <span class="repeat-tag">🔁 單句循環中</span>
             </div>
             <div class="sub-en">${tokensHTML}</div>
@@ -1726,28 +1867,47 @@
               this.handleWordLookup(e.target.dataset.word, s.en, s.zh);
               return;
             }
-            this.audio.currentTime = s.start;
             this.activeSentenceIndex = idx;
-            this.audio.play();
+            this.highlightSentence(idx);
+            this.speak(s.en);
           });
 
           this.subtitlesContainer.appendChild(row);
         });
-
-        if (this.currentMode === 'english') {
-          this.audio.src = lesson.audio;
-          if (autoPlay) this.audio.play();
-        }
       }
 
-      // Drag selection inside article
+      highlightSentence(idx) {
+        const rows = this.subtitlesContainer.querySelectorAll('.sub-row');
+        rows.forEach((r, i) => {
+          r.classList.toggle('active', i === idx);
+          r.classList.toggle('looping', i === idx && this.isLoopingSentence);
+          if (i === idx) r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+      }
+
+      updateLoopTag() {
+        const rows = this.subtitlesContainer.querySelectorAll('.sub-row');
+        rows.forEach((r, i) => {
+          r.classList.toggle('looping', i === this.activeSentenceIndex && this.isLoopingSentence);
+        });
+      }
+
+      jumpSentence(delta) {
+        if (this.currentArticleSentences.length === 0) return;
+        const targetIdx = Math.max(0, Math.min(this.currentArticleSentences.length - 1, this.activeSentenceIndex + delta));
+        this.activeSentenceIndex = targetIdx;
+        this.highlightSentence(targetIdx);
+        this.speak(this.currentArticleSentences[targetIdx].en);
+      }
+
+      // ==================== WORD SELECTION & FLASHCARDS ====================
+
       initTextSelection() {
         document.addEventListener('mouseup', (e) => {
           const sel = window.getSelection();
           const selectedText = sel ? sel.toString().trim() : '';
 
           if (selectedText && selectedText.length > 1 && !this.dictPopup.contains(e.target)) {
-            // Find parent sentence row
             const anchorNode = sel.anchorNode;
             let current = anchorNode ? anchorNode.parentElement : null;
             let sentenceRow = null;
@@ -1761,8 +1921,7 @@
 
             if (sentenceRow) {
               const idx = parseInt(sentenceRow.dataset.index);
-              const lesson = DATA_LESSONS[this.currentLesson];
-              const s = lesson ? lesson.sentences[idx] : null;
+              const s = this.currentArticleSentences[idx];
 
               if (s) {
                 this.activeSelectionSentence = s;
@@ -1803,7 +1962,6 @@
         this.dictPopup.style.display = 'block';
         this.dictBackdrop.style.display = 'block';
 
-        // Check local dictionary
         const local = QUICK_DICT[word.toLowerCase()];
         if (local) {
           this.dictPhonetic.textContent = local.ipa;
@@ -1811,7 +1969,6 @@
           return;
         }
 
-        // Call Google Apps Script LanguageApp
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           google.script.run
             .withSuccessHandler((res) => {
@@ -1858,7 +2015,7 @@
         this.dictBackdrop.style.display = 'none';
       }
 
-      // ==================== FLASHCARDS 3D ENGINE ====================
+      // ==================== FLASHCARDS ====================
 
       renderFlashcard() {
         this.sidebarFcCount.textContent = this.vocab.length;
@@ -1884,7 +2041,6 @@
 
         this.fcMeaningBack.textContent = card.meaning;
         
-        // Highlight word in example
         let highlightedExample = card.example_en || '';
         if (highlightedExample && card.word) {
           const reg = new RegExp(`(${card.word})`, 'gi');
@@ -1952,7 +2108,6 @@
         item.id = Date.now();
         item.mastered = false;
 
-        // Check if exists
         const existingIdx = this.vocab.findIndex((v) => v.word.toLowerCase() === item.word.toLowerCase());
         if (existingIdx >= 0) {
           this.vocab[existingIdx] = Object.assign(this.vocab[existingIdx], item);
@@ -1962,17 +2117,15 @@
 
         this.syncVocabToStorage();
 
-        // Also save to GAS backend
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           google.script.run.apiSaveVocab(item);
         }
 
-        // Highlight token
         document.querySelectorAll(`.vt-word[data-word="${item.word.toLowerCase()}"]`).forEach((el) => {
           el.classList.add('saved');
         });
 
-        alert(`🎉 已成功建立生字卡「${item.word}」！\n📌 同步收錄例句：\n"${item.example_en}"`);
+        alert(`🎉 已成功建立生字卡「${item.word}」！\n📌 自動收錄例句：\n"${item.example_en}"`);
         this.closeDict();
         this.renderFlashcard();
       }
@@ -2022,10 +2175,7 @@
       }
 
       exportAnkiCSV() {
-        if (this.vocab.length === 0) {
-          alert('生詞庫目前為空。');
-          return;
-        }
+        if (this.vocab.length === 0) return alert('生詞庫目前為空。');
         let csv = 'Front,Back,Example\n';
         this.vocab.forEach((v) => {
           const front = `"${v.word} ${v.phonetic || ''}"`;
@@ -2041,71 +2191,15 @@
         a.click();
       }
 
-      // ==================== AUDIO & UTILS ====================
+      // ==================== UTILS ====================
 
       onTimeUpdate() {
         const cur = this.audio.currentTime;
         const dur = this.audio.duration || 0;
-
         if (dur > 0) {
           const pct = (cur / dur) * 100;
           this.barProgressFill.style.width = `${pct}%`;
           this.timeCurrent.textContent = this.formatTime(cur);
-        }
-
-        if (this.currentMode === 'english') {
-          const lesson = DATA_LESSONS[this.currentLesson];
-          if (!lesson) return;
-
-          const activeRow = lesson.sentences[this.activeSentenceIndex];
-          if (this.isLoopingSentence && activeRow) {
-            if (cur >= activeRow.end) {
-              this.audio.currentTime = activeRow.start;
-              return;
-            }
-          }
-
-          lesson.sentences.forEach((s, idx) => {
-            if (cur >= s.start && cur <= s.end) {
-              if (this.activeSentenceIndex !== idx) {
-                this.activeSentenceIndex = idx;
-                this.highlightSentence(idx);
-              }
-            }
-          });
-        } else if (this.currentMode === 'music') {
-          this.syncLyrics(cur);
-        }
-      }
-
-      highlightSentence(idx) {
-        const rows = this.subtitlesContainer.querySelectorAll('.sub-row');
-        rows.forEach((r, i) => {
-          r.classList.toggle('active', i === idx);
-          r.classList.toggle('looping', i === idx && this.isLoopingSentence);
-          if (i === idx) {
-            r.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-          }
-        });
-      }
-
-      updateLoopTag() {
-        const rows = this.subtitlesContainer.querySelectorAll('.sub-row');
-        rows.forEach((r, i) => {
-          r.classList.toggle('looping', i === this.activeSentenceIndex && this.isLoopingSentence);
-        });
-      }
-
-      jumpSentence(delta) {
-        const lesson = DATA_LESSONS[this.currentLesson];
-        if (!lesson) return;
-        const targetIdx = Math.max(0, Math.min(lesson.sentences.length - 1, this.activeSentenceIndex + delta));
-        const s = lesson.sentences[targetIdx];
-        if (s) {
-          this.activeSentenceIndex = targetIdx;
-          this.audio.currentTime = s.start;
-          this.audio.play();
-          this.highlightSentence(targetIdx);
         }
       }
 
@@ -2114,7 +2208,12 @@
           window.speechSynthesis.cancel();
           const u = new SpeechSynthesisUtterance(text);
           u.lang = 'en-US';
-          u.rate = 0.9;
+          u.rate = 0.85;
+          u.onend = () => {
+            if (this.isLoopingSentence) {
+              setTimeout(() => { if (this.isLoopingSentence) this.speak(text); }, 1000);
+            }
+          };
           window.speechSynthesis.speak(u);
         }
       }
@@ -2124,8 +2223,6 @@
         const s = Math.floor(secs % 60);
         return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
       }
-
-      // ==================== SHADOWING ====================
 
       initShadowing() {
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -2158,9 +2255,7 @@
           const transcript = Array.from(e.results).map((r) => r[0].transcript).join('');
           this.shadowResult.textContent = `您的發音: "${transcript}"`;
 
-          const lesson = DATA_LESSONS[this.currentLesson];
-          if (!lesson) return;
-          const target = lesson.sentences[this.activeSentenceIndex].en.toLowerCase().replace(/[^a-z0-9\s]/g, '');
+          const target = (this.currentArticleSentences[this.activeSentenceIndex]?.en || '').toLowerCase().replace(/[^a-z0-9\s]/g, '');
           const user = transcript.toLowerCase().replace(/[^a-z0-9\s]/g, '');
 
           const targetWords = target.split(/\s+/);
@@ -2178,77 +2273,8 @@
           this.recordBtn.textContent = '🎤 開始跟讀';
         };
       }
-
-      // ==================== MUSIC LYRICS ====================
-
-      loadTrack(index, autoPlay = true) {
-        if (index < 0 || index >= DATA_TRACKS.length) return;
-        this.currentTrackIndex = index;
-        const track = DATA_TRACKS[index];
-
-        this.barTitle.textContent = track.title;
-        this.barArtist.textContent = track.artist;
-        this.barCover.src = track.cover;
-
-        this.renderLyrics(track.lrc);
-
-        if (this.currentMode === 'music') {
-          this.audio.src = track.audio;
-          if (autoPlay) this.audio.play();
-        }
-      }
-
-      renderLyrics(lrcText) {
-        this.lrcLines = [];
-        const box = document.getElementById('sp-lyrics-box');
-        box.innerHTML = '';
-
-        const lines = lrcText.split('\n');
-        const regex = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
-
-        lines.forEach((line) => {
-          const match = line.match(regex);
-          if (match) {
-            const min = parseInt(match[1]);
-            const sec = parseInt(match[2]);
-            const ms = parseInt(match[3]);
-            const time = min * 60 + sec + ms / (match[3].length === 2 ? 100 : 1000);
-            const text = match[4].trim();
-
-            if (text) {
-              const p = document.createElement('p');
-              p.className = 'sp-lrc-line';
-              p.textContent = text;
-              p.dataset.time = time;
-              p.addEventListener('click', () => {
-                this.audio.currentTime = time;
-                this.audio.play();
-              });
-              box.appendChild(p);
-              this.lrcLines.push({ time, el: p });
-            }
-          }
-        });
-      }
-
-      syncLyrics(cur) {
-        if (!this.lrcLines || this.lrcLines.length === 0) return;
-        for (let i = 0; i < this.lrcLines.length; i++) {
-          const curLine = this.lrcLines[i];
-          const nextLine = this.lrcLines[i + 1];
-
-          if (cur >= curLine.time && (!nextLine || cur < nextLine.time)) {
-            this.lrcLines.forEach((l, idx) => {
-              l.el.classList.toggle('active', idx === i);
-              if (idx === i) l.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            });
-            break;
-          }
-        }
-      }
     }
 
-    // Bootstrap
     window.addEventListener('DOMContentLoaded', () => {
       window.app = new AppManager();
     });
