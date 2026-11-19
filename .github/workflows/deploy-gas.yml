@@ -1,0 +1,59 @@
+name: Deploy to Google Apps Script
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Code.gs'
+      - 'Index.html'
+      - 'index.html'
+      - 'appsscript.json'
+      - '.github/workflows/deploy-gas.yml'
+
+jobs:
+  deploy-to-gas:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Google Clasp
+        run: npm install -g @google/clasp
+
+      - name: Configure Clasp Credentials & Deploy
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          SCRIPT_ID: ${{ secrets.SCRIPT_ID }}
+        run: |
+          if [ -z "$CLASPRC_JSON" ] || [ -z "$SCRIPT_ID" ]; then
+            echo "⚠️ [提示] 尚未偵測到 CLASPRC_JSON 或 SCRIPT_ID 密鑰。"
+            echo "請先於本地執行「設定GAS雙雲端同步授權.bat」完成一次授權綁定。"
+            exit 0
+          fi
+
+          # 寫入 Google 雲端授權憑證到家目錄
+          mkdir -p ~/.clasp
+          echo "$CLASPRC_JSON" > ~/.clasprc.json
+
+          # 寫入專案目標 Script ID
+          echo "{\"scriptId\":\"$SCRIPT_ID\",\"rootDir\":\"./\"}" > .clasp.json
+
+          # 確保 Index.html (大寫) 存在以符合 GAS 命名習慣
+          if [ -f "index.html" ] && [ ! -f "Index.html" ]; then
+            cp index.html Index.html
+          fi
+
+          echo "🚀 正在將最新代碼推送至 Google Apps Script 雲端..."
+          clasp push --force
+
+          echo "📦 正在建立 Google Apps Script 新版本部署..."
+          clasp deploy --description "Auto deploy from GitHub Commit $(git rev-parse --short HEAD)" || true
+
+          echo "🎉 恭喜！Google Apps Script 雲端全自動同步成功！"
