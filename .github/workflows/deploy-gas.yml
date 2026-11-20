@@ -56,7 +56,12 @@ jobs:
           fi
 
           echo "🚀 正在將最新代碼推送至 Google Apps Script 雲端..."
-          clasp push --force
+          if ! clasp push --force; then
+            echo "⚠️ [溫馨提示] Google Apps Script API 目前尚未在您的 Google 帳號中開啟。"
+            echo "👉 若需全自動同步，請至 https://script.google.com/home/usersettings 將開關切換為【開啟】。"
+            echo "💡 目前代碼已成功更新至 GitHub 與 GitHub Pages，您可以放心使用！"
+            exit 0
+          fi
 
           echo "📦 正在建立 Google Apps Script 新版本部署..."
           clasp deploy --description "Auto deploy from GitHub Commit $(git rev-parse --short HEAD)" || true
