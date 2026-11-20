@@ -13,7 +13,16 @@
 const FOLDER_ID = "132cXwwdjBGGYyxrYN1V1QMz8SrCNwNwL";
 
 function doGet(e) {
-  var template = HtmlService.createTemplateFromFile('Index');
+  var template;
+  try {
+    template = HtmlService.createTemplateFromFile('Index');
+  } catch (e1) {
+    try {
+      template = HtmlService.createTemplateFromFile('index');
+    } catch (e2) {
+      return HtmlService.createHtmlOutput('<h2>OSCARMARK 系統載入提示</h2><p>找不到 HTML 檔案，請確認 Apps Script 左側有 Index.html 檔案。</p><pre>' + e2.toString() + '</pre>');
+    }
+  }
   return template.evaluate()
     .setTitle('OSCARMARK | VoiceTube 英語精讀 ＆ Spotify 雲端音樂館')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no')
