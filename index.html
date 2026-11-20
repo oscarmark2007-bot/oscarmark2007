@@ -1026,6 +1026,261 @@
       .sidebar { display: none; }
       .vt-layout { grid-template-columns: 1fr; }
     }
+  
+    /* ==================== 4.1 SPOTIFY DETAILED TRACK TABLE ==================== */
+    .sp-table-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 18px 0 14px 0;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .sp-search-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 6px 14px;
+      width: 280px;
+    }
+    .sp-search-box input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #fff;
+      font-size: 13px;
+      width: 100%;
+    }
+    .sp-view-toggle-btns {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .sp-table-wrap {
+      background: rgba(18, 18, 18, 0.6);
+      border: 1px solid var(--sp-border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 24px;
+    }
+    .sp-track-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+    }
+    .sp-track-table th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--sp-light-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      border-bottom: 1px solid var(--sp-border);
+      background: rgba(255, 255, 255, 0.03);
+    }
+    .sp-track-row {
+      cursor: pointer;
+      transition: background 0.15s ease;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+    .sp-track-row:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .sp-track-row.active {
+      background: rgba(29, 185, 84, 0.15);
+      color: var(--sp-green);
+      font-weight: 700;
+    }
+    .sp-track-row td {
+      padding: 12px 16px;
+      vertical-align: middle;
+    }
+    .track-num-cell {
+      width: 44px;
+      text-align: center;
+      font-family: var(--font-mono);
+      color: var(--sp-light-gray);
+      font-size: 13px;
+    }
+    .sp-track-row.active .track-num-cell {
+      color: var(--sp-green);
+    }
+    .track-title-cell {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .sp-track-row.active .track-title-cell {
+      color: var(--sp-green);
+    }
+    .track-icon-disk {
+      font-size: 16px;
+      opacity: 0.8;
+    }
+    .track-source-cell {
+      color: var(--sp-light-gray);
+      font-size: 12px;
+    }
+    .track-badge-cell {
+      text-align: center;
+    }
+    .track-status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--sp-light-gray);
+    }
+    .track-status-pill.playing {
+      background: var(--sp-green);
+      color: #000;
+      box-shadow: 0 0 10px var(--sp-green-glow);
+    }
+    .track-action-cell {
+      text-align: right;
+    }
+    .row-play-btn {
+      background: transparent;
+      border: none;
+      color: var(--sp-light-gray);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px 8px;
+      transition: transform 0.15s, color 0.15s;
+    }
+    .row-play-btn:hover {
+      color: var(--sp-green);
+      transform: scale(1.2);
+    }
+
+    /* ==================== 4.2 PLAYING LIST (QUEUE DRAWER) ==================== */
+    .queue-drawer {
+      display: none;
+      background: #181818;
+      border: 1px solid var(--sp-border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 24px;
+      animation: fadeIn 0.2s ease;
+    }
+    .queue-drawer.show {
+      display: block;
+    }
+    .queue-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      border-bottom: 1px solid var(--sp-border);
+      padding-bottom: 10px;
+    }
+    .queue-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--vt-gold);
+    }
+    .queue-list {
+      max-height: 280px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .queue-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.15s;
+    }
+    .queue-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .queue-item.current {
+      background: rgba(29, 185, 84, 0.15);
+      border-left: 3px solid var(--sp-green);
+      color: var(--sp-green);
+      font-weight: 700;
+    }
+
+    /* ==================== 4.3 ENLARGED LOOP & REPEAT BUTTONS ==================== */
+    .player-pill-control {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px !important;
+      border-radius: 24px !important;
+      font-size: 13px !important;
+      font-weight: 700 !important;
+      background: rgba(255, 255, 255, 0.08) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2) !important;
+      color: var(--sp-light-gray) !important;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.3, 0, 0.2, 1) !important;
+    }
+    .player-pill-control:hover {
+      background: rgba(255, 255, 255, 0.15) !important;
+      color: #fff !important;
+      transform: scale(1.05);
+    }
+    .player-pill-control.active-loop {
+      background: rgba(29, 185, 84, 0.2) !important;
+      border-color: var(--sp-green) !important;
+      color: var(--sp-green) !important;
+      box-shadow: 0 0 12px var(--sp-green-glow);
+    }
+    .player-pill-control.active-repeat {
+      background: rgba(245, 158, 11, 0.2) !important;
+      border-color: var(--vt-gold) !important;
+      color: var(--vt-gold) !important;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.3);
+    }
+
+    /* ==================== 4.4 VOICETUBE AUTO-READING STYLES ==================== */
+    .sub-row.speaking {
+      border: 2px solid var(--sp-green) !important;
+      background: rgba(29, 185, 84, 0.12) !important;
+      box-shadow: 0 0 16px var(--sp-green-glow);
+      transform: scale(1.01);
+    }
+    .sub-row.speaking .sub-time {
+      color: var(--sp-green);
+      font-weight: 800;
+    }
+    .vt-play-btn-prominent {
+      background: var(--sp-green) !important;
+      color: #000 !important;
+      font-weight: 800 !important;
+      font-size: 14px !important;
+      padding: 10px 20px !important;
+      border-radius: 24px !important;
+      box-shadow: 0 4px 15px var(--sp-green-glow) !important;
+      transition: all 0.2s !important;
+    }
+    .vt-play-btn-prominent:hover {
+      background: var(--sp-green-hover) !important;
+      transform: scale(1.05) !important;
+    }
+    .vt-play-btn-prominent.reading {
+      background: #ef4444 !important;
+      color: #fff !important;
+      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4) !important;
+    }
+
   </style>
 </head>
 <body>
@@ -1155,11 +1410,21 @@
 
             <!-- VoiceTube Action Buttons -->
             <div class="vt-controls-bar">
-              <button class="vt-btn" id="vt-repeat-sentence-btn" title="循環重複當前句子">
-                <span>🔁 單句循環</span>
+              <!-- 核心：播放全文 / 連續自動朗讀 (讓英文跑起來！) -->
+              <button class="vt-btn vt-play-btn-prominent" id="vt-play-all-btn" title="開始逐句自動朗讀全文">
+                <span id="vt-play-all-icon">▶</span> <span id="vt-play-all-text">開始全文朗讀 (英文跑起來)</span>
               </button>
-              <button class="vt-btn" id="vt-speed-btn" title="慢速模式">
-                <span id="speed-indicator">🐢 1.0x</span>
+
+              <!-- 循環重複按鈕 (放大加粗) -->
+              <button class="vt-btn player-pill-control" id="vt-repeat-sentence-btn" title="單句重複練習模式">
+                <span>🔂 單句重複: <b id="vt-single-repeat-status">關</b></span>
+              </button>
+              <button class="vt-btn player-pill-control active-loop" id="vt-loop-article-btn" title="課文循環播放">
+                <span>🔁 全課循環: <b id="vt-all-loop-status">開</b></span>
+              </button>
+
+              <button class="vt-btn" id="vt-speed-btn" title="調整朗讀語速">
+                <span id="speed-indicator">⚡ 1.0x</span>
               </button>
               <button class="vt-btn active" id="vt-toggle-zh-btn" title="切換中英對照">
                 <span>雙語字幕</span>
@@ -1269,8 +1534,47 @@
           <p>Google Drive 專屬雲端音樂庫 ＆ Spotify 質感沉浸播放館。</p>
         </div>
 
-        <div class="sp-grid" id="drive-music-grid">
-          <!-- Dynamically populated from Google Drive audio files -->
+        <!-- Toolbar: Search & Queue Controls -->
+        <div class="sp-table-toolbar">
+          <div class="sp-search-box">
+            <span>🔍</span>
+            <input type="text" id="music-search-input" placeholder="在 73 首雲端音樂中搜尋歌曲名稱...">
+          </div>
+          <div class="sp-view-toggle-btns">
+            <button class="vt-btn gold" id="toggle-queue-btn" style="font-weight: 700; border-radius: 20px; padding: 8px 18px;">
+              📜 現正播放清單 (Playing List)
+            </button>
+            <span style="font-size: 13px; color: var(--sp-light-gray);">一律採用詳細列表模式</span>
+          </div>
+        </div>
+
+        <!-- 播放清單抽屜 (Playing List Queue Drawer) -->
+        <div class="queue-drawer" id="queue-drawer">
+          <div class="queue-header">
+            <div class="queue-title">📜 現正播放清單 (Playing List & Queue)</div>
+            <button class="vt-btn" id="close-queue-btn" style="padding: 4px 10px; font-size: 12px;">關閉清單 ✕</button>
+          </div>
+          <div class="queue-list" id="queue-list-container">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- 詳細列表 (Detailed Track Table) -->
+        <div class="sp-table-wrap">
+          <table class="sp-track-table">
+            <thead>
+              <tr>
+                <th class="track-num-cell">#</th>
+                <th>歌曲名稱 (Track Title)</th>
+                <th>來源 (Storage)</th>
+                <th class="track-badge-cell">播放狀態</th>
+                <th class="track-action-cell">操作</th>
+              </tr>
+            </thead>
+            <tbody id="drive-music-table-body">
+              <!-- Dynamically populated rows -->
+            </tbody>
+          </table>
         </div>
 
         <!-- Spotify Synchronized Lyrics Mode -->
@@ -1317,11 +1621,22 @@
       </div>
 
       <div class="bar-center">
-        <div class="center-buttons">
-          <button class="player-btn" id="player-prev" title="上一曲 / 上一句">⏮</button>
-          <button class="player-btn play-circle" id="player-play" title="播放 / 暫停">▶</button>
-          <button class="player-btn" id="player-next" title="下一曲 / 下一句">⏭</button>
-          <button class="player-btn" id="player-repeat" title="循環模式">🔁</button>
+        <div class="center-buttons" style="gap: 14px;">
+          <!-- 巡環按鈕 (放大顯眼，切換全部循環 / 隨機播放 / 順序播放) -->
+          <button class="player-pill-control active-loop" id="player-loop-pill" title="點擊切換循環模式">
+            <span id="player-loop-icon" style="font-size: 16px;">🔁</span>
+            <span id="player-loop-text">全部循環</span>
+          </button>
+
+          <button class="player-btn" id="player-prev" title="上一曲 / 上一句" style="font-size: 20px;">⏮</button>
+          <button class="player-btn play-circle" id="player-play" title="播放 / 暫停" style="width: 44px; height: 44px; font-size: 20px;">▶</button>
+          <button class="player-btn" id="player-next" title="下一曲 / 下一句" style="font-size: 20px;">⏭</button>
+
+          <!-- 專屬重複按鈕 (放大顯眼，單曲循環) -->
+          <button class="player-pill-control" id="player-repeat-pill" title="點擊切換單曲重複">
+            <span id="player-repeat-icon" style="font-size: 16px;">🔂</span>
+            <span id="player-repeat-text">單曲重複: 關</span>
+          </button>
         </div>
         <div class="playback-bar">
           <span id="time-current">00:00</span>
@@ -1406,6 +1721,14 @@
         this.currentArticleSentences = [];
         this.currentAudioIndex = 0;
 
+        // Auto-Reading & Loop States
+        this.isPlayingAllSentences = false;
+        this.isLoopingSentence = false;
+        this.isLoopingArticle = true;
+        this.loopMode = 'all'; // 'all', 'shuffle', 'seq'
+        this.singleRepeat = false;
+        this.musicFilterKeyword = '';
+
         this.initDOM();
         this.initEvents();
         this.loadVocabFromStorage();
@@ -1489,6 +1812,30 @@
         this.driveStatsText = document.getElementById('drive-stats-text');
         this.refreshDriveBtn = document.getElementById('refresh-drive-btn');
         this.driveMusicGrid = document.getElementById('drive-music-grid');
+
+        // VoiceTube New Auto-Play Elements
+        this.vtPlayAllBtn = document.getElementById('vt-play-all-btn');
+        this.vtPlayAllIcon = document.getElementById('vt-play-all-icon');
+        this.vtPlayAllText = document.getElementById('vt-play-all-text');
+        this.vtSingleRepeatStatus = document.getElementById('vt-single-repeat-status');
+        this.vtLoopArticleBtn = document.getElementById('vt-loop-article-btn');
+        this.vtAllLoopStatus = document.getElementById('vt-all-loop-status');
+
+        // Detailed Music Table & Queue Elements
+        this.musicTableBody = document.getElementById('drive-music-table-body');
+        this.musicSearchInput = document.getElementById('music-search-input');
+        this.toggleQueueBtn = document.getElementById('toggle-queue-btn');
+        this.closeQueueBtn = document.getElementById('close-queue-btn');
+        this.queueDrawer = document.getElementById('queue-drawer');
+        this.queueListContainer = document.getElementById('queue-list-container');
+
+        // Enlarged Bottom Bar Loop & Repeat Controls
+        this.playerLoopPill = document.getElementById('player-loop-pill');
+        this.playerLoopIcon = document.getElementById('player-loop-icon');
+        this.playerLoopText = document.getElementById('player-loop-text');
+        this.playerRepeatPill = document.getElementById('player-repeat-pill');
+        this.playerRepeatIcon = document.getElementById('player-repeat-icon');
+        this.playerRepeatText = document.getElementById('player-repeat-text');
       }
 
       initEvents() {
@@ -1583,6 +1930,52 @@
 
         this.vtJumpPrevBtn.addEventListener('click', () => this.jumpSentence(-1));
         this.vtJumpNextBtn.addEventListener('click', () => this.jumpSentence(1));
+
+        // VoiceTube Auto-Play & Loop Listeners
+        if (this.vtPlayAllBtn) {
+          this.vtPlayAllBtn.addEventListener('click', () => this.togglePlayAllSentences());
+        }
+        if (this.vtRepeatBtn) {
+          this.vtRepeatBtn.addEventListener('click', () => this.toggleSingleRepeatSentence());
+        }
+        if (this.vtLoopArticleBtn) {
+          this.vtLoopArticleBtn.addEventListener('click', () => this.toggleLoopArticle());
+        }
+
+        // Music Detailed Table & Queue Listeners
+        if (this.musicSearchInput) {
+          this.musicSearchInput.addEventListener('input', (e) => {
+            this.musicFilterKeyword = e.target.value.trim().toLowerCase();
+            this.renderSpotifyMusicTable();
+          });
+        }
+        if (this.toggleQueueBtn) {
+          this.toggleQueueBtn.addEventListener('click', () => this.toggleQueueDrawer());
+        }
+        if (this.closeQueueBtn) {
+          this.closeQueueBtn.addEventListener('click', () => {
+            this.queueDrawer.classList.remove('show');
+          });
+        }
+
+        // Enlarged Loop & Repeat Listeners
+        if (this.playerLoopPill) {
+          this.playerLoopPill.addEventListener('click', () => this.cycleMusicLoopMode());
+        }
+        if (this.playerRepeatPill) {
+          this.playerRepeatPill.addEventListener('click', () => this.toggleMusicSingleRepeat());
+        }
+
+        // Audio Ended Event (Auto-advance next song)
+        this.audio.addEventListener('ended', () => this.handleAudioEnded());
+
+        // Previous & Next Song / Sentence Router
+        if (this.prevBtn) {
+          this.prevBtn.addEventListener('click', () => this.handlePrevAction());
+        }
+        if (this.nextBtn) {
+          this.nextBtn.addEventListener('click', () => this.handleNextAction());
+        }
         this.prevBtn.addEventListener('click', () => this.jumpSentence(-1));
         this.nextBtn.addEventListener('click', () => this.jumpSentence(1));
 
@@ -1722,33 +2115,169 @@
       }
 
       renderSpotifyMusicGrid() {
-        this.driveMusicGrid.innerHTML = '';
-        const covers = [
-          'https://images.unsplash.com/photo-1518495973542-4542c06a5843?w=300&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=300&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1448375240586-882707db888b?w=300&auto=format&fit=crop',
-          'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=300&auto=format&fit=crop'
-        ];
+        // Alias to Detailed Table
+        this.renderSpotifyMusicTable();
+      }
+
+      renderSpotifyMusicTable() {
+        if (!this.musicTableBody) return;
+        this.musicTableBody.innerHTML = '';
+
+        const filter = (this.musicFilterKeyword || '').toLowerCase();
+        let displayCount = 0;
 
         this.driveAudios.forEach((audio, idx) => {
-          const card = document.createElement('div');
-          card.className = 'sp-card';
-          const coverImg = covers[idx % covers.length];
-          card.innerHTML = `
-            <div class="sp-card-img-wrap">
-              <img class="sp-card-img" src="${coverImg}" alt="Track">
-              <div class="sp-card-play">▶</div>
-            </div>
-            <div class="sp-card-title">${audio.name}</div>
-            <div class="sp-card-desc">Google Drive 雲端音樂 • 點擊播放</div>
+          if (filter && !audio.name.toLowerCase().includes(filter)) {
+            return;
+          }
+          displayCount++;
+
+          const isCurrent = (idx === this.currentAudioIndex && !this.audio.paused);
+          const tr = document.createElement('tr');
+          tr.className = `sp-track-row ${idx === this.currentAudioIndex ? 'active' : ''}`;
+          tr.innerHTML = `
+            <td class="track-num-cell">
+              ${isCurrent ? '<span style="color:var(--sp-green); animation: pulse 1s infinite;">🔊</span>' : (idx + 1)}
+            </td>
+            <td>
+              <div class="track-title-cell">
+                <span class="track-icon-disk">🎵</span>
+                <span>${audio.name}</span>
+              </div>
+            </td>
+            <td class="track-source-cell">
+              📁 Google Drive 雲端專屬音樂
+            </td>
+            <td class="track-badge-cell">
+              <span class="track-status-pill ${isCurrent ? 'playing' : ''}">
+                ${isCurrent ? '🟢 播放中' : '⚪ 待播'}
+              </span>
+            </td>
+            <td class="track-action-cell">
+              <button class="row-play-btn" title="播放此歌曲">${isCurrent ? '⏸' : '▶'}</button>
+            </td>
           `;
 
-          card.addEventListener('click', () => {
+          tr.addEventListener('click', () => {
             this.playDriveAudio(idx);
           });
 
-          this.driveMusicGrid.appendChild(card);
+          this.musicTableBody.appendChild(tr);
         });
+
+        // Also update Queue Drawer if open
+        this.renderQueueDrawerList();
+      }
+
+      toggleQueueDrawer() {
+        if (!this.queueDrawer) return;
+        this.queueDrawer.classList.toggle('show');
+        if (this.queueDrawer.classList.contains('show')) {
+          this.renderQueueDrawerList();
+          this.queueDrawer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      }
+
+      renderQueueDrawerList() {
+        if (!this.queueListContainer) return;
+        this.queueListContainer.innerHTML = '';
+
+        this.driveAudios.forEach((audio, idx) => {
+          const isCurrent = (idx === this.currentAudioIndex);
+          const item = document.createElement('div');
+          item.className = `queue-item ${isCurrent ? 'current' : ''}`;
+          item.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span style="font-family: var(--font-mono); color: var(--sp-light-gray); width: 24px;">${idx + 1}.</span>
+              <span style="font-weight: 600;">${audio.name}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span style="font-size: 11px; opacity: 0.8;">${isCurrent ? '🟢 正在播放' : '待播'}</span>
+              <span style="font-size: 14px;">${isCurrent ? '🔊' : '▶'}</span>
+            </div>
+          `;
+          item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.playDriveAudio(idx);
+          });
+          this.queueListContainer.appendChild(item);
+        });
+      }
+
+      cycleMusicLoopMode() {
+        if (this.loopMode === 'all') {
+          this.loopMode = 'shuffle';
+          this.playerLoopIcon.textContent = '🔀';
+          this.playerLoopText.textContent = '隨機播放';
+          this.playerLoopPill.className = 'player-pill-control active-loop';
+        } else if (this.loopMode === 'shuffle') {
+          this.loopMode = 'seq';
+          this.playerLoopIcon.textContent = '➡️';
+          this.playerLoopText.textContent = '順序播放';
+          this.playerLoopPill.className = 'player-pill-control';
+        } else {
+          this.loopMode = 'all';
+          this.playerLoopIcon.textContent = '🔁';
+          this.playerLoopText.textContent = '全部循環';
+          this.playerLoopPill.className = 'player-pill-control active-loop';
+        }
+      }
+
+      toggleMusicSingleRepeat() {
+        this.singleRepeat = !this.singleRepeat;
+        if (this.singleRepeat) {
+          this.playerRepeatPill.className = 'player-pill-control active-repeat';
+          this.playerRepeatText.textContent = '單曲重複: 開';
+        } else {
+          this.playerRepeatPill.className = 'player-pill-control';
+          this.playerRepeatText.textContent = '單曲重複: 關';
+        }
+      }
+
+      handleAudioEnded() {
+        if (this.singleRepeat) {
+          // 🔂 單曲重複
+          this.audio.currentTime = 0;
+          this.audio.play();
+          return;
+        }
+
+        if (this.loopMode === 'shuffle') {
+          // 🔀 隨機播放
+          const randIdx = Math.floor(Math.random() * this.driveAudios.length);
+          this.playDriveAudio(randIdx);
+          return;
+        }
+
+        if (this.loopMode === 'all') {
+          // 🔁 全部循環
+          const nextIdx = (this.currentAudioIndex + 1) % this.driveAudios.length;
+          this.playDriveAudio(nextIdx);
+          return;
+        }
+
+        // ➡️ 順序播放 (到最後一首停止)
+        if (this.currentAudioIndex < this.driveAudios.length - 1) {
+          this.playDriveAudio(this.currentAudioIndex + 1);
+        }
+      }
+
+      handlePrevAction() {
+        if (this.currentView === 'english-view') {
+          this.jumpSentence(-1);
+        } else {
+          const prevIdx = (this.currentAudioIndex - 1 + this.driveAudios.length) % this.driveAudios.length;
+          this.playDriveAudio(prevIdx);
+        }
+      }
+
+      handleNextAction() {
+        if (this.currentView === 'english-view') {
+          this.jumpSentence(1);
+        } else {
+          const nextIdx = (this.currentAudioIndex + 1) % this.driveAudios.length;
+          this.playDriveAudio(nextIdx);
+        }
       }
 
       playDriveAudio(index) {
@@ -2214,13 +2743,139 @@
           window.speechSynthesis.cancel();
           const u = new SpeechSynthesisUtterance(text);
           u.lang = 'en-US';
-          u.rate = 0.85;
+          u.rate = (this.playbackSpeed || 1.0) * 0.9;
+          window.speechSynthesis.speak(u);
+        }
+      }
+
+      // ==================== VOICETUBE 英文跑起來 (全自動朗讀) ====================
+
+      togglePlayAllSentences() {
+        if (this.isPlayingAllSentences) {
+          this.stopAutoReading();
+        } else {
+          this.startAutoReading();
+        }
+      }
+
+      startAutoReading() {
+        if (this.currentArticleSentences.length === 0) return alert('尚未載入文章內容');
+        this.isPlayingAllSentences = true;
+        this.vtPlayAllBtn.className = 'vt-btn vt-play-btn-prominent reading';
+        this.vtPlayAllIcon.textContent = '⏸';
+        this.vtPlayAllText.textContent = '暫停朗讀全文';
+
+        // 暫停背景音樂以專注聽英文
+        if (!this.audio.paused) {
+          this.audio.pause();
+        }
+
+        this.speakSentenceSequence(this.activeSentenceIndex);
+      }
+
+      stopAutoReading() {
+        this.isPlayingAllSentences = false;
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+        if (this.vtPlayAllBtn) {
+          this.vtPlayAllBtn.className = 'vt-btn vt-play-btn-prominent';
+          this.vtPlayAllIcon.textContent = '▶';
+          this.vtPlayAllText.textContent = '開始全文朗讀 (英文跑起來)';
+        }
+        this.clearSpeakingHighlight();
+      }
+
+      speakSentenceSequence(idx) {
+        if (!this.isPlayingAllSentences) return;
+        if (idx < 0 || idx >= this.currentArticleSentences.length) {
+          if (this.isLoopingArticle) {
+            idx = 0;
+          } else {
+            this.stopAutoReading();
+            return;
+          }
+        }
+
+        this.activeSentenceIndex = idx;
+        const sentence = this.currentArticleSentences[idx];
+        this.highlightSentence(idx);
+        this.markSpeakingHighlight(idx);
+
+        // Update Bottom Bar info
+        this.barTitle.textContent = `🎙️ 英語精讀朗讀中：第 ${idx + 1} / ${this.currentArticleSentences.length} 句`;
+        this.barArtist.textContent = sentence.en.slice(0, 40) + '...';
+
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          const u = new SpeechSynthesisUtterance(sentence.en);
+          u.lang = 'en-US';
+          u.rate = (this.playbackSpeed || 1.0) * 0.9;
+
           u.onend = () => {
+            this.clearSpeakingHighlight();
+
             if (this.isLoopingSentence) {
-              setTimeout(() => { if (this.isLoopingSentence) this.speak(text); }, 1000);
+              // 🔂 單句重複：停 700ms 後重複同一句
+              setTimeout(() => {
+                if (this.isLoopingSentence && this.isPlayingAllSentences) {
+                  this.speakSentenceSequence(idx);
+                }
+              }, 700);
+            } else if (this.isPlayingAllSentences) {
+              // ➡️ 全文連續跑：停 600ms 後自動進入下一句！
+              setTimeout(() => {
+                if (this.isPlayingAllSentences) {
+                  this.speakSentenceSequence(idx + 1);
+                }
+              }, 600);
             }
           };
+
+          u.onerror = () => {
+            this.clearSpeakingHighlight();
+          };
+
           window.speechSynthesis.speak(u);
+        }
+      }
+
+      markSpeakingHighlight(idx) {
+        const rows = this.subtitlesContainer.querySelectorAll('.sub-row');
+        rows.forEach((r, i) => {
+          if (i === idx) {
+            r.classList.add('speaking');
+            r.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            r.classList.remove('speaking');
+          }
+        });
+      }
+
+      clearSpeakingHighlight() {
+        const rows = this.subtitlesContainer.querySelectorAll('.sub-row');
+        rows.forEach(r => r.classList.remove('speaking'));
+      }
+
+      toggleSingleRepeatSentence() {
+        this.isLoopingSentence = !this.isLoopingSentence;
+        if (this.isLoopingSentence) {
+          this.vtRepeatBtn.className = 'vt-btn player-pill-control active-repeat';
+          this.vtSingleRepeatStatus.textContent = '開';
+        } else {
+          this.vtRepeatBtn.className = 'vt-btn player-pill-control';
+          this.vtSingleRepeatStatus.textContent = '關';
+        }
+      }
+
+      toggleLoopArticle() {
+        this.isLoopingArticle = !this.isLoopingArticle;
+        if (this.isLoopingArticle) {
+          this.vtLoopArticleBtn.className = 'vt-btn player-pill-control active-loop';
+          this.vtAllLoopStatus.textContent = '開';
+        } else {
+          this.vtLoopArticleBtn.className = 'vt-btn player-pill-control';
+          this.vtAllLoopStatus.textContent = '關';
         }
       }
 
