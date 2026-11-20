@@ -1691,6 +1691,12 @@
         this.driveStatsText.textContent = `✅ 雲端硬碟：${this.driveAudios.length} 首音樂 / ${this.driveArticles.length} 篇教材`;
         this.sidebarMusicCount.textContent = this.driveAudios.length;
 
+        // 更新底部播放列提示狀態
+        if (this.driveAudios.length > 0) {
+          this.barTitle.textContent = `🎵 雲端音樂已就緒 (共 ${this.driveAudios.length} 首)`;
+          this.barArtist.textContent = '點擊左側「Spotify 音樂館」挑選歌曲播放';
+        }
+
         // Populate Lesson Selector
         this.lessonSelector.innerHTML = '';
         if (this.driveArticles.length > 0) {
