@@ -1397,6 +1397,185 @@
       border-bottom: 2px solid var(--sp-green) !important;
     }
 
+  
+    /* ==================== 4.3 CUSTOM PLAYLISTS & DRAG-DROP SYSTEM ==================== */
+    .folder-pill.add-playlist-btn {
+      background: rgba(29, 185, 84, 0.12);
+      border: 1px dashed var(--sp-green);
+      color: var(--sp-green);
+      font-weight: 700;
+    }
+    .folder-pill.add-playlist-btn:hover {
+      background: var(--sp-green);
+      color: #000;
+    }
+    .folder-pill.playlist-pill {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(245, 158, 11, 0.08);
+    }
+    .folder-pill.playlist-pill:hover {
+      border-color: var(--vt-gold);
+      color: var(--vt-gold);
+    }
+    .folder-pill.playlist-pill.active {
+      background: var(--vt-gold);
+      color: #000;
+      border-color: var(--vt-gold);
+      font-weight: 800;
+    }
+    .folder-pill.drag-target-hover {
+      transform: scale(1.1) !important;
+      box-shadow: 0 0 18px var(--sp-green) !important;
+      border-color: var(--sp-green) !important;
+      background: rgba(29, 185, 84, 0.4) !important;
+      color: var(--sp-white) !important;
+    }
+
+    /* Playlist Drop Zone Banner */
+    .playlist-drop-zone {
+      border: 2px dashed rgba(29, 185, 84, 0.45);
+      background: rgba(29, 185, 84, 0.06);
+      border-radius: 12px;
+      padding: 14px 20px;
+      text-align: center;
+      color: var(--sp-green);
+      font-size: 13.5px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      transition: var(--transition);
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .playlist-drop-zone.drag-over {
+      background: rgba(29, 185, 84, 0.25);
+      border-color: var(--sp-green);
+      transform: scale(1.015);
+      box-shadow: 0 6px 24px rgba(29, 185, 84, 0.35);
+    }
+
+    /* Playlist Active Toolbar */
+    .playlist-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 12px;
+      padding: 12px 18px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .playlist-toolbar-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .playlist-toolbar-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--vt-gold);
+    }
+    .playlist-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Batch Actions Floating Bar */
+    .batch-actions-bar {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: #242424;
+      border: 1px solid var(--sp-green);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+      border-radius: 30px;
+      padding: 6px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--sp-white);
+      margin-left: 10px;
+    }
+
+    /* Row Action Buttons */
+    .row-add-pl-btn, .row-remove-pl-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--sp-light-gray);
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      transition: var(--transition);
+      margin-left: 6px;
+    }
+    .row-add-pl-btn:hover {
+      background: var(--sp-green);
+      border-color: var(--sp-green);
+      color: #000;
+      transform: scale(1.15);
+    }
+    .row-remove-pl-btn:hover {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #fff;
+      transform: scale(1.15);
+    }
+
+    /* Quick Playlist Menu */
+    .quick-pl-menu {
+      position: fixed;
+      background: #1f1f1f;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.8);
+      padding: 8px 0;
+      z-index: 9999;
+      min-width: 220px;
+      animation: fadeIn 0.15s ease;
+    }
+    .quick-pl-item {
+      padding: 9px 16px;
+      font-size: 13px;
+      color: var(--sp-white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .quick-pl-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--sp-green);
+    }
+    .quick-pl-item.create-new {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      margin-top: 4px;
+      color: var(--vt-gold);
+      font-weight: 700;
+    }
+
+    /* Checkbox Column */
+    .track-check-cell {
+      width: 36px;
+      text-align: center;
+      vertical-align: middle;
+    }
+    .song-checkbox, #select-all-songs {
+      cursor: pointer;
+      width: 15px;
+      height: 15px;
+      accent-color: var(--sp-green);
+    }
+
   </style>
 </head>
 <body>
@@ -1669,11 +1848,33 @@
           <p>Google Drive 專屬雲端音樂庫 ＆ Spotify 質感沉浸播放館。</p>
         </div>
 
-        <!-- Folder Category Filter for Spotify Music -->
+        <!-- Folder Category Filter for Spotify Music & Custom Playlists -->
         <div class="folder-pills-row" id="music-folder-pills" style="margin-bottom: 12px;">
           <button class="folder-pill active" data-music-folder="all">🎵 全部歌曲 (<span id="music-count-all">0</span>)</button>
           <button class="folder-pill" data-music-folder="Englishvoice">📘 Englishvoice (<span id="music-count-ev">0</span>)</button>
           <button class="folder-pill kline-pill" data-music-folder="KLine">📈 KLine (<span id="music-count-kline">0</span>)</button>
+          <span id="custom-playlist-pills-wrap" style="display:inline-flex; gap:8px;"></span>
+          <button class="folder-pill add-playlist-btn" id="create-playlist-btn" title="建立專屬播放清單 (可在螢幕上拖曳多首歌曲組成)">➕ 新增歌單</button>
+        </div>
+
+        <!-- Active Playlist Header / Toolbar -->
+        <div class="playlist-toolbar" id="active-playlist-toolbar" style="display: none;">
+          <div class="playlist-toolbar-info">
+            <span class="playlist-toolbar-title" id="active-pl-title">📜 播放清單</span>
+            <span style="font-size: 13px; color: var(--sp-light-gray);" id="active-pl-count-text">0 首歌曲</span>
+          </div>
+          <div class="playlist-toolbar-actions">
+            <button class="vt-btn gold" id="play-active-pl-btn" style="font-weight: 700;">▶ 播放此歌單</button>
+            <button class="vt-btn" id="rename-active-pl-btn" style="font-size: 12px; padding: 6px 12px;">✏️ 重新命名</button>
+            <button class="vt-btn" id="delete-active-pl-btn" style="font-size: 12px; padding: 6px 12px; color: var(--danger);">🗑️ 刪除歌單</button>
+            <button class="vt-btn" id="back-all-songs-btn" style="font-size: 12px; padding: 6px 12px;">返回全部 ✕</button>
+          </div>
+        </div>
+
+        <!-- Dedicated Playlist Drop Zone Banner -->
+        <div class="playlist-drop-zone" id="playlist-drop-zone" style="display: none;">
+          <span>📥</span>
+          <span>按住歌曲左側 <strong>⠿</strong> 拖曳至此（或直接拖曳至上方歌單按鈕），立即為此清單增歌！</span>
         </div>
 
         <!-- Toolbar: Search & Queue Controls -->
@@ -1689,7 +1890,12 @@
             <button class="vt-btn gold" id="toggle-queue-btn" style="font-weight: 700; border-radius: 20px; padding: 8px 18px;">
               📜 現正播放清單 (Playing List)
             </button>
-            <span style="font-size: 12px; color: var(--sp-light-gray);">🖐️ 按住 ⠿ 拖曳自訂播放順序</span>
+            <div id="batch-actions-bar" class="batch-actions-bar">
+              <span id="batch-selected-count">已勾選 0 首</span>
+              <button class="vt-btn gold" id="batch-add-btn" style="padding: 4px 12px; font-size: 12px;">➕ 加入歌單...</button>
+              <button class="vt-btn" id="batch-clear-btn" style="padding: 4px 10px; font-size: 12px;">取消</button>
+            </div>
+            <span style="font-size: 12px; color: var(--sp-light-gray);">🖐️ 按住 ⠿ 拖曳自訂排序 / 拖至歌單加入</span>
           </div>
         </div>
 
@@ -1709,6 +1915,7 @@
           <table class="sp-track-table">
             <thead>
               <tr>
+                <th class="track-check-cell"><input type="checkbox" id="select-all-songs" title="全選/取消全選"></th>
                 <th class="track-num-cell">#</th>
                 <th>歌曲名稱 (Track Title)</th>
                 <th>來源 (Storage)</th>
@@ -1946,9 +2153,16 @@
         this.activeArticleFolder = 'all';
         this.activeMusicFolder = 'all';
 
+        // Custom Playlists & Drag-Drop State
+        this.playlists = [];
+        this.activePlaylistId = null;
+        this.selectedSongIds = new Set();
+        this.activePlayQueue = null;
+
         try { this.initDOM(); } catch(e) { console.error('initDOM err:', e); }
         try { this.initEvents(); } catch(e) { console.error('initEvents err:', e); }
         try { this.loadVocabFromStorage(); } catch(e) { console.error('loadVocab err:', e); }
+        try { this.loadPlaylistsFromStorage(); } catch(e) { console.error('loadPlaylists err:', e); }
         try { this.loadDriveAssets(); } catch(e) { console.error('loadDriveAssets err:', e); }
       }
 
@@ -1980,6 +2194,23 @@
         this.musicCountEv = document.getElementById('music-count-ev');
         this.musicCountKline = document.getElementById('music-count-kline');
         this.articleTargetFolder = document.getElementById('article-target-folder');
+
+        // Custom Playlists & Batch Selection DOM
+        this.customPlaylistPillsWrap = document.getElementById('custom-playlist-pills-wrap');
+        this.createPlaylistBtn = document.getElementById('create-playlist-btn');
+        this.activePlaylistToolbar = document.getElementById('active-playlist-toolbar');
+        this.activePlTitle = document.getElementById('active-pl-title');
+        this.activePlCountText = document.getElementById('active-pl-count-text');
+        this.playActivePlBtn = document.getElementById('play-active-pl-btn');
+        this.renameActivePlBtn = document.getElementById('rename-active-pl-btn');
+        this.deleteActivePlBtn = document.getElementById('delete-active-pl-btn');
+        this.backAllSongsBtn = document.getElementById('back-all-songs-btn');
+        this.playlistDropZone = document.getElementById('playlist-drop-zone');
+        this.batchActionsBar = document.getElementById('batch-actions-bar');
+        this.batchSelectedCount = document.getElementById('batch-selected-count');
+        this.batchAddBtn = document.getElementById('batch-add-btn');
+        this.batchClearBtn = document.getElementById('batch-clear-btn');
+        this.selectAllSongs = document.getElementById('select-all-songs');
 
         // VoiceTube Controls
         this.lessonSelector = document.getElementById('lesson-selector');
@@ -2504,16 +2735,324 @@
         this.renderSpotifyMusicTable();
       }
 
+      
+      // ==================== CUSTOM PLAYLISTS & DRAG-DROP SYSTEM ====================
+
+      loadPlaylistsFromStorage() {
+        try {
+          const raw = localStorage.getItem('OSCARMARK_USER_PLAYLISTS');
+          if (raw) {
+            this.playlists = JSON.parse(raw);
+          } else {
+            this.playlists = [
+              { id: 'fav', name: '⭐ 我的最愛', icon: '⭐', songIds: [] }
+            ];
+          }
+        } catch(e) {
+          this.playlists = [
+            { id: 'fav', name: '⭐ 我的最愛', icon: '⭐', songIds: [] }
+          ];
+        }
+        this.renderPlaylistPills();
+      }
+
+      savePlaylistsToStorage() {
+        try {
+          localStorage.setItem('OSCARMARK_USER_PLAYLISTS', JSON.stringify(this.playlists));
+        } catch(e) {}
+        this.renderPlaylistPills();
+      }
+
+      renderPlaylistPills() {
+        if (!this.customPlaylistPillsWrap) return;
+        this.customPlaylistPillsWrap.innerHTML = '';
+
+        this.playlists.forEach((pl) => {
+          const count = pl.songIds ? pl.songIds.length : 0;
+          const isActive = (this.activePlaylistId === pl.id);
+          const btn = document.createElement('button');
+          btn.className = 'folder-pill playlist-pill ' + (isActive ? 'active' : '');
+          btn.setAttribute('data-pl-id', pl.id);
+          btn.title = '點擊檢視歌單，或按住歌曲左側 ⠿ 拖曳至此直接加入！';
+          btn.innerHTML = pl.name + ' (<span class="pl-count">' + count + '</span>)';
+
+          // Drag-and-drop song into this playlist pill
+          btn.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            btn.classList.add('drag-target-hover');
+          });
+
+          btn.addEventListener('dragleave', () => {
+            btn.classList.remove('drag-target-hover');
+          });
+
+          btn.addEventListener('drop', (e) => {
+            e.preventDefault();
+            btn.classList.remove('drag-target-hover');
+            const songIds = window._draggedSongIds || (window._draggedSongId ? [window._draggedSongId] : []);
+            if (songIds.length > 0) {
+              this.addSongsToPlaylist(pl.id, songIds);
+            }
+          });
+
+          this.customPlaylistPillsWrap.appendChild(btn);
+        });
+      }
+
+      createPlaylist(name) {
+        if (!name) return;
+        const newPl = {
+          id: 'pl_' + Date.now(),
+          name: name.startsWith('🎵') || name.startsWith('⭐') || name.startsWith('📈') ? name : '🎵 ' + name,
+          icon: '🎵',
+          songIds: []
+        };
+        this.playlists.push(newPl);
+        this.savePlaylistsToStorage();
+        this.selectPlaylist(newPl.id);
+        this.showToast('🎉 已成功建立播放清單【' + newPl.name + '】！');
+      }
+
+      selectPlaylist(plId) {
+        this.activePlaylistId = plId;
+        const allPills = document.querySelectorAll('#music-folder-pills .folder-pill');
+        allPills.forEach(p => p.classList.remove('active'));
+
+        if (!plId) {
+          // Return to all songs
+          if (this.activePlaylistToolbar) this.activePlaylistToolbar.style.display = 'none';
+          if (this.playlistDropZone) this.playlistDropZone.style.display = 'none';
+          const allPill = document.querySelector('#music-folder-pills [data-music-folder="all"]');
+          if (allPill) allPill.classList.add('active');
+          this.activeMusicFolder = 'all';
+          this.renderSpotifyMusicTable();
+          return;
+        }
+
+        const pl = this.playlists.find(p => p.id === plId);
+        if (!pl) return;
+
+        // Activate pill
+        const plPill = document.querySelector('#music-folder-pills [data-pl-id="' + plId + '"]');
+        if (plPill) plPill.classList.add('active');
+
+        // Show toolbar and drop zone
+        if (this.activePlaylistToolbar) {
+          this.activePlaylistToolbar.style.display = 'flex';
+          if (this.activePlTitle) this.activePlTitle.textContent = pl.name;
+          if (this.activePlCountText) this.activePlCountText.textContent = '共 ' + (pl.songIds ? pl.songIds.length : 0) + ' 首歌曲';
+        }
+        if (this.playlistDropZone) {
+          this.playlistDropZone.style.display = 'flex';
+        }
+
+        this.renderSpotifyMusicTable();
+      }
+
+      addSongsToPlaylist(plId, songIds) {
+        const pl = this.playlists.find(p => p.id === plId);
+        if (!pl) return;
+        if (!pl.songIds) pl.songIds = [];
+
+        let addedCount = 0;
+        songIds.forEach(id => {
+          if (!pl.songIds.includes(id)) {
+            pl.songIds.push(id);
+            addedCount++;
+          }
+        });
+
+        this.savePlaylistsToStorage();
+        if (this.activePlaylistId === plId) {
+          if (this.activePlCountText) this.activePlCountText.textContent = '共 ' + pl.songIds.length + ' 首歌曲';
+          this.renderSpotifyMusicTable();
+        }
+
+        if (addedCount > 0) {
+          this.showToast('🎉 已將 ' + addedCount + ' 首歌加入【' + pl.name + '】！');
+        } else {
+          this.showToast('ℹ️ 所選歌曲已在【' + pl.name + '】中');
+        }
+
+        this.clearSelectedSongs();
+      }
+
+      removeSongFromPlaylist(plId, songId) {
+        const pl = this.playlists.find(p => p.id === plId);
+        if (!pl || !pl.songIds) return;
+
+        const idx = pl.songIds.indexOf(songId);
+        if (idx !== -1) {
+          pl.songIds.splice(idx, 1);
+          this.savePlaylistsToStorage();
+          if (this.activePlCountText) this.activePlCountText.textContent = '共 ' + pl.songIds.length + ' 首歌曲';
+          this.renderSpotifyMusicTable();
+          this.showToast('🗑️ 已將歌曲移出【' + pl.name + '】');
+        }
+      }
+
+      playCurrentPlaylist() {
+        if (!this.activePlaylistId) return;
+        const pl = this.playlists.find(p => p.id === this.activePlaylistId);
+        if (!pl || !pl.songIds || pl.songIds.length === 0) {
+          return alert('此歌單目前沒有歌曲，請先拖曳歌曲加入！');
+        }
+
+        // Find audios in order
+        const plAudios = [];
+        pl.songIds.forEach(id => {
+          const a = this.driveAudios.find(audio => audio.id === id);
+          if (a) plAudios.push(a);
+        });
+
+        if (plAudios.length === 0) return;
+        this.activePlayQueue = plAudios;
+
+        const firstAudio = plAudios[0];
+        const realIdx = this.driveAudios.indexOf(firstAudio);
+        if (realIdx !== -1) {
+          this.playDriveAudio(realIdx);
+          this.showToast('▶ 開始播放歌單【' + pl.name + '】！');
+        }
+      }
+
+      renameCurrentPlaylist() {
+        if (!this.activePlaylistId) return;
+        const pl = this.playlists.find(p => p.id === this.activePlaylistId);
+        if (!pl) return;
+
+        const newName = prompt('請輸入歌單新名稱：', pl.name);
+        if (newName && newName.trim()) {
+          pl.name = newName.trim();
+          this.savePlaylistsToStorage();
+          if (this.activePlTitle) this.activePlTitle.textContent = pl.name;
+          this.showToast('✏️ 歌單已更名為【' + pl.name + '】！');
+        }
+      }
+
+      deleteCurrentPlaylist() {
+        if (!this.activePlaylistId) return;
+        const pl = this.playlists.find(p => p.id === this.activePlaylistId);
+        if (!pl) return;
+
+        if (confirm('確定要刪除播放清單【' + pl.name + '】嗎？（雲端原始音檔不會被刪除）')) {
+          this.playlists = this.playlists.filter(p => p.id !== this.activePlaylistId);
+          this.savePlaylistsToStorage();
+          this.selectPlaylist(null);
+          this.showToast('🗑️ 已刪除歌單！');
+        }
+      }
+
+      openQuickPlaylistMenu(anchorEl, songIds) {
+        this.closeQuickPlaylistMenu();
+        const menu = document.createElement('div');
+        menu.className = 'quick-pl-menu';
+        menu.id = 'quick-pl-menu';
+
+        const titleDiv = document.createElement('div');
+        titleDiv.style.cssText = 'padding:6px 16px 8px;font-size:11px;font-weight:700;color:var(--sp-light-gray);border-bottom:1px solid rgba(255,255,255,0.08);';
+        titleDiv.textContent = '➕ 選擇要加入的播放清單：';
+        menu.appendChild(titleDiv);
+
+        this.playlists.forEach(pl => {
+          const item = document.createElement('div');
+          item.className = 'quick-pl-item';
+          const count = pl.songIds ? pl.songIds.length : 0;
+          item.innerHTML = '<span>' + pl.name + '</span><span style="font-size:11px;opacity:0.6;">' + count + ' 首</span>';
+          item.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.addSongsToPlaylist(pl.id, songIds);
+            this.closeQuickPlaylistMenu();
+          });
+          menu.appendChild(item);
+        });
+
+        const createItem = document.createElement('div');
+        createItem.className = 'quick-pl-item create-new';
+        createItem.innerHTML = '<span>➕ 建立新歌單並加入...</span>';
+        createItem.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.closeQuickPlaylistMenu();
+          const name = prompt('請輸入新播放清單名稱：');
+          if (name && name.trim()) {
+            const newPl = {
+              id: 'pl_' + Date.now(),
+              name: '🎵 ' + name.trim(),
+              icon: '🎵',
+              songIds: []
+            };
+            this.playlists.push(newPl);
+            this.addSongsToPlaylist(newPl.id, songIds);
+          }
+        });
+        menu.appendChild(createItem);
+
+        document.body.appendChild(menu);
+
+        // Position menu
+        const rect = anchorEl.getBoundingClientRect();
+        let top = rect.bottom + window.scrollY + 6;
+        let left = rect.left + window.scrollX - 100;
+        if (left < 10) left = 10;
+        if (left + 220 > window.innerWidth) left = window.innerWidth - 230;
+        menu.style.top = top + 'px';
+        menu.style.left = left + 'px';
+      }
+
+      closeQuickPlaylistMenu() {
+        const existing = document.getElementById('quick-pl-menu');
+        if (existing) existing.remove();
+      }
+
+      toggleSelectAllSongs(checked) {
+        this.selectedSongIds.clear();
+        if (checked) {
+          const checkboxes = document.querySelectorAll('.song-checkbox');
+          checkboxes.forEach(cb => {
+            cb.checked = true;
+            this.selectedSongIds.add(cb.getAttribute('data-song-id'));
+          });
+        } else {
+          const checkboxes = document.querySelectorAll('.song-checkbox');
+          checkboxes.forEach(cb => cb.checked = false);
+        }
+        this.updateBatchBar();
+      }
+
+      clearSelectedSongs() {
+        this.selectedSongIds.clear();
+        if (this.selectAllSongs) this.selectAllSongs.checked = false;
+        const checkboxes = document.querySelectorAll('.song-checkbox');
+        checkboxes.forEach(cb => cb.checked = false);
+        this.updateBatchBar();
+      }
+
+      updateBatchBar() {
+        if (!this.batchActionsBar) return;
+        const count = this.selectedSongIds.size;
+        if (count > 0) {
+          this.batchActionsBar.style.display = 'inline-flex';
+          if (this.batchSelectedCount) this.batchSelectedCount.textContent = '已勾選 ' + count + ' 首';
+        } else {
+          this.batchActionsBar.style.display = 'none';
+        }
+      }
+
       renderSpotifyMusicTable() {
         if (!this.musicTableBody) return;
         this.musicTableBody.innerHTML = '';
 
         const keyword = (this.musicFilterKeyword || '').toLowerCase();
         const folder = this.activeMusicFolder || 'all';
+        const isPlaylist = !!this.activePlaylistId;
+        const currentPl = isPlaylist ? this.playlists.find(p => p.id === this.activePlaylistId) : null;
 
         // Update search input placeholder
         if (this.musicSearchInput) {
-          if (folder === 'KLine') {
+          if (isPlaylist && currentPl) {
+            this.musicSearchInput.placeholder = '在【' + currentPl.name + '】中搜尋歌曲...';
+          } else if (folder === 'KLine') {
             this.musicSearchInput.placeholder = '在 KLine 專屬音檔中搜尋...';
           } else if (folder === 'Englishvoice') {
             this.musicSearchInput.placeholder = '在 Englishvoice 音樂庫中搜尋...';
@@ -2522,49 +3061,70 @@
           }
         }
 
-        const filteredAudios = this.driveAudios.filter(audio => {
-          if (folder !== 'all') {
-            const f = (audio.folder || '').toLowerCase();
-            if (f !== folder.toLowerCase()) return false;
-          }
-          if (keyword && !audio.name.toLowerCase().includes(keyword)) {
-            return false;
-          }
-          return true;
-        });
+        let filteredAudios = [];
+        if (isPlaylist && currentPl) {
+          const idList = currentPl.songIds || [];
+          const idMap = new Map();
+          this.driveAudios.forEach(a => idMap.set(a.id, a));
+          idList.forEach(id => {
+            if (idMap.has(id)) filteredAudios.push(idMap.get(id));
+          });
+        } else {
+          filteredAudios = this.driveAudios.filter(audio => {
+            if (folder !== 'all') {
+              const f = (audio.folder || '').toLowerCase();
+              if (f !== folder.toLowerCase()) return false;
+            }
+            return true;
+          });
+        }
+
+        if (keyword) {
+          filteredAudios = filteredAudios.filter(audio => audio.name.toLowerCase().includes(keyword));
+        }
 
         if (filteredAudios.length === 0) {
           const emptyTr = document.createElement('tr');
-          emptyTr.innerHTML = `
-            <td colspan="5" style="text-align: center; padding: 40px 20px; color: var(--sp-light-gray);">
-              ${folder.toLowerCase() === 'kline' 
-                ? '📈 <strong>KLine 資料夾目前尚無音檔</strong><br><span style="font-size:12px;color:rgba(255,255,255,0.5);display:inline-block;margin-top:6px;">請將 MP3 音樂或英語講解音檔放入 Google Drive 中的「KLine」資料夾，點擊左側「重新掃描雲端」即可立即同步！</span>' 
-                : '找不到符合條件的歌曲'}
-            </td>
-          `;
+          let emptyMsg = '找不到符合條件的歌曲';
+          if (isPlaylist && currentPl) {
+            emptyMsg = '📥 <strong>此播放清單【' + currentPl.name + '】目前尚無歌曲</strong><br><span style="font-size:12px;color:rgba(255,255,255,0.6);display:inline-block;margin-top:8px;">請點擊上方「🎵 全部歌曲」，按住歌曲左側 <strong>⠿</strong> 拖曳至此歌單按鈕，或點擊每首歌右側「➕」即可快速加歌！</span>';
+          } else if (folder.toLowerCase() === 'kline') {
+            emptyMsg = '📈 <strong>KLine 資料夾目前尚無音檔</strong><br><span style="font-size:12px;color:rgba(255,255,255,0.5);display:inline-block;margin-top:6px;">請將 MP3 音樂放入 Google Drive 中的「KLine」資料夾，點擊「重新掃描雲端」即可同步！</span>';
+          }
+          emptyTr.innerHTML = '<td colspan="6" style="text-align: center; padding: 40px 20px; color: var(--sp-light-gray);">' + emptyMsg + '</td>';
           this.musicTableBody.appendChild(emptyTr);
           this.renderQueueDrawerList(filteredAudios);
           return;
         }
 
-        filteredAudios.forEach((audio) => {
+        filteredAudios.forEach((audio, localIdx) => {
           const realIdx = this.driveAudios.indexOf(audio);
           const isCurrent = (realIdx === this.currentAudioIndex && !this.audio.paused);
           const isSelected = (realIdx === this.currentAudioIndex);
+          const isChecked = this.selectedSongIds.has(audio.id);
+
           const tr = document.createElement('tr');
-          tr.className = `sp-track-row ${isSelected ? 'active' : ''}`;
+          tr.className = 'sp-track-row ' + (isSelected ? 'active ' : '') + (isChecked ? 'checked ' : '');
           tr.setAttribute('draggable', 'true');
           tr.setAttribute('data-real-idx', realIdx);
+          tr.setAttribute('data-song-id', audio.id);
 
           const folderBadge = (audio.folder || '').toLowerCase() === 'kline'
             ? '<span class="badge-folder badge-kline">📈 KLine</span>'
             : '<span class="badge-folder badge-ev">📘 Englishvoice</span>';
 
+          const removeBtnHTML = isPlaylist 
+            ? '<button class="row-remove-pl-btn" data-song-id="' + audio.id + '" title="從此清單移除">✕</button>' 
+            : '';
+
           tr.innerHTML = `
+            <td class="track-check-cell">
+              <input type="checkbox" class="song-checkbox" data-song-id="${audio.id}" ${isChecked ? 'checked' : ''}>
+            </td>
             <td class="track-num-cell">
               <div class="drag-handle-cell">
-                <span class="drag-handle" title="按住拖曳調整播放順序">⠿</span>
-                <span>${isCurrent ? '<span style="color:var(--sp-green); animation: pulse 1s infinite;">🔊</span>' : (realIdx + 1)}</span>
+                <span class="drag-handle" title="按住拖曳調整播放順序，或拖至上方歌單加歌">⠿</span>
+                <span>${isCurrent ? '<span style="color:var(--sp-green); animation: pulse 1s infinite;">🔊</span>' : (localIdx + 1)}</span>
               </div>
             </td>
             <td>
@@ -2588,20 +3148,70 @@
             </td>
             <td class="track-action-cell">
               <button class="row-play-btn" title="播放此歌曲">${isCurrent ? '⏸' : '▶'}</button>
+              <button class="row-add-pl-btn" data-song-id="${audio.id}" title="加入播放清單">➕</button>
+              ${removeBtnHTML}
             </td>
           `;
 
-          // Click to play
+          // Checkbox event
+          const cb = tr.querySelector('.song-checkbox');
+          if (cb) {
+            cb.addEventListener('click', (e) => e.stopPropagation());
+            cb.addEventListener('change', (e) => {
+              if (e.target.checked) {
+                this.selectedSongIds.add(audio.id);
+                tr.classList.add('checked');
+              } else {
+                this.selectedSongIds.delete(audio.id);
+                tr.classList.remove('checked');
+              }
+              this.updateBatchBar();
+            });
+          }
+
+          // Add to playlist button event
+          const addBtn = tr.querySelector('.row-add-pl-btn');
+          if (addBtn) {
+            addBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              this.openQuickPlaylistMenu(addBtn, [audio.id]);
+            });
+          }
+
+          // Remove from playlist button event
+          const removeBtn = tr.querySelector('.row-remove-pl-btn');
+          if (removeBtn) {
+            removeBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              this.removeSongFromPlaylist(this.activePlaylistId, audio.id);
+            });
+          }
+
+          // Click row to play
           tr.addEventListener('click', (e) => {
-            if (e.target.closest('.drag-handle')) return;
+            if (e.target.closest('.drag-handle') || e.target.closest('.song-checkbox') || e.target.closest('.row-add-pl-btn') || e.target.closest('.row-remove-pl-btn')) return;
+            if (isPlaylist) {
+              this.activePlayQueue = filteredAudios;
+            } else {
+              this.activePlayQueue = null;
+            }
             this.playDriveAudio(realIdx);
           });
 
           // ==================== DRAG & DROP EVENTS ====================
           tr.addEventListener('dragstart', (e) => {
             window._draggedMusicIndex = realIdx;
-            e.dataTransfer.effectAllowed = 'move';
-            e.dataTransfer.setData('text/plain', realIdx);
+            window._draggedSongId = audio.id;
+            
+            // If dragging a checked row, transfer all checked song IDs!
+            if (this.selectedSongIds.has(audio.id)) {
+              window._draggedSongIds = Array.from(this.selectedSongIds);
+            } else {
+              window._draggedSongIds = [audio.id];
+            }
+
+            e.dataTransfer.effectAllowed = 'copyMove';
+            e.dataTransfer.setData('text/plain', audio.id);
             setTimeout(() => tr.classList.add('is-dragging'), 0);
           });
 
@@ -2633,6 +3243,31 @@
           tr.addEventListener('drop', (e) => {
             e.preventDefault();
             tr.classList.remove('drag-over-top', 'drag-over-bottom');
+
+            // If in playlist view: reorder songs in playlist
+            if (isPlaylist && currentPl) {
+              const fromId = window._draggedSongId;
+              const targetId = audio.id;
+              if (!fromId || fromId === targetId) return;
+
+              const ids = currentPl.songIds || [];
+              const fromIdx = ids.indexOf(fromId);
+              const toIdx = ids.indexOf(targetId);
+              if (fromIdx !== -1 && toIdx !== -1) {
+                ids.splice(fromIdx, 1);
+                const rect = tr.getBoundingClientRect();
+                const relY = e.clientY - rect.top;
+                const insertAfter = (relY >= rect.height / 2);
+                const finalIdx = insertAfter ? (ids.indexOf(targetId) + 1) : ids.indexOf(targetId);
+                ids.splice(finalIdx, 0, fromId);
+                this.savePlaylistsToStorage();
+                this.renderSpotifyMusicTable();
+                this.showToast('🖐️ 已更新【' + currentPl.name + '】內部歌曲順序！');
+              }
+              return;
+            }
+
+            // In normal table: reorder driveAudios
             const fromIdx = window._draggedMusicIndex;
             const targetIdx = realIdx;
             if (fromIdx === null || fromIdx === undefined || fromIdx === targetIdx) return;
@@ -2881,23 +3516,33 @@
           return;
         }
 
+        const currentQueue = (this.activePlayQueue && this.activePlayQueue.length > 0) ? this.activePlayQueue : this.driveAudios;
+        const currentSong = this.driveAudios[this.currentAudioIndex];
+        const queueIdx = currentQueue.indexOf(currentSong);
+
         if (this.loopMode === 'shuffle') {
           // 🔀 隨機播放
-          const randIdx = Math.floor(Math.random() * this.driveAudios.length);
-          this.playDriveAudio(randIdx);
+          const randQIdx = Math.floor(Math.random() * currentQueue.length);
+          const targetAudio = currentQueue[randQIdx];
+          const realIdx = this.driveAudios.indexOf(targetAudio);
+          this.playDriveAudio(realIdx !== -1 ? realIdx : 0);
           return;
         }
 
         if (this.loopMode === 'all') {
           // 🔁 全部循環
-          const nextIdx = (this.currentAudioIndex + 1) % this.driveAudios.length;
-          this.playDriveAudio(nextIdx);
+          const nextQIdx = (queueIdx + 1) % currentQueue.length;
+          const targetAudio = currentQueue[nextQIdx];
+          const realIdx = this.driveAudios.indexOf(targetAudio);
+          this.playDriveAudio(realIdx !== -1 ? realIdx : 0);
           return;
         }
 
         // ➡️ 順序播放 (到最後一首停止)
-        if (this.currentAudioIndex < this.driveAudios.length - 1) {
-          this.playDriveAudio(this.currentAudioIndex + 1);
+        if (queueIdx !== -1 && queueIdx < currentQueue.length - 1) {
+          const nextAudio = currentQueue[queueIdx + 1];
+          const realIdx = this.driveAudios.indexOf(nextAudio);
+          if (realIdx !== -1) this.playDriveAudio(realIdx);
         }
       }
 
@@ -2905,8 +3550,12 @@
         if (this.currentView === 'english-view') {
           this.jumpSentence(-1);
         } else {
-          const prevIdx = (this.currentAudioIndex - 1 + this.driveAudios.length) % this.driveAudios.length;
-          this.playDriveAudio(prevIdx);
+          const queue = (this.activePlayQueue && this.activePlayQueue.length > 0) ? this.activePlayQueue : this.driveAudios;
+          const currentSong = this.driveAudios[this.currentAudioIndex];
+          const qIdx = queue.indexOf(currentSong);
+          const prevQIdx = (qIdx - 1 + queue.length) % queue.length;
+          const realIdx = this.driveAudios.indexOf(queue[prevQIdx]);
+          this.playDriveAudio(realIdx !== -1 ? realIdx : 0);
         }
       }
 
@@ -2914,8 +3563,12 @@
         if (this.currentView === 'english-view') {
           this.jumpSentence(1);
         } else {
-          const nextIdx = (this.currentAudioIndex + 1) % this.driveAudios.length;
-          this.playDriveAudio(nextIdx);
+          const queue = (this.activePlayQueue && this.activePlayQueue.length > 0) ? this.activePlayQueue : this.driveAudios;
+          const currentSong = this.driveAudios[this.currentAudioIndex];
+          const qIdx = queue.indexOf(currentSong);
+          const nextQIdx = (qIdx + 1) % queue.length;
+          const realIdx = this.driveAudios.indexOf(queue[nextQIdx]);
+          this.playDriveAudio(realIdx !== -1 ? realIdx : 0);
         }
       }
 
