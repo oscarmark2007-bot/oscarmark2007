@@ -6,10 +6,17 @@ Write-Host "  🚀 OSCARMARK2007 - GitHub ＆ Google Apps Script 雙雲端全自
 Write-Host "================================================================="
 
 $timestamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+$deployDesc = "AutoDeploy_" + (Get-Date -Format "yyyyMMdd_HHmmss")
+$deploymentId = "AKfycbzlu1Nw4Vd1chVGOaXD4G5wF5UYlbexojAeee62oFPU7s1u4IHH53omM6nD-DXXHEZYTw"
+
+# 0. Embed latest index.html into Englishvoice.gs
+Write-Host "`n[1/4] 正在自動打包最新 HTML 至 Google Apps Script..." -ForegroundColor Cyan
+python embed_kline_all.py | Out-Null
+Write-Host "✅ 代碼打包完成！" -ForegroundColor Green
 
 # 1. Push to GitHub
-Write-Host "`n[1/3] 正在推送到 GitHub 與 GitHub Pages..." -ForegroundColor Cyan
-git add .
+Write-Host "`n[2/4] 正在推送到 GitHub 與 GitHub Pages..." -ForegroundColor Cyan
+git add index.html Englishvoice.gs Englishvoice.txt Index.txt sync_to_cloud.ps1
 $status = git status --porcelain
 if ($status) {
     git commit -m "auto: cloud sync $timestamp" | Out-Null
@@ -20,26 +27,25 @@ if ($status) {
 }
 
 # 2. Push to Google Apps Script
-Write-Host "`n[2/3] 正在全自動推送到 Google Apps Script 雲端..." -ForegroundColor Cyan
+Write-Host "`n[3/4] 正在全自動推送到 Google Apps Script 雲端..." -ForegroundColor Cyan
 $pushRes = cmd /c "npx @google/clasp push --force 2>&1"
 $pushStr = ($pushRes | Out-String)
 
 if ($pushStr -match "User has not enabled the Apps Script API") {
     Write-Host "`n⚠️ [重要提示] Google Apps Script API 尚未開啟！" -ForegroundColor Yellow
-    Write-Host "👉 請在剛才打開的瀏覽器頁面 (https://script.google.com/home/usersettings)" -ForegroundColor Yellow
-    Write-Host "   將「Google Apps Script API」開關切換為【開啟 (ON)】。" -ForegroundColor Yellow
-    Write-Host "   開啟後，未來點擊此腳本即可【100% 全自動部署，無需手動複製貼上】！`n" -ForegroundColor Yellow
+    Write-Host "👉 請前往: https://script.google.com/home/usersettings 開啟" -ForegroundColor Yellow
 } elseif ($pushStr -match "Pushed") {
     Write-Host "✅ Google Apps Script 程式碼全自動推送成功！" -ForegroundColor Green
 
-    # 3. Auto Deploy to Web App
-    Write-Host "`n[3/3] 正在全自動發布 Google Apps Script Web App 新版本..." -ForegroundColor Cyan
-    cmd /c "npx @google/clasp deploy --description 'Auto Deploy $timestamp'"
-    Write-Host "🎉 恭喜！Google Apps Script Web App 已全自動部署上線！" -ForegroundColor Green
+    # 3. Auto Deploy to Web App (In-place update)
+    Write-Host "`n[4/4] 正在原地覆蓋部署最新版本至 Web App..." -ForegroundColor Cyan
+    cmd /c "npx @google/clasp deploy -i $deploymentId -d $deployDesc"
+    Write-Host "🎉 恭喜！Google Apps Script Web App 已成功覆蓋更新！" -ForegroundColor Green
 } else {
     Write-Host $pushStr
 }
 
 Write-Host "`n=================================================================" -ForegroundColor Cyan
+Write-Host "🌐 Web App 網址: https://script.google.com/macros/s/$deploymentId/exec" -ForegroundColor Green
 Write-Host "🌐 GitHub Pages: https://oscarmark2007-bot.github.io/oscarmark2007/" -ForegroundColor Yellow
 Write-Host "=================================================================" -ForegroundColor Cyan
