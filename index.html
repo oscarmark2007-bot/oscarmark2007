@@ -2125,6 +2125,33 @@
           this.vtLoopArticleBtn.addEventListener('click', () => this.toggleLoopArticle());
         }
 
+        // ==================== FOLDER PILLS SWITCHERS (EVENT DELEGATION) ====================
+        const musicPillsContainer = document.getElementById('music-folder-pills');
+        if (musicPillsContainer) {
+          musicPillsContainer.addEventListener('click', (e) => {
+            const pill = e.target.closest('.folder-pill');
+            if (!pill) return;
+            const allPills = musicPillsContainer.querySelectorAll('.folder-pill');
+            allPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            this.activeMusicFolder = pill.getAttribute('data-music-folder') || 'all';
+            this.renderSpotifyMusicTable();
+          });
+        }
+
+        const vtPillsContainer = document.getElementById('vt-folder-pills');
+        if (vtPillsContainer) {
+          vtPillsContainer.addEventListener('click', (e) => {
+            const pill = e.target.closest('.folder-pill');
+            if (!pill) return;
+            const allPills = vtPillsContainer.querySelectorAll('.folder-pill');
+            allPills.forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            const folder = pill.getAttribute('data-vt-folder') || 'all';
+            this.populateArticlesByFolder(folder);
+          });
+        }
+
         // Music Detailed Table & Queue Listeners
         if (this.musicSearchInput) {
           this.musicSearchInput.addEventListener('input', (e) => {
@@ -2345,7 +2372,7 @@
 
         const filtered = (folder === 'all')
           ? this.driveArticles
-          : this.driveArticles.filter(art => art.folder === folder);
+          : this.driveArticles.filter(art => (art.folder || '').toLowerCase() === folder.toLowerCase());
 
         if (filtered.length > 0) {
           filtered.forEach((art) => {
@@ -2381,8 +2408,9 @@
         const folder = this.activeMusicFolder || 'all';
 
         const filteredAudios = this.driveAudios.filter(audio => {
-          if (folder !== 'all' && audio.folder !== folder) {
-            return false;
+          if (folder !== 'all') {
+            const f = (audio.folder || '').toLowerCase();
+            if (f !== folder.toLowerCase()) return false;
           }
           if (keyword && !audio.name.toLowerCase().includes(keyword)) {
             return false;
@@ -2582,29 +2610,34 @@
         this.currentAudioIndex = index;
         const track = this.driveAudios[index];
 
-        this.barTitle.textContent = `⏳ 載入音檔: ${track.name}`;
+        this.barTitle.textContent = `⏳ 正在載入: ${track.name}`;
         this.barArtist.textContent = `${track.folder || 'Google Drive'} 雲端音樂串流`;
         this.audio.src = '';
 
-        // 1. 若有直接預載網址或本機示範音檔
+        // 1. 本機或外部直連 URL
         if (track.url) {
           this.audio.src = track.url;
           this.barTitle.textContent = track.name;
-          this.audio.play().catch(e => console.log('Auto-play blocked or waiting:', e));
+          this.audio.play().catch(e => console.log('Play note:', e));
           this.renderSpotifyMusicTable();
           return;
         }
 
-        // 2. 若為大檔案 (例如 79.6MB 的 YouTube 影音)，直接使用串流網址避免 Base64 記憶體限制
-        if (track.isLarge && track.streamUrl) {
+        // 2. Google Drive 直接串流 URL (附帶 confirm=t 繞過大檔病毒警告確認頁)
+        const directStreamUrl = `https://drive.google.com/uc?export=download&id=${track.id}&confirm=t`;
+
+        // 3. 若為大檔案 (例如 79.6MB)
+        if (track.isLarge) {
           this.barTitle.textContent = track.name;
-          this.audio.src = track.streamUrl;
-          this.audio.play().catch(e => console.log('Stream play error:', e));
+          this.audio.src = directStreamUrl;
+          this.audio.play().catch(err => {
+            console.log('Direct stream play notice:', err);
+          });
           this.renderSpotifyMusicTable();
           return;
         }
 
-        // 3. 呼叫 GAS 取得音檔 (支援 Base64 與 Direct Stream 雙引擎)
+        // 4. 一般小檔案 (< 25MB)：優先以 GAS Base64 加載
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           google.script.run
             .withSuccessHandler((resultData) => {
@@ -2615,37 +2648,27 @@
                 } else {
                   this.audio.src = resultData;
                 }
-                this.audio.play().catch(e => console.log('Audio play error:', e));
+                this.audio.play().catch(e => console.log('Audio play note:', e));
                 this.renderSpotifyMusicTable();
               } else {
-                if (track.streamUrl) {
-                  this.barTitle.textContent = track.name;
-                  this.audio.src = track.streamUrl;
-                  this.audio.play().catch(e => console.log('Stream fallback error:', e));
-                  this.renderSpotifyMusicTable();
-                } else {
-                  this.barTitle.textContent = '❌ 音檔讀取失敗';
-                }
+                this.audio.src = directStreamUrl;
+                this.barTitle.textContent = track.name;
+                this.audio.play().catch(e => console.log('Audio play note:', e));
+                this.renderSpotifyMusicTable();
               }
             })
             .withFailureHandler(() => {
-              if (track.streamUrl) {
-                this.barTitle.textContent = track.name;
-                this.audio.src = track.streamUrl;
-                this.audio.play().catch(e => console.log('Stream fallback error:', e));
-                this.renderSpotifyMusicTable();
-              } else {
-                this.barTitle.textContent = '❌ 網路連線逾時';
-              }
+              this.audio.src = directStreamUrl;
+              this.barTitle.textContent = track.name;
+              this.audio.play().catch(e => console.log('Audio play note:', e));
+              this.renderSpotifyMusicTable();
             })
             .getAudioBase64(track.id);
         } else {
-          if (track.streamUrl) {
-            this.audio.src = track.streamUrl;
-            this.barTitle.textContent = track.name;
-            this.audio.play().catch(e => console.log('Audio preview:', e));
-            this.renderSpotifyMusicTable();
-          }
+          this.audio.src = directStreamUrl;
+          this.barTitle.textContent = track.name;
+          this.audio.play().catch(e => console.log('Preview note:', e));
+          this.renderSpotifyMusicTable();
         }
       }
 
