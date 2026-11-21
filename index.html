@@ -1281,6 +1281,68 @@
       box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4) !important;
     }
 
+  
+    /* ==================== FOLDER PILLS & CATEGORY BADGES ==================== */
+    .folder-pills-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .folder-pill {
+      background: var(--sp-card-gray);
+      border: 1px solid var(--sp-border);
+      color: var(--sp-light-gray);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: var(--transition);
+      user-select: none;
+    }
+    .folder-pill:hover {
+      background: var(--sp-card-hover);
+      color: var(--sp-white);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+    .folder-pill.active {
+      background: var(--sp-green);
+      color: #000;
+      border-color: var(--sp-green);
+      font-weight: 700;
+      box-shadow: 0 2px 10px var(--sp-green-glow);
+    }
+    .folder-pill.kline-pill.active {
+      background: #06b6d4;
+      color: #000;
+      border-color: #06b6d4;
+      box-shadow: 0 2px 10px rgba(6, 182, 212, 0.35);
+    }
+    .badge-folder {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 6px;
+    }
+    .badge-ev {
+      background: rgba(29, 185, 84, 0.18);
+      color: #4ade80;
+      border: 1px solid rgba(29, 185, 84, 0.4);
+    }
+    .badge-kline {
+      background: rgba(6, 182, 212, 0.18);
+      color: #22d3ee;
+      border: 1px solid rgba(6, 182, 212, 0.4);
+    }
+
   </style>
 </head>
 <body>
@@ -1383,20 +1445,34 @@
             <h1>📚 VoiceTube 沉浸式英語學習</h1>
             <p>點選文章單字或滑鼠圈選片語，自動將單字與<strong>當前句子收錄為生字卡與例句</strong>。</p>
           </div>
-          <div class="vt-lesson-picker">
-            <select class="vt-select" id="lesson-selector">
-              <option value="">正在掃描雲端文章庫...</option>
-            </select>
-            <button class="vt-btn" id="toggle-drawer-btn">📝 貼上新文章</button>
-            <button class="vt-btn gold" id="jump-to-fc-btn">📇 查看生字卡</button>
+          <div class="vt-header-right" style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+            <div class="folder-pills-row" id="vt-folder-pills">
+              <button class="folder-pill active" data-vt-folder="all">📁 全部 (<span id="vt-art-count-all">0</span>)</button>
+              <button class="folder-pill" data-vt-folder="Englishvoice">📘 Englishvoice (<span id="vt-art-count-ev">0</span>)</button>
+              <button class="folder-pill kline-pill" data-vt-folder="KLine">📈 KLine (<span id="vt-art-count-kline">0</span>)</button>
+            </div>
+            <div class="vt-lesson-picker">
+              <select class="vt-select" id="lesson-selector">
+                <option value="">正在掃描雲端文章庫...</option>
+              </select>
+              <button class="vt-btn" id="toggle-drawer-btn">📝 貼上新文章</button>
+              <button class="vt-btn gold" id="jump-to-fc-btn">📇 查看生字卡</button>
+            </div>
           </div>
         </div>
 
         <!-- Article Input / Save Drawer -->
         <div class="article-drawer" id="article-drawer">
           <textarea id="raw-article-input" placeholder="請在此貼上英文文章內容..."></textarea>
-          <div class="drawer-actions">
-            <input type="text" id="article-save-name" class="drawer-input" placeholder="儲存至 Google Drive 的檔名 (例如: Lesson_04)">
+          <div class="drawer-actions" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 12px; color: var(--sp-light-gray);">儲存目標：</span>
+              <select id="article-target-folder" class="vt-select" style="padding: 6px 12px; font-size: 13px; border-radius: 8px;">
+                <option value="KLine">📈 KLine 資料夾</option>
+                <option value="Englishvoice" selected>📘 Englishvoice 資料夾</option>
+              </select>
+            </div>
+            <input type="text" id="article-save-name" class="drawer-input" placeholder="儲存至 Google Drive 的檔名 (例如: KLine_01)" style="flex: 1;">
             <button class="vt-btn active" id="parse-article-btn">解析並翻譯文章</button>
             <button class="vt-btn" id="save-article-drive-btn">儲存到雲端硬碟</button>
           </div>
@@ -1537,6 +1613,13 @@
         <div class="sp-hero">
           <h1 id="greeting-text">Good Evening, oscarmark</h1>
           <p>Google Drive 專屬雲端音樂庫 ＆ Spotify 質感沉浸播放館。</p>
+        </div>
+
+        <!-- Folder Category Filter for Spotify Music -->
+        <div class="folder-pills-row" id="music-folder-pills" style="margin-bottom: 12px;">
+          <button class="folder-pill active" data-music-folder="all">🎵 全部歌曲 (<span id="music-count-all">0</span>)</button>
+          <button class="folder-pill" data-music-folder="Englishvoice">📘 Englishvoice (<span id="music-count-ev">0</span>)</button>
+          <button class="folder-pill kline-pill" data-music-folder="KLine">📈 KLine (<span id="music-count-kline">0</span>)</button>
         </div>
 
         <!-- Toolbar: Search & Queue Controls -->
@@ -1803,6 +1886,8 @@
         this.loopMode = 'all'; // 'all', 'shuffle', 'seq'
         this.singleRepeat = false;
         this.musicFilterKeyword = '';
+        this.activeArticleFolder = 'all';
+        this.activeMusicFolder = 'all';
 
         this.initDOM();
         this.initEvents();
@@ -1826,6 +1911,18 @@
         this.barTitle = document.getElementById('bar-title-text');
         this.barArtist = document.getElementById('bar-artist-text');
         this.barVolume = document.getElementById('bar-volume');
+
+        // Folder & Category Filter Controls
+        this.vtFolderPills = document.querySelectorAll('#vt-folder-pills .folder-pill');
+        this.vtArtCountAll = document.getElementById('vt-art-count-all');
+        this.vtArtCountEv = document.getElementById('vt-art-count-ev');
+        this.vtArtCountKline = document.getElementById('vt-art-count-kline');
+
+        this.musicFolderPills = document.querySelectorAll('#music-folder-pills .folder-pill');
+        this.musicCountAll = document.getElementById('music-count-all');
+        this.musicCountEv = document.getElementById('music-count-ev');
+        this.musicCountKline = document.getElementById('music-count-kline');
+        this.articleTargetFolder = document.getElementById('article-target-folder');
 
         // VoiceTube Controls
         this.lessonSelector = document.getElementById('lesson-selector');
@@ -2146,7 +2243,7 @@
       // ==================== GOOGLE DRIVE ASSET LOADER ====================
 
       loadDriveAssets() {
-        this.driveStatsText.textContent = '⏳ 正在掃描雲端硬碟 (ID: 132cXw...)...';
+        this.driveStatsText.innerHTML = '⏳ 正在掃描雲端硬碟 (English_voice ＆ KLine)...';
 
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           google.script.run
@@ -2160,59 +2257,119 @@
             .getFolderAssets();
         } else {
           // GitHub Pages mode / Local Preview mode
-          this.driveStatsText.textContent = '☁️ 雲端已連線 (備份示範庫已啟動)';
+          this.driveStatsText.textContent = '☁️ 雲端已連線 (雙目錄備份示範庫已啟動)';
           this.handleLoadedAssets({
+            folders: ['Englishvoice', 'KLine'],
             audios: [
-              { name: 'Rainy Night Lofi Study.mp3', id: 'sample_rain', url: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg' },
-              { name: 'Warm Coffee Shop Acoustic.mp3', id: 'sample_cafe', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg' },
-              { name: 'Forest Birds Meditation.mp3', id: 'sample_forest', url: 'https://actions.google.com/sounds/v1/ambiences/outdoor_morning.ogg' }
+              { name: 'Rainy Night Lofi Study.mp3', id: 'sample_rain', url: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg', folder: 'Englishvoice', fullPath: 'Englishvoice / Rainy Night Lofi Study.mp3' },
+              { name: 'Warm Coffee Shop Acoustic.mp3', id: 'sample_cafe', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg', folder: 'Englishvoice', fullPath: 'Englishvoice / Warm Coffee Shop Acoustic.mp3' },
+              { name: 'Forest Birds Meditation.mp3', id: 'sample_forest', url: 'https://actions.google.com/sounds/v1/ambiences/outdoor_morning.ogg', folder: 'Englishvoice', fullPath: 'Englishvoice / Forest Birds Meditation.mp3' },
+              { name: 'K-Line Technical Analysis & Price Action Trading Guide.mp3', id: 'sample_kline', url: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg', folder: 'KLine', fullPath: 'KLine / K-Line Technical Analysis & Price Action Trading Guide.mp3' }
             ],
             articles: [
-              { name: '01. Mixed Conditionals & Modern Business', content: "Shrinkflation occurs when the price of a product remains the same, but the packaging size gets smaller.\nSkimpflation happens when a company uses cheaper ingredients to make the same product.\nGreedflation describes when corporations raise prices excessively under the guise of general inflation." }
+              { name: '01. Mixed Conditionals & Modern Business', folder: 'Englishvoice', fullName: 'Englishvoice / 01. Mixed Conditionals & Modern Business.txt', content: "Shrinkflation occurs when the price of a product remains the same, but the packaging size gets smaller.\nSkimpflation happens when a company uses cheaper ingredients to make the same product.\nGreedflation describes when corporations raise prices excessively under the guise of general inflation." },
+              { name: '02. K-Line Price Action & Support Resistance Strategies', folder: 'KLine', fullName: 'KLine / 02. K-Line Price Action & Support Resistance Strategies.txt', content: "A candlestick pattern is a movement in prices shown graphically on a candlestick chart.\nBullish engulfing pattern indicates a potential market reversal from a downtrend to an uptrend.\nSupport levels represent the price point where buying interest is strong enough to overcome selling pressure.\nRisk management and strict stop-loss discipline are the cornerstones of consistent quantitative trading." }
             ]
           });
         }
       }
 
       handleLoadedAssets(assets) {
+        this.rawAssets = assets || { audios: [], articles: [], folders: [] };
         this.driveAudios = assets.audios || [];
         this.driveArticles = assets.articles || [];
 
-        this.driveStatsText.textContent = `✅ 雲端硬碟：${this.driveAudios.length} 首音樂 / ${this.driveArticles.length} 篇教材`;
-        this.sidebarMusicCount.textContent = this.driveAudios.length;
+        // Normalize folder tags
+        this.driveAudios.forEach(a => {
+          if (!a.folder) {
+            const p = (a.fullPath || a.name || '').toLowerCase();
+            a.folder = p.includes('kline') ? 'KLine' : 'Englishvoice';
+          }
+        });
+        this.driveArticles.forEach(art => {
+          if (!art.folder) {
+            const p = (art.fullName || art.name || '').toLowerCase();
+            art.folder = p.includes('kline') ? 'KLine' : 'Englishvoice';
+          }
+        });
 
-        // 更新底部播放列提示狀態
+        // Compute counts
+        const evAudios = this.driveAudios.filter(a => a.folder === 'Englishvoice');
+        const klineAudios = this.driveAudios.filter(a => a.folder === 'KLine');
+        const evArticles = this.driveArticles.filter(art => art.folder === 'Englishvoice');
+        const klineArticles = this.driveArticles.filter(art => art.folder === 'KLine');
+
+        // Update badge counts
+        if (this.vtArtCountAll) this.vtArtCountAll.textContent = this.driveArticles.length;
+        if (this.vtArtCountEv) this.vtArtCountEv.textContent = evArticles.length;
+        if (this.vtArtCountKline) this.vtArtCountKline.textContent = klineArticles.length;
+
+        if (this.musicCountAll) this.musicCountAll.textContent = this.driveAudios.length;
+        if (this.musicCountEv) this.musicCountEv.textContent = evAudios.length;
+        if (this.musicCountKline) this.musicCountKline.textContent = klineAudios.length;
+
+        if (this.sidebarMusicCount) this.sidebarMusicCount.textContent = this.driveAudios.length;
+
+        // Update Sidebar Drive Status Card with multi-folder breakdown
+        if (this.driveStatsText) {
+          this.driveStatsText.innerHTML = `
+            <div style="font-weight: 700; color: var(--sp-white); margin-bottom: 5px;">✅ 雲端硬碟 (English_voice)</div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+              <span>📘 Englishvoice:</span>
+              <strong style="color: var(--sp-green);">${evAudios.length} 首 / ${evArticles.length} 篇</strong>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 11px;">
+              <span>📈 KLine:</span>
+              <strong style="color: #22d3ee;">${klineAudios.length} 首 / ${klineArticles.length} 篇</strong>
+            </div>
+          `;
+        }
+
+        // Update Bottom Player Bar Status
         if (this.driveAudios.length > 0) {
           this.barTitle.textContent = `🎵 雲端音樂已就緒 (共 ${this.driveAudios.length} 首)`;
-          this.barArtist.textContent = '點擊左側「Spotify 音樂館」挑選歌曲播放';
+          this.barArtist.textContent = '點擊「Spotify 音樂館」可依 Englishvoice / KLine 切換播放';
         }
 
-        // Populate Lesson Selector
-        this.lessonSelector.innerHTML = '';
-        if (this.driveArticles.length > 0) {
-          this.driveArticles.forEach((art, i) => {
-            const opt = document.createElement('option');
-            opt.value = `drive_art_${i}`;
-            opt.textContent = `📄 ${art.name}`;
-            this.lessonSelector.appendChild(opt);
-          });
-          // Auto load first article
-          this.currentLessonTitle.textContent = this.driveArticles[0].name;
-          this.parseAndRenderRawArticle(this.driveArticles[0].content);
-        } else {
-          const opt = document.createElement('option');
-          opt.value = 'sample-1';
-          opt.textContent = '01. Mixed Conditionals (示範教材)';
-          this.lessonSelector.appendChild(opt);
-          this.renderSampleLesson('sample-1');
-        }
+        // Populate Articles by active category
+        this.populateArticlesByFolder(this.activeArticleFolder || 'all');
 
-        // Populate Spotify Music Grid
+        // Populate Spotify Music Grid & Table
         this.renderSpotifyMusicGrid();
       }
 
+      populateArticlesByFolder(folder) {
+        this.activeArticleFolder = folder;
+        if (!this.lessonSelector) return;
+        this.lessonSelector.innerHTML = '';
+
+        const filtered = (folder === 'all')
+          ? this.driveArticles
+          : this.driveArticles.filter(art => art.folder === folder);
+
+        if (filtered.length > 0) {
+          filtered.forEach((art) => {
+            const opt = document.createElement('option');
+            const realIdx = this.driveArticles.indexOf(art);
+            opt.value = `drive_art_${realIdx}`;
+            const badge = art.folder === 'KLine' ? '📈 [KLine]' : '📘 [Englishvoice]';
+            opt.textContent = `${badge} ${art.name}`;
+            this.lessonSelector.appendChild(opt);
+          });
+          // Load first article of category
+          this.currentLessonTitle.textContent = filtered[0].name;
+          this.parseAndRenderRawArticle(filtered[0].content);
+        } else {
+          const opt = document.createElement('option');
+          opt.value = '';
+          opt.textContent = (folder === 'KLine')
+            ? '📈 KLine 資料夾尚無文章 (可點右側貼上新文章儲存)'
+            : '此分類目前尚無文章教材';
+          this.lessonSelector.appendChild(opt);
+        }
+      }
+
       renderSpotifyMusicGrid() {
-        // Alias to Detailed Table
         this.renderSpotifyMusicTable();
       }
 
@@ -2220,30 +2377,61 @@
         if (!this.musicTableBody) return;
         this.musicTableBody.innerHTML = '';
 
-        const filter = (this.musicFilterKeyword || '').toLowerCase();
-        let displayCount = 0;
+        const keyword = (this.musicFilterKeyword || '').toLowerCase();
+        const folder = this.activeMusicFolder || 'all';
 
-        this.driveAudios.forEach((audio, idx) => {
-          if (filter && !audio.name.toLowerCase().includes(filter)) {
-            return;
+        const filteredAudios = this.driveAudios.filter(audio => {
+          if (folder !== 'all' && audio.folder !== folder) {
+            return false;
           }
-          displayCount++;
+          if (keyword && !audio.name.toLowerCase().includes(keyword)) {
+            return false;
+          }
+          return true;
+        });
 
-          const isCurrent = (idx === this.currentAudioIndex && !this.audio.paused);
+        if (filteredAudios.length === 0) {
+          const emptyTr = document.createElement('tr');
+          emptyTr.innerHTML = `
+            <td colspan="5" style="text-align: center; padding: 40px 20px; color: var(--sp-light-gray);">
+              ${folder === 'KLine' 
+                ? '📈 <strong>KLine 資料夾目前尚無音檔</strong><br><span style="font-size:12px;color:rgba(255,255,255,0.5);display:inline-block;margin-top:6px;">請將 MP3 音樂或英語講解音檔放入 Google Drive 中的「KLine」資料夾，點擊左側「重新掃描雲端」即可立即同步！</span>' 
+                : '找不到符合條件的歌曲'}
+            </td>
+          `;
+          this.musicTableBody.appendChild(emptyTr);
+          this.renderQueueDrawerList(filteredAudios);
+          return;
+        }
+
+        filteredAudios.forEach((audio) => {
+          const realIdx = this.driveAudios.indexOf(audio);
+          const isCurrent = (realIdx === this.currentAudioIndex && !this.audio.paused);
+          const isSelected = (realIdx === this.currentAudioIndex);
           const tr = document.createElement('tr');
-          tr.className = `sp-track-row ${idx === this.currentAudioIndex ? 'active' : ''}`;
+          tr.className = `sp-track-row ${isSelected ? 'active' : ''}`;
+
+          const folderBadge = audio.folder === 'KLine'
+            ? '<span class="badge-folder badge-kline">📈 KLine</span>'
+            : '<span class="badge-folder badge-ev">📘 Englishvoice</span>';
+
           tr.innerHTML = `
             <td class="track-num-cell">
-              ${isCurrent ? '<span style="color:var(--sp-green); animation: pulse 1s infinite;">🔊</span>' : (idx + 1)}
+              ${isCurrent ? '<span style="color:var(--sp-green); animation: pulse 1s infinite;">🔊</span>' : (realIdx + 1)}
             </td>
             <td>
               <div class="track-title-cell">
                 <span class="track-icon-disk">🎵</span>
-                <span>${audio.name}</span>
+                <div>
+                  <div style="font-weight: 600;">${audio.name}</div>
+                  <div style="font-size: 11px; color: var(--sp-light-gray); margin-top: 3px;">
+                    ${folderBadge} ${audio.fullPath || audio.name}
+                  </div>
+                </div>
               </div>
             </td>
             <td class="track-source-cell">
-              📁 Google Drive 雲端專屬音樂
+              Google Drive 雲端音樂
             </td>
             <td class="track-badge-cell">
               <span class="track-status-pill ${isCurrent ? 'playing' : ''}">
@@ -2256,14 +2444,14 @@
           `;
 
           tr.addEventListener('click', () => {
-            this.playDriveAudio(idx);
+            this.playDriveAudio(realIdx);
           });
 
           this.musicTableBody.appendChild(tr);
         });
 
-        // Also update Queue Drawer if open
-        this.renderQueueDrawerList();
+        // Also update Queue Drawer
+        this.renderQueueDrawerList(filteredAudios);
       }
 
       toggleQueueDrawer() {
@@ -2275,28 +2463,40 @@
         }
       }
 
-      renderQueueDrawerList() {
+      renderQueueDrawerList(audiosToRender) {
         if (!this.queueListContainer) return;
         this.queueListContainer.innerHTML = '';
+        const list = audiosToRender || this.driveAudios;
 
-        this.driveAudios.forEach((audio, idx) => {
-          const isCurrent = (idx === this.currentAudioIndex);
+        list.forEach((audio) => {
+          const realIdx = this.driveAudios.indexOf(audio);
+          const isCurrent = (realIdx === this.currentAudioIndex);
           const item = document.createElement('div');
           item.className = `queue-item ${isCurrent ? 'current' : ''}`;
+
+          const folderBadge = audio.folder === 'KLine'
+            ? '<span class="badge-folder badge-kline" style="font-size:10px;padding:1px 6px;">📈 KLine</span>'
+            : '<span class="badge-folder badge-ev" style="font-size:10px;padding:1px 6px;">📘 Englishvoice</span>';
+
           item.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <span style="font-family: var(--font-mono); color: var(--sp-light-gray); width: 24px;">${idx + 1}.</span>
-              <span style="font-weight: 600;">${audio.name}</span>
+            <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1;">
+              <span style="font-family: var(--font-mono); color: var(--sp-light-gray); width: 24px;">${realIdx + 1}.</span>
+              <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <div style="font-weight: 600; font-size: 13px; color: ${isCurrent ? 'var(--sp-green)' : 'var(--sp-white)'};">${audio.name}</div>
+                <div style="font-size: 11px; margin-top: 2px;">${folderBadge}</div>
+              </div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
               <span style="font-size: 11px; opacity: 0.8;">${isCurrent ? '🟢 正在播放' : '待播'}</span>
               <span style="font-size: 14px;">${isCurrent ? '🔊' : '▶'}</span>
             </div>
           `;
+
           item.addEventListener('click', (e) => {
             e.stopPropagation();
-            this.playDriveAudio(idx);
+            this.playDriveAudio(realIdx);
           });
+
           this.queueListContainer.appendChild(item);
         });
       }
@@ -2435,6 +2635,7 @@
       saveArticleToCloud() {
         const name = this.articleSaveName.value.trim();
         const content = this.rawArticleInput.value.trim();
+        const targetFolder = (this.articleTargetFolder ? this.articleTargetFolder.value : 'Englishvoice') || 'Englishvoice';
         if (!name || !content) return alert('請先輸入文章檔名與內容！');
 
         this.saveArticleDriveBtn.textContent = '儲存中...';
@@ -2448,11 +2649,24 @@
               this.saveArticleDriveBtn.disabled = false;
               this.loadDriveAssets();
             })
-            .saveArticleToDrive(name, content);
+            .withFailureHandler((err) => {
+              alert('儲存失敗：' + err);
+              this.saveArticleDriveBtn.textContent = '儲存到雲端硬碟';
+              this.saveArticleDriveBtn.disabled = false;
+            })
+            .saveArticleToDrive(name, content, targetFolder);
         } else {
-          alert('已在預覽模式下模擬儲存！');
+          alert(`已在預覽模式下模擬儲存至「${targetFolder}」資料夾！`);
           this.saveArticleDriveBtn.textContent = '儲存到雲端硬碟';
           this.saveArticleDriveBtn.disabled = false;
+          this.driveArticles.unshift({
+            id: 'local_' + Date.now(),
+            name: name,
+            fullName: `${targetFolder} / ${name}.txt`,
+            content: content,
+            folder: targetFolder
+          });
+          this.handleLoadedAssets(this.rawAssets);
         }
       }
 
