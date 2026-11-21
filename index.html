@@ -1343,6 +1343,60 @@
       border: 1px solid rgba(6, 182, 212, 0.4);
     }
 
+  
+    /* ==================== DRAG & DROP SONG REORDERING ==================== */
+    .sp-track-row[draggable="true"] {
+      cursor: grab;
+      user-select: none;
+    }
+    .sp-track-row[draggable="true"]:active {
+      cursor: grabbing;
+    }
+    .sp-track-row.is-dragging {
+      opacity: 0.35 !important;
+      background: rgba(29, 185, 84, 0.22) !important;
+      outline: 2px dashed var(--sp-green) !important;
+    }
+    .sp-track-row.drag-over-top td {
+      border-top: 3px solid var(--sp-green) !important;
+    }
+    .sp-track-row.drag-over-bottom td {
+      border-bottom: 3px solid var(--sp-green) !important;
+    }
+    .drag-handle-cell {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .drag-handle {
+      cursor: grab;
+      font-size: 15px;
+      opacity: 0.45;
+      user-select: none;
+      transition: opacity 0.2s, transform 0.2s, color 0.2s;
+    }
+    .sp-track-row:hover .drag-handle {
+      opacity: 1 !important;
+      color: var(--sp-green);
+      transform: scale(1.2);
+    }
+    .queue-item[draggable="true"] {
+      cursor: grab;
+      user-select: none;
+      transition: background 0.15s;
+    }
+    .queue-item.is-dragging {
+      opacity: 0.35 !important;
+      outline: 2px dashed var(--sp-green) !important;
+    }
+    .queue-item.drag-over-top {
+      border-top: 2px solid var(--sp-green) !important;
+    }
+    .queue-item.drag-over-bottom {
+      border-bottom: 2px solid var(--sp-green) !important;
+    }
+
   </style>
 </head>
 <body>
@@ -1629,10 +1683,13 @@
             <input type="text" id="music-search-input" placeholder="在 73 首雲端音樂中搜尋歌曲名稱...">
           </div>
           <div class="sp-view-toggle-btns">
+            <button class="vt-btn" id="reset-order-btn" title="按住每首歌曲左側 ⠿ 即可上下拖曳自訂順序，點此可恢復雲端預設排序" style="font-size: 12px; border-radius: 20px; padding: 6px 14px;">
+              🔄 重設排序
+            </button>
             <button class="vt-btn gold" id="toggle-queue-btn" style="font-weight: 700; border-radius: 20px; padding: 8px 18px;">
               📜 現正播放清單 (Playing List)
             </button>
-            <span style="font-size: 13px; color: var(--sp-light-gray);">一律採用詳細列表模式</span>
+            <span style="font-size: 12px; color: var(--sp-light-gray);">🖐️ 按住 ⠿ 拖曳自訂播放順序</span>
           </div>
         </div>
 
@@ -1998,6 +2055,7 @@
         this.musicSearchInput = document.getElementById('music-search-input');
         this.toggleQueueBtn = document.getElementById('toggle-queue-btn');
         this.closeQueueBtn = document.getElementById('close-queue-btn');
+        this.resetOrderBtn = document.getElementById('reset-order-btn');
         this.queueDrawer = document.getElementById('queue-drawer');
         this.queueListContainer = document.getElementById('queue-list-container');
 
@@ -2158,6 +2216,9 @@
             this.musicFilterKeyword = e.target.value.trim().toLowerCase();
             this.renderSpotifyMusicTable();
           });
+        }
+        if (this.resetOrderBtn) {
+          this.resetOrderBtn.addEventListener('click', () => this.resetMusicOrder());
         }
         if (this.toggleQueueBtn) {
           this.toggleQueueBtn.addEventListener('click', () => this.toggleQueueDrawer());
@@ -2361,6 +2422,9 @@
         // Populate Articles by active category
         this.populateArticlesByFolder(this.activeArticleFolder || 'all');
 
+        // 套用使用者自訂拖曳排序 (若有)
+        this.applyCustomMusicOrder();
+
         // Populate Spotify Music Grid & Table
         this.renderSpotifyMusicGrid();
       }
@@ -2407,6 +2471,17 @@
         const keyword = (this.musicFilterKeyword || '').toLowerCase();
         const folder = this.activeMusicFolder || 'all';
 
+        // Update search input placeholder
+        if (this.musicSearchInput) {
+          if (folder === 'KLine') {
+            this.musicSearchInput.placeholder = '在 KLine 專屬音檔中搜尋...';
+          } else if (folder === 'Englishvoice') {
+            this.musicSearchInput.placeholder = '在 Englishvoice 音樂庫中搜尋...';
+          } else {
+            this.musicSearchInput.placeholder = `在全部 ${this.driveAudios.length} 首雲端音樂中搜尋...`;
+          }
+        }
+
         const filteredAudios = this.driveAudios.filter(audio => {
           if (folder !== 'all') {
             const f = (audio.folder || '').toLowerCase();
@@ -2422,7 +2497,7 @@
           const emptyTr = document.createElement('tr');
           emptyTr.innerHTML = `
             <td colspan="5" style="text-align: center; padding: 40px 20px; color: var(--sp-light-gray);">
-              ${folder === 'KLine' 
+              ${folder.toLowerCase() === 'kline' 
                 ? '📈 <strong>KLine 資料夾目前尚無音檔</strong><br><span style="font-size:12px;color:rgba(255,255,255,0.5);display:inline-block;margin-top:6px;">請將 MP3 音樂或英語講解音檔放入 Google Drive 中的「KLine」資料夾，點擊左側「重新掃描雲端」即可立即同步！</span>' 
                 : '找不到符合條件的歌曲'}
             </td>
@@ -2438,20 +2513,25 @@
           const isSelected = (realIdx === this.currentAudioIndex);
           const tr = document.createElement('tr');
           tr.className = `sp-track-row ${isSelected ? 'active' : ''}`;
+          tr.setAttribute('draggable', 'true');
+          tr.setAttribute('data-real-idx', realIdx);
 
-          const folderBadge = audio.folder === 'KLine'
+          const folderBadge = (audio.folder || '').toLowerCase() === 'kline'
             ? '<span class="badge-folder badge-kline">📈 KLine</span>'
             : '<span class="badge-folder badge-ev">📘 Englishvoice</span>';
 
           tr.innerHTML = `
             <td class="track-num-cell">
-              ${isCurrent ? '<span style="color:var(--sp-green); animation: pulse 1s infinite;">🔊</span>' : (realIdx + 1)}
+              <div class="drag-handle-cell">
+                <span class="drag-handle" title="按住拖曳調整播放順序">⠿</span>
+                <span>${isCurrent ? '<span style="color:var(--sp-green); animation: pulse 1s infinite;">🔊</span>' : (realIdx + 1)}</span>
+              </div>
             </td>
             <td>
               <div class="track-title-cell">
                 <span class="track-icon-disk">🎵</span>
-                <div>
-                  <div style="font-weight: 600;">${audio.name}</div>
+                <div style="overflow: hidden;">
+                  <div style="font-weight: 600; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${audio.name}</div>
                   <div style="font-size: 11px; color: var(--sp-light-gray); margin-top: 3px;">
                     ${folderBadge} ${audio.fullPath || audio.name}
                   </div>
@@ -2471,8 +2551,57 @@
             </td>
           `;
 
-          tr.addEventListener('click', () => {
+          // Click to play
+          tr.addEventListener('click', (e) => {
+            if (e.target.closest('.drag-handle')) return;
             this.playDriveAudio(realIdx);
+          });
+
+          // ==================== DRAG & DROP EVENTS ====================
+          tr.addEventListener('dragstart', (e) => {
+            window._draggedMusicIndex = realIdx;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', realIdx);
+            setTimeout(() => tr.classList.add('is-dragging'), 0);
+          });
+
+          tr.addEventListener('dragend', () => {
+            tr.classList.remove('is-dragging');
+            document.querySelectorAll('.sp-track-row').forEach(r => {
+              r.classList.remove('drag-over-top', 'drag-over-bottom', 'is-dragging');
+            });
+          });
+
+          tr.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const rect = tr.getBoundingClientRect();
+            const relY = e.clientY - rect.top;
+            if (relY < rect.height / 2) {
+              tr.classList.add('drag-over-top');
+              tr.classList.remove('drag-over-bottom');
+            } else {
+              tr.classList.add('drag-over-bottom');
+              tr.classList.remove('drag-over-top');
+            }
+          });
+
+          tr.addEventListener('dragleave', () => {
+            tr.classList.remove('drag-over-top', 'drag-over-bottom');
+          });
+
+          tr.addEventListener('drop', (e) => {
+            e.preventDefault();
+            tr.classList.remove('drag-over-top', 'drag-over-bottom');
+            const fromIdx = window._draggedMusicIndex;
+            const targetIdx = realIdx;
+            if (fromIdx === null || fromIdx === undefined || fromIdx === targetIdx) return;
+
+            const rect = tr.getBoundingClientRect();
+            const relY = e.clientY - rect.top;
+            const insertAfter = (relY >= rect.height / 2);
+
+            this.reorderAudios(fromIdx, targetIdx, insertAfter);
           });
 
           this.musicTableBody.appendChild(tr);
@@ -2501,14 +2630,17 @@
           const isCurrent = (realIdx === this.currentAudioIndex);
           const item = document.createElement('div');
           item.className = `queue-item ${isCurrent ? 'current' : ''}`;
+          item.setAttribute('draggable', 'true');
+          item.setAttribute('data-real-idx', realIdx);
 
-          const folderBadge = audio.folder === 'KLine'
+          const folderBadge = (audio.folder || '').toLowerCase() === 'kline'
             ? '<span class="badge-folder badge-kline" style="font-size:10px;padding:1px 6px;">📈 KLine</span>'
             : '<span class="badge-folder badge-ev" style="font-size:10px;padding:1px 6px;">📘 Englishvoice</span>';
 
           item.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px; overflow: hidden; flex: 1;">
-              <span style="font-family: var(--font-mono); color: var(--sp-light-gray); width: 24px;">${realIdx + 1}.</span>
+            <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1;">
+              <span class="drag-handle" title="按住拖曳排序" style="font-size:14px; opacity:0.5;">⠿</span>
+              <span style="font-family: var(--font-mono); color: var(--sp-light-gray); width: 22px;">${realIdx + 1}.</span>
               <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                 <div style="font-weight: 600; font-size: 13px; color: ${isCurrent ? 'var(--sp-green)' : 'var(--sp-white)'};">${audio.name}</div>
                 <div style="font-size: 11px; margin-top: 2px;">${folderBadge}</div>
@@ -2521,12 +2653,154 @@
           `;
 
           item.addEventListener('click', (e) => {
+            if (e.target.closest('.drag-handle')) return;
             e.stopPropagation();
             this.playDriveAudio(realIdx);
           });
 
+          // Queue Item Drag & Drop
+          item.addEventListener('dragstart', (e) => {
+            window._draggedMusicIndex = realIdx;
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/plain', realIdx);
+            setTimeout(() => item.classList.add('is-dragging'), 0);
+          });
+
+          item.addEventListener('dragend', () => {
+            item.classList.remove('is-dragging');
+            document.querySelectorAll('.queue-item').forEach(qi => {
+              qi.classList.remove('drag-over-top', 'drag-over-bottom', 'is-dragging');
+            });
+          });
+
+          item.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            const rect = item.getBoundingClientRect();
+            const relY = e.clientY - rect.top;
+            if (relY < rect.height / 2) {
+              item.classList.add('drag-over-top');
+              item.classList.remove('drag-over-bottom');
+            } else {
+              item.classList.add('drag-over-bottom');
+              item.classList.remove('drag-over-top');
+            }
+          });
+
+          item.addEventListener('dragleave', () => {
+            item.classList.remove('drag-over-top', 'drag-over-bottom');
+          });
+
+          item.addEventListener('drop', (e) => {
+            e.preventDefault();
+            item.classList.remove('drag-over-top', 'drag-over-bottom');
+            const fromIdx = window._draggedMusicIndex;
+            const targetIdx = realIdx;
+            if (fromIdx === null || fromIdx === undefined || fromIdx === targetIdx) return;
+
+            const rect = item.getBoundingClientRect();
+            const relY = e.clientY - rect.top;
+            const insertAfter = (relY >= rect.height / 2);
+
+            this.reorderAudios(fromIdx, targetIdx, insertAfter);
+          });
+
           this.queueListContainer.appendChild(item);
         });
+      }
+
+      // ==================== REORDERING LOGIC & PERSISTENCE ====================
+
+      reorderAudios(fromIdx, targetIdx, insertAfter) {
+        if (fromIdx < 0 || fromIdx >= this.driveAudios.length) return;
+        if (targetIdx < 0 || targetIdx >= this.driveAudios.length) return;
+
+        const currentTrack = this.driveAudios[this.currentAudioIndex];
+        const [movedItem] = this.driveAudios.splice(fromIdx, 1);
+
+        let finalTargetIdx = this.driveAudios.indexOf(this.driveAudios[targetIdx > fromIdx ? targetIdx - 1 : targetIdx]);
+        if (finalTargetIdx === -1) finalTargetIdx = targetIdx;
+        if (insertAfter) {
+          finalTargetIdx++;
+        }
+
+        this.driveAudios.splice(finalTargetIdx, 0, movedItem);
+
+        // Keep current playing index tracked
+        if (currentTrack) {
+          this.currentAudioIndex = this.driveAudios.indexOf(currentTrack);
+        }
+
+        // Persist custom order
+        this.saveCustomMusicOrder();
+
+        // Refresh UI
+        this.renderSpotifyMusicTable();
+
+        // Toast feedback
+        this.showToast(`🖐️ 已調整順序：移至第 ${finalTargetIdx + 1} 首`);
+      }
+
+      saveCustomMusicOrder() {
+        try {
+          const idList = this.driveAudios.map(a => a.id);
+          localStorage.setItem('OSCARMARK_CUSTOM_MUSIC_ORDER', JSON.stringify(idList));
+        } catch(e) {}
+      }
+
+      applyCustomMusicOrder() {
+        try {
+          const raw = localStorage.getItem('OSCARMARK_CUSTOM_MUSIC_ORDER');
+          if (!raw) return;
+          const order = JSON.parse(raw);
+          if (!Array.isArray(order) || order.length === 0) return;
+
+          const map = new Map();
+          this.driveAudios.forEach(a => map.set(a.id, a));
+
+          const sorted = [];
+          order.forEach(id => {
+            if (map.has(id)) {
+              sorted.push(map.get(id));
+              map.delete(id);
+            }
+          });
+          map.forEach(a => sorted.push(a));
+          this.driveAudios = sorted;
+        } catch(e) {}
+      }
+
+      resetMusicOrder() {
+        localStorage.removeItem('OSCARMARK_CUSTOM_MUSIC_ORDER');
+        if (this.rawAssets && this.rawAssets.audios) {
+          this.driveAudios = [...this.rawAssets.audios];
+          this.driveAudios.forEach(a => {
+            if (!a.folder) {
+              const p = (a.fullPath || a.name || '').toLowerCase();
+              a.folder = p.includes('kline') ? 'KLine' : 'Englishvoice';
+            }
+          });
+          this.renderSpotifyMusicTable();
+          this.showToast('🔄 已重設為雲端原始順序！');
+        }
+      }
+
+      showToast(msg) {
+        let toast = document.getElementById('sp-toast');
+        if (!toast) {
+          toast = document.createElement('div');
+          toast.id = 'sp-toast';
+          toast.style.cssText = 'position:fixed;bottom:102px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--sp-green);color:#000;font-weight:700;font-size:13px;padding:9px 20px;border-radius:24px;box-shadow:0 6px 20px rgba(0,0,0,0.6);z-index:99999;transition:all 0.25s cubic-bezier(0.3,0,0.2,1);pointer-events:none;opacity:0;display:flex;align-items:center;gap:6px;';
+          document.body.appendChild(toast);
+        }
+        toast.textContent = msg;
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+        clearTimeout(this._toastTimer);
+        this._toastTimer = setTimeout(() => {
+          toast.style.opacity = '0';
+          toast.style.transform = 'translateX(-50%) translateY(10px)';
+        }, 2200);
       }
 
       cycleMusicLoopMode() {
