@@ -2583,32 +2583,69 @@
         const track = this.driveAudios[index];
 
         this.barTitle.textContent = `⏳ 載入音檔: ${track.name}`;
-        this.barArtist.textContent = 'Google Drive 雲端音樂串流';
+        this.barArtist.textContent = `${track.folder || 'Google Drive'} 雲端音樂串流`;
         this.audio.src = '';
 
+        // 1. 若有直接預載網址或本機示範音檔
         if (track.url) {
           this.audio.src = track.url;
           this.barTitle.textContent = track.name;
-          this.audio.play();
+          this.audio.play().catch(e => console.log('Auto-play blocked or waiting:', e));
+          this.renderSpotifyMusicTable();
           return;
         }
 
-        // Call GAS getAudioBase64
+        // 2. 若為大檔案 (例如 79.6MB 的 YouTube 影音)，直接使用串流網址避免 Base64 記憶體限制
+        if (track.isLarge && track.streamUrl) {
+          this.barTitle.textContent = track.name;
+          this.audio.src = track.streamUrl;
+          this.audio.play().catch(e => console.log('Stream play error:', e));
+          this.renderSpotifyMusicTable();
+          return;
+        }
+
+        // 3. 呼叫 GAS 取得音檔 (支援 Base64 與 Direct Stream 雙引擎)
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           google.script.run
-            .withSuccessHandler((base64Data) => {
-              if (base64Data && !base64Data.startsWith('ERROR')) {
+            .withSuccessHandler((resultData) => {
+              if (resultData && !resultData.startsWith('ERROR')) {
                 this.barTitle.textContent = track.name;
-                this.audio.src = base64Data;
-                this.audio.play();
+                if (resultData.startsWith('URL:')) {
+                  this.audio.src = resultData.replace('URL:', '');
+                } else {
+                  this.audio.src = resultData;
+                }
+                this.audio.play().catch(e => console.log('Audio play error:', e));
+                this.renderSpotifyMusicTable();
               } else {
-                this.barTitle.textContent = '❌ 音檔讀取失敗';
+                if (track.streamUrl) {
+                  this.barTitle.textContent = track.name;
+                  this.audio.src = track.streamUrl;
+                  this.audio.play().catch(e => console.log('Stream fallback error:', e));
+                  this.renderSpotifyMusicTable();
+                } else {
+                  this.barTitle.textContent = '❌ 音檔讀取失敗';
+                }
               }
             })
             .withFailureHandler(() => {
-              this.barTitle.textContent = '❌ 網路連線逾時';
+              if (track.streamUrl) {
+                this.barTitle.textContent = track.name;
+                this.audio.src = track.streamUrl;
+                this.audio.play().catch(e => console.log('Stream fallback error:', e));
+                this.renderSpotifyMusicTable();
+              } else {
+                this.barTitle.textContent = '❌ 網路連線逾時';
+              }
             })
             .getAudioBase64(track.id);
+        } else {
+          if (track.streamUrl) {
+            this.audio.src = track.streamUrl;
+            this.barTitle.textContent = track.name;
+            this.audio.play().catch(e => console.log('Audio preview:', e));
+            this.renderSpotifyMusicTable();
+          }
         }
       }
 
