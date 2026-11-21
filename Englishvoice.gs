@@ -3,13 +3,13 @@
  * OSCARMARK2007 - VoiceTube 英語精讀 ＆ Google Drive 雲端音樂館 ＆ KLine 專區
  * ==============================================================================
  * 主目錄 (PARENT_FOLDER_ID): 1ra0hX3MuMOm_FYPlj6GpDD4j7t_Gre7 (English_voice)
- * 子目錄 1 (KLINE_FOLDER_ID): 1Fy3cePs8PQ5_pIJAkqcNDg-2u4RbG5xMH (KLine 投資理財/技術分析)
+ * 子目錄 1 (KLINE_FOLDER_ID): 1Ey3cePs8PQ5_pUAkqcNDg-2u4BbG5sMH (KLine 投資理財/技術分析)
  * 子目錄 2 (ENGLISHVOICE_FOLDER_ID): 132cXwwdjBGGYyxrYN1V1QMz8SrCNwNwL (Englishvoice 英語音樂庫)
  * ==============================================================================
  */
 
 const PARENT_FOLDER_ID = "1ra0hX3MuMOm_FYPlj6GpDD4j7t_Gre7";
-const KLINE_FOLDER_ID = "1Fy3cePs8PQ5_pIJAkqcNDg-2u4RbG5xMH";
+const KLINE_FOLDER_ID = "1Ey3cePs8PQ5_pUAkqcNDg-2u4BbG5sMH";
 const ENGLISHVOICE_FOLDER_ID = "132cXwwdjBGGYyxrYN1V1QMz8SrCNwNwL";
 const FOLDER_ID = PARENT_FOLDER_ID;
 
@@ -75,16 +75,25 @@ function isArticleFile(file) {
 }
 
 /**
- * 輔助函式：將單一檔案安全加入資產清單 (自動去重)
+ * 輔助函式：將單一檔案安全加入資產清單 (自動去重，並對 KLine 影音建立雙軌支援)
  */
 function addFileToAssets(file, folderTag, assets) {
   var fileId = file.getId();
 
+  var alreadyInAudios = false;
   for (var i = 0; i < assets.audios.length; i++) {
-    if (assets.audios[i].id === fileId) return;
+    if (assets.audios[i].id === fileId) {
+      alreadyInAudios = true;
+      break;
+    }
   }
+
+  var alreadyInArticles = false;
   for (var j = 0; j < assets.articles.length; j++) {
-    if (assets.articles[j].id === fileId) return;
+    if (assets.articles[j].id === fileId || assets.articles[j].id === (fileId + "_lesson")) {
+      alreadyInArticles = true;
+      break;
+    }
   }
 
   var fileName = file.getName();
@@ -93,7 +102,8 @@ function addFileToAssets(file, folderTag, assets) {
   var fullPath = folderTag + " / " + fileName;
   var streamUrl = "https://drive.google.com/uc?export=download&id=" + fileId;
 
-  if (isMediaFile(file)) {
+  // 1. 若為媒體檔案 (音樂 / 影片 / YouTube 檔)
+  if (isMediaFile(file) && !alreadyInAudios) {
     assets.audios.push({
       id: fileId,
       name: fileName,
@@ -103,7 +113,10 @@ function addFileToAssets(file, folderTag, assets) {
       streamUrl: streamUrl,
       isLarge: (size > 25 * 1024 * 1024)
     });
-  } else if (isArticleFile(file)) {
+  }
+
+  // 2. 若為文字/教材檔案
+  if (isArticleFile(file) && !alreadyInArticles) {
     var content = "";
     try {
       if (mime === MimeType.GOOGLE_DOCS) {
@@ -111,7 +124,7 @@ function addFileToAssets(file, folderTag, assets) {
       } else if (mime === MimeType.PLAIN_TEXT || fileName.endsWith('.txt') || fileName.endsWith('.md')) {
         content = file.getBlob().getDataAsString("UTF-8");
       } else {
-        content = "📄 檔案名稱：" + fileName + "\n檔案大小：" + (size / 1024).toFixed(1) + " KB\n(此為 PDF 或特殊格式教材)";
+        content = "📄 檔案名稱：" + fileName + "\n檔案大小：" + (size / 1024).toFixed(1) + " KB\n(特殊格式教材)";
       }
     } catch(readErr) {
       content = "（教材讀取中...）";
@@ -123,6 +136,25 @@ function addFileToAssets(file, folderTag, assets) {
       fullName: fullPath,
       content: content,
       folder: folderTag
+    });
+  }
+  // 3. 針對 KLine 資料夾中的大影音檔，同步在 VoiceTube 建立精讀雙語課程！
+  else if ((folderTag === "KLine" || folderTag.indexOf("KLine") !== -1) && !alreadyInArticles) {
+    var cleanTitle = fileName.replace(/\.[^/.]+$/, "");
+    var klineStudyText = cleanTitle + "。\n\n" +
+      "1. Wyckoff Method and Price Action Technical Analysis.\n" +
+      "2. Moving averages often lag behind real-time institutional order flow.\n" +
+      "3. Three physical footprints reveal the truth behind account drawdown and compounding returns.\n" +
+      "4. Professional traders focus on volume price spread analysis rather than lagging indicators.\n" +
+      "5. Capital preservation and disciplined risk reward ratios build long-term consistency.";
+
+    assets.articles.push({
+      id: fileId + "_lesson",
+      name: cleanTitle,
+      fullName: fullPath,
+      content: klineStudyText,
+      folder: "KLine",
+      audioId: fileId
     });
   }
 }
@@ -164,7 +196,7 @@ function scanFolder(folder, folderTag, assets) {
 function getFolderAssets(folderId, path) {
   var assets = { audios: [], articles: [], folders: ["Englishvoice", "KLine"] };
 
-  // 1. 直達掃描 KLine 專屬資料夾 (ID: 1Fy3cePs8PQ5_pIJAkqcNDg-2u4RbG5xMH)
+  // 1. 直達掃描 KLine 專屬資料夾 (ID: 1Ey3cePs8PQ5_pUAkqcNDg-2u4BbG5sMH)
   try {
     var klineFolder = DriveApp.getFolderById(KLINE_FOLDER_ID);
     scanFolder(klineFolder, "KLine", assets);
