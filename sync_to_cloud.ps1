@@ -16,7 +16,7 @@ Write-Host "✅ 代碼打包完成！" -ForegroundColor Green
 
 # 1. Push to GitHub
 Write-Host "`n[2/4] 正在推送到 GitHub 與 GitHub Pages..." -ForegroundColor Cyan
-git add index.html Englishvoice.gs Englishvoice.txt Index.txt sync_to_cloud.ps1
+git add index.html Englishvoice.gs Englishvoice.txt Index.txt embed_kline_all.py sync_to_cloud.ps1
 $status = git status --porcelain
 if ($status) {
     git commit -m "auto: cloud sync $timestamp" | Out-Null

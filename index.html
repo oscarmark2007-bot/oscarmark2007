@@ -1084,8 +1084,9 @@
     }
     .sp-track-row {
       cursor: pointer;
-      transition: background 0.15s ease;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      transition: all 0.2s cubic-bezier(0.3, 0, 0.2, 1);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      border-left: 6px solid transparent;
     }
     .sp-track-row:hover {
       background: rgba(255, 255, 255, 0.08);
@@ -1100,7 +1101,7 @@
       vertical-align: middle;
     }
     .track-num-cell {
-      width: 44px;
+      width: 48px;
       text-align: center;
       font-family: var(--font-mono);
       color: var(--sp-light-gray);
@@ -1116,12 +1117,21 @@
       font-weight: 600;
       color: #fff;
     }
-    .sp-track-row.active .track-title-cell {
-      color: var(--sp-green);
+    .track-title-text {
+      font-weight: 600;
+      color: #ffffff;
+      transition: color 0.2s, font-weight 0.2s;
+    }
+    .track-subtitle-text {
+      font-size: 11px;
+      color: var(--sp-light-gray);
+      transition: color 0.2s;
     }
     .track-icon-disk {
-      font-size: 16px;
-      opacity: 0.8;
+      font-size: 17px;
+      opacity: 0.85;
+      display: inline-block;
+      transition: transform 0.2s;
     }
     .track-source-cell {
       color: var(--sp-light-gray);
@@ -1134,17 +1144,13 @@
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 3px 10px;
+      padding: 3px 11px;
       border-radius: 12px;
       font-size: 11px;
       font-weight: 700;
       background: rgba(255, 255, 255, 0.06);
       color: var(--sp-light-gray);
-    }
-    .track-status-pill.playing {
-      background: var(--sp-green);
-      color: #000;
-      box-shadow: 0 0 10px var(--sp-green-glow);
+      transition: all 0.2s ease;
     }
     .track-action-cell {
       text-align: right;
@@ -1161,6 +1167,87 @@
     .row-play-btn:hover {
       color: var(--sp-green);
       transform: scale(1.2);
+    }
+
+    /* ==================== 正在唱的歌 超顯眼專屬色彩與動態光效 (使用者核心需求) ==================== */
+    .sp-track-row.is-playing {
+      background: linear-gradient(90deg, rgba(30, 215, 96, 0.32) 0%, rgba(16, 185, 129, 0.20) 45%, rgba(20, 83, 45, 0.12) 100%) !important;
+      border-left: 6px solid #1ed760 !important;
+      box-shadow: inset 0 0 22px rgba(30, 215, 96, 0.26), 0 4px 16px rgba(0, 0, 0, 0.6) !important;
+      border-bottom: 1px solid rgba(30, 215, 96, 0.4) !important;
+    }
+    .sp-track-row.is-playing .track-title-text {
+      color: #1ed760 !important;
+      font-weight: 800 !important;
+      font-size: 15px !important;
+      text-shadow: 0 0 14px rgba(30, 215, 96, 0.7), 0 0 2px #ffffff !important;
+      letter-spacing: 0.3px;
+    }
+    .sp-track-row.is-playing .track-subtitle-text {
+      color: #a7f3d0 !important;
+      font-weight: 600 !important;
+    }
+    .sp-track-row.is-playing .track-icon-disk {
+      animation: spinVinyl 2.2s linear infinite;
+      filter: drop-shadow(0 0 8px #1ed760);
+      font-size: 19px !important;
+    }
+    .sp-track-row.is-playing .row-play-btn {
+      color: #1ed760 !important;
+      transform: scale(1.25);
+      filter: drop-shadow(0 0 6px #1ed760);
+    }
+    .sp-track-row.is-playing .track-status-pill.playing {
+      background: linear-gradient(135deg, #1ed760 0%, #10b981 100%) !important;
+      color: #042f14 !important;
+      font-weight: 800 !important;
+      box-shadow: 0 0 14px rgba(30, 215, 96, 0.85) !important;
+      border: 1px solid #6ee7b7 !important;
+      animation: pulsePlayingBadge 1.5s infinite alternate ease-in-out;
+    }
+
+    /* 選取但暫停狀態 */
+    .sp-track-row.is-paused {
+      background: rgba(255, 255, 255, 0.08) !important;
+      border-left: 6px solid #9ca3af !important;
+    }
+    .sp-track-row.is-paused .track-title-text {
+      color: #ffffff !important;
+      font-weight: 700 !important;
+    }
+
+    /* 正在播放的動態等化器音波動畫 */
+    .playing-eq-bars {
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 2.5px;
+      height: 16px;
+      padding: 0 2px;
+      vertical-align: middle;
+    }
+    .playing-eq-bars span {
+      display: inline-block;
+      width: 3.5px;
+      background: #1ed760;
+      border-radius: 2px;
+      box-shadow: 0 0 6px rgba(30, 215, 96, 0.9);
+      animation: bounceBar 0.85s ease-in-out infinite alternate;
+    }
+    .playing-eq-bars span:nth-child(1) { height: 60%; animation-delay: 0.05s; }
+    .playing-eq-bars span:nth-child(2) { height: 100%; animation-delay: 0.25s; }
+    .playing-eq-bars span:nth-child(3) { height: 45%; animation-delay: 0.15s; }
+    .playing-eq-bars span:nth-child(4) { height: 85%; animation-delay: 0.35s; }
+    @keyframes bounceBar {
+      0% { height: 25%; }
+      100% { height: 100%; }
+    }
+    @keyframes spinVinyl {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    @keyframes pulsePlayingBadge {
+      0% { transform: scale(1); filter: brightness(1); }
+      100% { transform: scale(1.08); filter: brightness(1.25); box-shadow: 0 0 18px rgba(30, 215, 96, 1); }
     }
 
     /* ==================== 4.2 PLAYING LIST (QUEUE DRAWER) ==================== */
@@ -1212,9 +1299,19 @@
     }
     .queue-item.current {
       background: rgba(29, 185, 84, 0.15);
-      border-left: 3px solid var(--sp-green);
+      border-left: 4px solid var(--sp-green);
       color: var(--sp-green);
       font-weight: 700;
+    }
+    .queue-item.is-playing {
+      background: linear-gradient(90deg, rgba(30, 215, 96, 0.32) 0%, rgba(16, 185, 129, 0.16) 100%) !important;
+      border-left: 5px solid #1ed760 !important;
+      box-shadow: inset 0 0 14px rgba(30, 215, 96, 0.25) !important;
+    }
+    .queue-item.is-playing .queue-title-text {
+      color: #1ed760 !important;
+      font-weight: 800 !important;
+      text-shadow: 0 0 8px rgba(30, 215, 96, 0.6) !important;
     }
 
     /* ==================== 4.3 ENLARGED LOOP & REPEAT BUTTONS ==================== */
@@ -2318,8 +2415,14 @@
 
         // Bottom Player
         this.audio.addEventListener('timeupdate', () => this.onTimeUpdate());
-        this.audio.addEventListener('play', () => { this.playBtn.textContent = '⏸'; });
-        this.audio.addEventListener('pause', () => { this.playBtn.textContent = '▶'; });
+        this.audio.addEventListener('play', () => { 
+          this.playBtn.textContent = '⏸'; 
+          this.updatePlayingRowUI(true);
+        });
+        this.audio.addEventListener('pause', () => { 
+          this.playBtn.textContent = '▶'; 
+          this.updatePlayingRowUI(false);
+        });
         this.audio.addEventListener('loadedmetadata', () => {
           this.timeDuration.textContent = this.formatTime(this.audio.duration || 0);
         });
@@ -3099,12 +3202,12 @@
 
         filteredAudios.forEach((audio, localIdx) => {
           const realIdx = this.driveAudios.indexOf(audio);
-          const isCurrent = (realIdx === this.currentAudioIndex && !this.audio.paused);
           const isSelected = (realIdx === this.currentAudioIndex);
+          const isPlaying = (isSelected && !this.audio.paused);
           const isChecked = this.selectedSongIds.has(audio.id);
 
           const tr = document.createElement('tr');
-          tr.className = 'sp-track-row ' + (isSelected ? 'active ' : '') + (isChecked ? 'checked ' : '');
+          tr.className = 'sp-track-row ' + (isPlaying ? 'is-playing active ' : (isSelected ? 'is-paused active ' : '')) + (isChecked ? 'checked ' : '');
           tr.setAttribute('draggable', 'true');
           tr.setAttribute('data-real-idx', realIdx);
           tr.setAttribute('data-song-id', audio.id);
@@ -3117,41 +3220,49 @@
             ? '<button class="row-remove-pl-btn" data-song-id="' + audio.id + '" title="從此清單移除">✕</button>' 
             : '';
 
-          tr.innerHTML = `
-            <td class="track-check-cell">
-              <input type="checkbox" class="song-checkbox" data-song-id="${audio.id}" ${isChecked ? 'checked' : ''}>
-            </td>
-            <td class="track-num-cell">
-              <div class="drag-handle-cell">
-                <span class="drag-handle" title="按住拖曳調整播放順序，或拖至上方歌單加歌">⠿</span>
-                <span>${isCurrent ? '<span style="color:var(--sp-green); animation: pulse 1s infinite;">🔊</span>' : (localIdx + 1)}</span>
-              </div>
-            </td>
-            <td>
-              <div class="track-title-cell">
-                <span class="track-icon-disk">🎵</span>
-                <div style="overflow: hidden;">
-                  <div style="font-weight: 600; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${audio.name}</div>
-                  <div style="font-size: 11px; color: var(--sp-light-gray); margin-top: 3px;">
-                    ${folderBadge} ${audio.fullPath || audio.name}
-                  </div>
-                </div>
-              </div>
-            </td>
-            <td class="track-source-cell">
-              Google Drive 雲端音樂
-            </td>
-            <td class="track-badge-cell">
-              <span class="track-status-pill ${isCurrent ? 'playing' : ''}">
-                ${isCurrent ? '🟢 播放中' : '⚪ 待播'}
-              </span>
-            </td>
-            <td class="track-action-cell">
-              <button class="row-play-btn" title="播放此歌曲">${isCurrent ? '⏸' : '▶'}</button>
-              <button class="row-add-pl-btn" data-song-id="${audio.id}" title="加入播放清單">➕</button>
-              ${removeBtnHTML}
-            </td>
-          `;
+          const eqOrNum = isPlaying 
+            ? '<div class="playing-eq-bars" title="正在播放中"><span></span><span></span><span></span><span></span></div>'
+            : (isSelected ? '<span style="color:#b3b3b3;">⏸</span>' : (localIdx + 1));
+
+          const statusText = isPlaying ? '🟢 正在播放' : (isSelected ? '⏸ 已暫停' : '⚪ 待播');
+          const statusClass = 'track-status-pill ' + (isPlaying ? 'playing' : '');
+          const diskIcon = isPlaying ? '💿' : '🎵';
+          const playBtnIcon = isPlaying ? '⏸' : '▶';
+
+          tr.innerHTML = 
+            '<td class="track-check-cell">' +
+              '<input type="checkbox" class="song-checkbox" data-song-id="' + audio.id + '" ' + (isChecked ? 'checked' : '') + '>' +
+            '</td>' +
+            '<td class="track-num-cell">' +
+              '<div class="drag-handle-cell">' +
+                '<span class="drag-handle" title="按住拖曳調整播放順序，或拖至上方歌單加歌">⠿</span>' +
+                '<span class="track-num-display">' + eqOrNum + '</span>' +
+              '</div>' +
+            '</td>' +
+            '<td>' +
+              '<div class="track-title-cell">' +
+                '<span class="track-icon-disk">' + diskIcon + '</span>' +
+                '<div style="overflow: hidden;">' +
+                  '<div class="track-title-text" style="text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">' + audio.name + '</div>' +
+                  '<div class="track-subtitle-text" style="font-size: 11px; margin-top: 3px;">' +
+                    folderBadge + ' ' + (audio.fullPath || audio.name) +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+            '</td>' +
+            '<td class="track-source-cell">' +
+              'Google Drive 雲端音樂' +
+            '</td>' +
+            '<td class="track-badge-cell">' +
+              '<span class="' + statusClass + '">' +
+                statusText +
+              '</span>' +
+            '</td>' +
+            '<td class="track-action-cell">' +
+              '<button class="row-play-btn" title="播放此歌曲">' + playBtnIcon + '</button>' +
+              '<button class="row-add-pl-btn" data-song-id="' + audio.id + '" title="加入播放清單">➕</button>' +
+              removeBtnHTML +
+            '</td>';
 
           // Checkbox event
           const cb = tr.querySelector('.song-checkbox');
@@ -3302,9 +3413,10 @@
 
         list.forEach((audio) => {
           const realIdx = this.driveAudios.indexOf(audio);
-          const isCurrent = (realIdx === this.currentAudioIndex);
+          const isSelected = (realIdx === this.currentAudioIndex);
+          const isPlaying = (isSelected && !this.audio.paused);
           const item = document.createElement('div');
-          item.className = `queue-item ${isCurrent ? 'current' : ''}`;
+          item.className = 'queue-item ' + (isPlaying ? 'is-playing current' : (isSelected ? 'is-paused current' : ''));
           item.setAttribute('draggable', 'true');
           item.setAttribute('data-real-idx', realIdx);
 
@@ -3312,20 +3424,22 @@
             ? '<span class="badge-folder badge-kline" style="font-size:10px;padding:1px 6px;">📈 KLine</span>'
             : '<span class="badge-folder badge-ev" style="font-size:10px;padding:1px 6px;">📘 Englishvoice</span>';
 
-          item.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1;">
-              <span class="drag-handle" title="按住拖曳排序" style="font-size:14px; opacity:0.5;">⠿</span>
-              <span style="font-family: var(--font-mono); color: var(--sp-light-gray); width: 22px;">${realIdx + 1}.</span>
-              <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                <div style="font-weight: 600; font-size: 13px; color: ${isCurrent ? 'var(--sp-green)' : 'var(--sp-white)'};">${audio.name}</div>
-                <div style="font-size: 11px; margin-top: 2px;">${folderBadge}</div>
-              </div>
-            </div>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <span style="font-size: 11px; opacity: 0.8;">${isCurrent ? '🟢 正在播放' : '待播'}</span>
-              <span style="font-size: 14px;">${isCurrent ? '🔊' : '▶'}</span>
-            </div>
-          `;
+          const queueStatus = isPlaying ? '🟢 正在播放' : (isSelected ? '⏸ 已暫停' : '待播');
+          const queueIcon = isPlaying ? '<span style="color:#1ed760; font-weight:800;">🔊</span>' : (isSelected ? '⏸' : '▶');
+
+          item.innerHTML = 
+            '<div style="display: flex; align-items: center; gap: 8px; overflow: hidden; flex: 1;">' +
+              '<span class="drag-handle" title="按住拖曳排序" style="font-size:14px; opacity:0.5;">⠿</span>' +
+              '<span style="font-family: var(--font-mono); color: var(--sp-light-gray); width: 22px;">' + (realIdx + 1) + '.</span>' +
+              '<div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">' +
+                '<div class="queue-title-text" style="font-size: 13px;">' + audio.name + '</div>' +
+                '<div style="font-size: 11px; margin-top: 2px;">' + folderBadge + '</div>' +
+              '</div>' +
+            '</div>' +
+            '<div style="display: flex; align-items: center; gap: 8px;">' +
+              '<span class="queue-status-text" style="font-size: 11px; opacity: 0.9;">' + queueStatus + '</span>' +
+              '<span class="queue-icon-display" style="font-size: 14px;">' + queueIcon + '</span>' +
+            '</div>';
 
           item.addEventListener('click', (e) => {
             if (e.target.closest('.drag-handle')) return;
@@ -3382,6 +3496,98 @@
 
           this.queueListContainer.appendChild(item);
         });
+      }
+
+      // ==================== 正在唱的歌 即時色彩與動態狀態更新 ====================
+      updatePlayingRowUI(isPlaying) {
+        // 1. 即時更新 Spotify 歌曲表格 (正在唱的歌出顯眼高亮主題)
+        document.querySelectorAll('.sp-track-row').forEach((row) => {
+          const rIdx = parseInt(row.getAttribute('data-real-idx'), 10);
+          const isThisTrack = (rIdx === this.currentAudioIndex);
+          const pill = row.querySelector('.track-status-pill');
+          const playBtn = row.querySelector('.row-play-btn');
+          const disk = row.querySelector('.track-icon-disk');
+          const numDisplay = row.querySelector('.track-num-display');
+
+          if (isThisTrack) {
+            row.classList.add('active');
+            if (isPlaying) {
+              row.classList.add('is-playing');
+              row.classList.remove('is-paused');
+              if (pill) {
+                pill.className = 'track-status-pill playing';
+                pill.textContent = '🟢 正在播放';
+              }
+              if (playBtn) playBtn.textContent = '⏸';
+              if (disk) disk.textContent = '💿';
+              if (numDisplay) {
+                numDisplay.innerHTML = '<div class="playing-eq-bars" title="正在播放中"><span></span><span></span><span></span><span></span></div>';
+              }
+            } else {
+              row.classList.remove('is-playing');
+              row.classList.add('is-paused');
+              if (pill) {
+                pill.className = 'track-status-pill';
+                pill.textContent = '⏸ 已暫停';
+              }
+              if (playBtn) playBtn.textContent = '▶';
+              if (disk) disk.textContent = '🎵';
+              if (numDisplay) {
+                numDisplay.innerHTML = '<span style="color:#b3b3b3;">⏸</span>';
+              }
+            }
+          } else {
+            row.classList.remove('active', 'is-playing', 'is-paused');
+            if (pill) {
+              pill.className = 'track-status-pill';
+              pill.textContent = '⚪ 待播';
+            }
+            if (playBtn) playBtn.textContent = '▶';
+            if (disk) disk.textContent = '🎵';
+            if (numDisplay && numDisplay.querySelector('.playing-eq-bars')) {
+              const originalNum = row.rowIndex ? row.rowIndex : '';
+              if (originalNum) numDisplay.textContent = originalNum;
+            }
+          }
+        });
+
+        // 2. 即時更新播放清單抽屜 (Queue Drawer)
+        document.querySelectorAll('.queue-item').forEach((item) => {
+          const rIdx = parseInt(item.getAttribute('data-real-idx'), 10);
+          const isThisTrack = (rIdx === this.currentAudioIndex);
+          const statusSpan = item.querySelector('.queue-status-text');
+          const iconSpan = item.querySelector('.queue-icon-display');
+
+          if (isThisTrack) {
+            item.classList.add('current');
+            if (isPlaying) {
+              item.classList.add('is-playing');
+              item.classList.remove('is-paused');
+              if (statusSpan) statusSpan.textContent = '🟢 正在播放';
+              if (iconSpan) iconSpan.innerHTML = '<span style="color:#1ed760; font-weight:800;">🔊</span>';
+            } else {
+              item.classList.remove('is-playing');
+              item.classList.add('is-paused');
+              if (statusSpan) statusSpan.textContent = '⏸ 已暫停';
+              if (iconSpan) iconSpan.textContent = '⏸';
+            }
+          } else {
+            item.classList.remove('current', 'is-playing', 'is-paused');
+            if (statusSpan) statusSpan.textContent = '待播';
+            if (iconSpan) iconSpan.textContent = '▶';
+          }
+        });
+
+        // 3. 底部播放列歌名同步微亮
+        if (this.barTitle && this.currentAudioIndex >= 0 && this.driveAudios[this.currentAudioIndex]) {
+          if (isPlaying) {
+            this.barTitle.style.color = '#1ed760';
+            this.barTitle.style.textShadow = '0 0 10px rgba(30, 215, 96, 0.5)';
+          } else {
+            this.barTitle.style.color = 'var(--sp-white)';
+            this.barTitle.style.textShadow = 'none';
+          }
+        }
       }
 
       // ==================== REORDERING LOGIC & PERSISTENCE ====================
@@ -3580,6 +3786,7 @@
         this.barTitle.textContent = '⏳ 正在載入: ' + track.name;
         this.barArtist.textContent = (track.folder || 'Google Drive') + ' 雲端音樂串流';
         this.audio.src = '';
+        this.updatePlayingRowUI(true);
 
         // 1. 本機或外部直連 URL
         if (track.url) {
