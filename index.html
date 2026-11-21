@@ -2158,7 +2158,7 @@
           idx = (idx + 1) % speeds.length;
           this.playbackSpeed = speeds[idx];
           this.audio.playbackRate = this.playbackSpeed;
-          this.speedIndicator.textContent = `🐢 ${this.playbackSpeed}x`;
+          this.speedIndicator.textContent = '🐢 ' + this.playbackSpeed + 'x';
         });
 
         this.vtToggleZhBtn.addEventListener('click', () => {
@@ -2455,7 +2455,7 @@
 
         // Update Bottom Player Bar Status
         if (this.driveAudios.length > 0) {
-          this.barTitle.textContent = `🎵 雲端音樂已就緒 (共 ${this.driveAudios.length} 首)`;
+          this.barTitle.textContent = '🎵 雲端音樂已就緒 (共 ' + this.driveAudios.length + ' 首)';
           this.barArtist.textContent = '點擊「Spotify 音樂館」可依 Englishvoice / KLine 切換播放';
         }
 
@@ -2482,9 +2482,9 @@
           filtered.forEach((art) => {
             const opt = document.createElement('option');
             const realIdx = this.driveArticles.indexOf(art);
-            opt.value = `drive_art_${realIdx}`;
+            opt.value = 'drive_art_' + realIdx;
             const badge = art.folder === 'KLine' ? '📈 [KLine]' : '📘 [Englishvoice]';
-            opt.textContent = `${badge} ${art.name}`;
+            opt.textContent = badge + ' ' + art.name;
             this.lessonSelector.appendChild(opt);
           });
           // Load first article of category
@@ -2518,7 +2518,7 @@
           } else if (folder === 'Englishvoice') {
             this.musicSearchInput.placeholder = '在 Englishvoice 音樂庫中搜尋...';
           } else {
-            this.musicSearchInput.placeholder = `在全部 ${this.driveAudios.length} 首雲端音樂中搜尋...`;
+            this.musicSearchInput.placeholder = '在全部 ' + this.driveAudios.length + ' 首雲端音樂中搜尋...';
           }
         }
 
@@ -2778,7 +2778,7 @@
         this.renderSpotifyMusicTable();
 
         // Toast feedback
-        this.showToast(`🖐️ 已調整順序：移至第 ${finalTargetIdx + 1} 首`);
+        this.showToast('🖐️ 已調整順序：移至第 ' + (finalTargetIdx + 1) + ' 首');
       }
 
       saveCustomMusicOrder() {
@@ -2924,8 +2924,8 @@
         this.currentAudioIndex = index;
         const track = this.driveAudios[index];
 
-        this.barTitle.textContent = `⏳ 正在載入: ${track.name}`;
-        this.barArtist.textContent = `${track.folder || 'Google Drive'} 雲端音樂串流`;
+        this.barTitle.textContent = '⏳ 正在載入: ' + track.name;
+        this.barArtist.textContent = (track.folder || 'Google Drive') + ' 雲端音樂串流';
         this.audio.src = '';
 
         // 1. 本機或外部直連 URL
@@ -2938,7 +2938,7 @@
         }
 
         // 2. Google Drive 直接串流 URL (附帶 confirm=t 繞過大檔病毒警告確認頁)
-        const directStreamUrl = `https://drive.google.com/uc?export=download&id=${track.id}&confirm=t`;
+        const directStreamUrl = 'https://drive.google.com/uc?export=download&id=' + track.id + '&confirm=t';
 
         // 3. 若為大檔案 (例如 79.6MB)
         if (track.isLarge) {
@@ -3050,13 +3050,13 @@
             })
             .saveArticleToDrive(name, content, targetFolder);
         } else {
-          alert(`已在預覽模式下模擬儲存至「${targetFolder}」資料夾！`);
+          alert('已在預覽模式下模擬儲存至「' + targetFolder + '」資料夾！');
           this.saveArticleDriveBtn.textContent = '儲存到雲端硬碟';
           this.saveArticleDriveBtn.disabled = false;
           this.driveArticles.unshift({
             id: 'local_' + Date.now(),
             name: name,
-            fullName: `${targetFolder} / ${name}.txt`,
+            fullName: targetFolder + ' / ' + name + '.txt',
             content: content,
             folder: targetFolder
           });
@@ -3381,7 +3381,7 @@
           el.classList.add('saved');
         });
 
-        alert(`🎉 已成功建立生字卡「${item.word}」！\n📌 自動收錄例句：\n"${item.example_en}"`);
+        alert('🎉 已成功建立生字卡「' + item.word + '」！\n📌 自動收錄例句：\n"' + item.example_en + '"');
         this.closeDict();
         this.renderFlashcard();
       }
@@ -3675,7 +3675,7 @@
         this.barCover.src = `https://img.youtube.com/vi/${this.currentAnalyzedYtId}/hqdefault.jpg`;
 
         // Switch to Invidious audio stream or play sound
-        alert(`已載入「${title}」！\n若需永久保存至 Google Drive，請點擊【下載 320kbps MP3】或使用本機【YouTube轉320k音樂.bat】！`);
+        alert('已載入「' + title + '」！\n若需永久保存至 Google Drive，請點擊【下載 320kbps MP3】或使用本機【YouTube轉320k音樂.bat】！');
       }
 
       initShadowing() {
@@ -3707,7 +3707,7 @@
 
         recognition.onresult = (e) => {
           const transcript = Array.from(e.results).map((r) => r[0].transcript).join('');
-          this.shadowResult.textContent = `您的發音: "${transcript}"`;
+          this.shadowResult.textContent = '您的發音: "' + transcript + '"';
 
           const target = (this.currentArticleSentences[this.activeSentenceIndex]?.en || '').toLowerCase().replace(/[^a-z0-9\s]/g, '');
           const user = transcript.toLowerCase().replace(/[^a-z0-9\s]/g, '');
@@ -3717,7 +3717,7 @@
           const matched = targetWords.filter((w) => userWords.includes(w)).length;
           const score = Math.round((matched / Math.max(1, targetWords.length)) * 100);
 
-          this.shadowScore.textContent = `準確度: ${score}%`;
+          this.shadowScore.textContent = '準確度: ' + score + '%';
           this.shadowScore.classList.toggle('good', score >= 75);
         };
 
