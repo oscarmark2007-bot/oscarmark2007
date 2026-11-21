@@ -1,0 +1,23 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Local binaries & tools
+ffmpeg.exe
+ffprobe.exe
+
+# Node modules & logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS metadata
+Thumbs.db
+.DS_Store
+
+# Temporary scripts
+test_*.js
+check_*.py
+tmp/
