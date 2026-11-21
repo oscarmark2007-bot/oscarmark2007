@@ -1027,12 +1027,121 @@
       .vt-layout { grid-template-columns: 1fr; }
     }
   
-    /* ==================== 4.1 SPOTIFY DETAILED TRACK TABLE ==================== */
+    /* ==================== 4.1 SPOTIFY 雙欄式版面 (左側音樂庫清單 + 右側直式搜尋與分類歌單) ==================== */
+    .sp-main-layout {
+      display: grid;
+      grid-template-columns: 1fr 280px;
+      gap: 24px;
+      align-items: start;
+      margin-top: 10px;
+    }
+    .sp-table-column {
+      min-width: 0;
+    }
+    .sp-right-panel {
+      background: #181818;
+      border: 1px solid var(--sp-border);
+      border-radius: 16px;
+      padding: 18px 16px;
+      position: sticky;
+      top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    }
+    .sp-right-panel-header {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--sp-light-gray);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px 6px 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .folder-pills-vertical {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+    .folder-pills-vertical .folder-pill {
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+      text-align: left;
+    }
+    .folder-pills-vertical .folder-pill.active {
+      background: var(--sp-green);
+      color: #000;
+      box-shadow: 0 4px 16px var(--sp-green-glow);
+    }
+    .folder-pills-vertical .folder-pill.kline-pill.active {
+      background: #06b6d4;
+      color: #000;
+      box-shadow: 0 4px 16px rgba(6, 182, 212, 0.4);
+    }
+    .custom-playlist-vertical-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+    .custom-playlist-vertical-wrap .folder-pill {
+      width: 100%;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      font-weight: 700;
+    }
+    .sp-right-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 4px 0;
+    }
+    .pill-badge {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      opacity: 0.85;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.12);
+    }
+    .folder-pill.active .pill-badge {
+      background: rgba(0, 0, 0, 0.25);
+      color: #000;
+      font-weight: 800;
+    }
+
+    @media (max-width: 1100px) {
+      .sp-main-layout {
+        grid-template-columns: 1fr;
+      }
+      .sp-right-panel {
+        position: static;
+        order: -1;
+      }
+    }
+
+    /* ==================== 4.2 SPOTIFY DETAILED TRACK TABLE ==================== */
     .sp-table-toolbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 18px 0 14px 0;
+      margin: 0 0 14px 0;
       flex-wrap: wrap;
       gap: 12px;
     }
@@ -1043,8 +1152,15 @@
       background: rgba(255, 255, 255, 0.08);
       border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 20px;
-      padding: 6px 14px;
-      width: 280px;
+      padding: 8px 14px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+    .sp-search-box:focus-within {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--sp-green);
+      box-shadow: 0 0 12px var(--sp-green-glow);
     }
     .sp-search-box input {
       background: transparent;
@@ -1945,85 +2061,124 @@
           <p>Google Drive 專屬雲端音樂庫 ＆ Spotify 質感沉浸播放館。</p>
         </div>
 
-        <!-- Folder Category Filter for Spotify Music & Custom Playlists -->
-        <div class="folder-pills-row" id="music-folder-pills" style="margin-bottom: 12px;">
-          <button class="folder-pill active" data-music-folder="all">🎵 全部歌曲 (<span id="music-count-all">0</span>)</button>
-          <button class="folder-pill" data-music-folder="Englishvoice">📘 Englishvoice (<span id="music-count-ev">0</span>)</button>
-          <button class="folder-pill kline-pill" data-music-folder="KLine">📈 KLine (<span id="music-count-kline">0</span>)</button>
-          <span id="custom-playlist-pills-wrap" style="display:inline-flex; gap:8px;"></span>
-          <button class="folder-pill add-playlist-btn" id="create-playlist-btn" title="建立專屬播放清單 (可在螢幕上拖曳多首歌曲組成)">➕ 新增歌單</button>
-        </div>
-
-        <!-- Active Playlist Header / Toolbar -->
-        <div class="playlist-toolbar" id="active-playlist-toolbar" style="display: none;">
-          <div class="playlist-toolbar-info">
-            <span class="playlist-toolbar-title" id="active-pl-title">📜 播放清單</span>
-            <span style="font-size: 13px; color: var(--sp-light-gray);" id="active-pl-count-text">0 首歌曲</span>
-          </div>
-          <div class="playlist-toolbar-actions">
-            <button class="vt-btn gold" id="play-active-pl-btn" style="font-weight: 700;">▶ 播放此歌單</button>
-            <button class="vt-btn" id="rename-active-pl-btn" style="font-size: 12px; padding: 6px 12px;">✏️ 重新命名</button>
-            <button class="vt-btn" id="delete-active-pl-btn" style="font-size: 12px; padding: 6px 12px; color: var(--danger);">🗑️ 刪除歌單</button>
-            <button class="vt-btn" id="back-all-songs-btn" style="font-size: 12px; padding: 6px 12px;">返回全部 ✕</button>
-          </div>
-        </div>
-
-        <!-- Dedicated Playlist Drop Zone Banner -->
-        <div class="playlist-drop-zone" id="playlist-drop-zone" style="display: none;">
-          <span>📥</span>
-          <span>按住歌曲左側 <strong>⠿</strong> 拖曳至此（或直接拖曳至上方歌單按鈕），立即為此清單增歌！</span>
-        </div>
-
-        <!-- Toolbar: Search & Queue Controls -->
-        <div class="sp-table-toolbar">
-          <div class="sp-search-box">
-            <span>🔍</span>
-            <input type="text" id="music-search-input" placeholder="在 73 首雲端音樂中搜尋歌曲名稱...">
-          </div>
-          <div class="sp-view-toggle-btns">
-            <button class="vt-btn" id="reset-order-btn" title="按住每首歌曲左側 ⠿ 即可上下拖曳自訂順序，點此可恢復雲端預設排序" style="font-size: 12px; border-radius: 20px; padding: 6px 14px;">
-              🔄 重設排序
-            </button>
-            <button class="vt-btn gold" id="toggle-queue-btn" style="font-weight: 700; border-radius: 20px; padding: 8px 18px;">
-              📜 現正播放清單 (Playing List)
-            </button>
-            <div id="batch-actions-bar" class="batch-actions-bar">
-              <span id="batch-selected-count">已勾選 0 首</span>
-              <button class="vt-btn gold" id="batch-add-btn" style="padding: 4px 12px; font-size: 12px;">➕ 加入歌單...</button>
-              <button class="vt-btn" id="batch-clear-btn" style="padding: 4px 10px; font-size: 12px;">取消</button>
+        <!-- Spotify 雙欄式版面：左側歌曲清單，右側直式搜尋與分類歌單 (成直的) -->
+        <div class="sp-main-layout">
+          <!-- 左欄：播放清單橫條、佇列抽屜、操作工具列、詳細歌曲表格 -->
+          <div class="sp-table-column">
+            <!-- Active Playlist Header / Toolbar -->
+            <div class="playlist-toolbar" id="active-playlist-toolbar" style="display: none;">
+              <div class="playlist-toolbar-info">
+                <span class="playlist-toolbar-title" id="active-pl-title">📜 播放清單</span>
+                <span style="font-size: 13px; color: var(--sp-light-gray);" id="active-pl-count-text">0 首歌曲</span>
+              </div>
+              <div class="playlist-toolbar-actions">
+                <button class="vt-btn gold" id="play-active-pl-btn" style="font-weight: 700;">▶ 播放此歌單</button>
+                <button class="vt-btn" id="rename-active-pl-btn" style="font-size: 12px; padding: 6px 12px;">✏️ 重新命名</button>
+                <button class="vt-btn" id="delete-active-pl-btn" style="font-size: 12px; padding: 6px 12px; color: var(--danger);">🗑️ 刪除歌單</button>
+                <button class="vt-btn" id="back-all-songs-btn" style="font-size: 12px; padding: 6px 12px;">返回全部 ✕</button>
+              </div>
             </div>
-            <span style="font-size: 12px; color: var(--sp-light-gray);">🖐️ 按住 ⠿ 拖曳自訂排序 / 拖至歌單加入</span>
-          </div>
-        </div>
 
-        <!-- 播放清單抽屜 (Playing List Queue Drawer) -->
-        <div class="queue-drawer" id="queue-drawer">
-          <div class="queue-header">
-            <div class="queue-title">📜 現正播放清單 (Playing List & Queue)</div>
-            <button class="vt-btn" id="close-queue-btn" style="padding: 4px 10px; font-size: 12px;">關閉清單 ✕</button>
-          </div>
-          <div class="queue-list" id="queue-list-container">
-            <!-- Dynamically populated -->
-          </div>
-        </div>
+            <!-- Dedicated Playlist Drop Zone Banner -->
+            <div class="playlist-drop-zone" id="playlist-drop-zone" style="display: none;">
+              <span>📥</span>
+              <span>按住歌曲左側 <strong>⠿</strong> 拖曳至此（或直接拖至右側歌單），立即為此清單增歌！</span>
+            </div>
 
-        <!-- 詳細列表 (Detailed Track Table) -->
-        <div class="sp-table-wrap">
-          <table class="sp-track-table">
-            <thead>
-              <tr>
-                <th class="track-check-cell"><input type="checkbox" id="select-all-songs" title="全選/取消全選"></th>
-                <th class="track-num-cell">#</th>
-                <th>歌曲名稱 (Track Title)</th>
-                <th>來源 (Storage)</th>
-                <th class="track-badge-cell">播放狀態</th>
-                <th class="track-action-cell">操作</th>
-              </tr>
-            </thead>
-            <tbody id="drive-music-table-body">
-              <!-- Dynamically populated rows -->
-            </tbody>
-          </table>
+            <!-- Toolbar: Controls for Table (重設排序、現正播放清單、批次操作) -->
+            <div class="sp-table-toolbar">
+              <div class="sp-view-toggle-btns" style="width: 100%; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <button class="vt-btn" id="reset-order-btn" title="按住每首歌曲左側 ⠿ 即可上下拖曳自訂順序，點此可恢復雲端預設排序" style="font-size: 12px; border-radius: 20px; padding: 6px 14px;">
+                    🔄 重設排序
+                  </button>
+                  <button class="vt-btn gold" id="toggle-queue-btn" style="font-weight: 700; border-radius: 20px; padding: 8px 18px;">
+                    📜 現正播放清單 (Playing List)
+                  </button>
+                  <div id="batch-actions-bar" class="batch-actions-bar">
+                    <span id="batch-selected-count">已勾選 0 首</span>
+                    <button class="vt-btn gold" id="batch-add-btn" style="padding: 4px 12px; font-size: 12px;">➕ 加入歌單...</button>
+                    <button class="vt-btn" id="batch-clear-btn" style="padding: 4px 10px; font-size: 12px;">取消</button>
+                  </div>
+                </div>
+                <span style="font-size: 12px; color: var(--sp-light-gray);">🖐️ 按住 ⠿ 拖曳自訂排序 / 拖至右側歌單加入</span>
+              </div>
+            </div>
+
+            <!-- 播放清單抽屜 (Playing List Queue Drawer) -->
+            <div class="queue-drawer" id="queue-drawer">
+              <div class="queue-header">
+                <div class="queue-title">📜 現正播放清單 (Playing List & Queue)</div>
+                <button class="vt-btn" id="close-queue-btn" style="padding: 4px 10px; font-size: 12px;">關閉清單 ✕</button>
+              </div>
+              <div class="queue-list" id="queue-list-container">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- 詳細列表 (Detailed Track Table - 移除「來源」欄位) -->
+            <div class="sp-table-wrap">
+              <table class="sp-track-table">
+                <thead>
+                  <tr>
+                    <th class="track-check-cell"><input type="checkbox" id="select-all-songs" title="全選/取消全選"></th>
+                    <th class="track-num-cell">#</th>
+                    <th>歌曲名稱 (Track Title)</th>
+                    <!-- 「來源 (Storage)」欄位已依要求移除 -->
+                    <th class="track-badge-cell">播放狀態</th>
+                    <th class="track-action-cell">操作</th>
+                  </tr>
+                </thead>
+                <tbody id="drive-music-table-body">
+                  <!-- Dynamically populated rows -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 右欄：直式搜尋 + 全部歌曲分類/自訂歌單 (成直的) -->
+          <aside class="sp-right-panel">
+            <!-- 搜尋欄 (移到右邊垂直最頂部) -->
+            <div class="sp-search-box">
+              <span>🔍</span>
+              <input type="text" id="music-search-input" placeholder="在歌曲中搜尋...">
+            </div>
+
+            <!-- 直式分類與歌單標題 -->
+            <div class="sp-right-panel-header">
+              <span>📁 音樂庫分類</span>
+            </div>
+
+            <!-- "全部歌曲" + 各目錄分類 (成直的) -->
+            <div class="folder-pills-vertical" id="music-folder-pills">
+              <button class="folder-pill active" data-music-folder="all">
+                <span>🎵 全部歌曲</span>
+                <span class="pill-badge" id="music-count-all">0</span>
+              </button>
+              <button class="folder-pill" data-music-folder="Englishvoice">
+                <span>📘 Englishvoice</span>
+                <span class="pill-badge" id="music-count-ev">0</span>
+              </button>
+              <button class="folder-pill kline-pill" data-music-folder="KLine">
+                <span>📈 KLine</span>
+                <span class="pill-badge" id="music-count-kline">0</span>
+              </button>
+
+              <div class="sp-right-divider"></div>
+              <div style="font-size: 11px; font-weight: 700; color: var(--vt-gold); text-transform: uppercase; padding: 2px 4px; display: flex; align-items: center; justify-content: space-between;">
+                <span>⭐ 自訂播放清單</span>
+                <span style="font-size: 10px; opacity: 0.7;">(支援拖曳加歌)</span>
+              </div>
+
+              <!-- 自訂歌單 (成直的列表，支援拖曳歌曲加歌) -->
+              <div id="custom-playlist-pills-wrap" class="custom-playlist-vertical-wrap"></div>
+
+              <!-- 新增歌單按鈕 (成直的) -->
+              <button class="folder-pill add-playlist-btn" id="create-playlist-btn" title="建立專屬播放清單 (可直接將歌曲拖曳至此處)">
+                <span>➕ 新增播放清單</span>
+              </button>
+            </div>
+          </aside>
         </div>
 
         <!-- Spotify Synchronized Lyrics Mode -->
@@ -2523,10 +2678,18 @@
           musicPillsContainer.addEventListener('click', (e) => {
             const pill = e.target.closest('.folder-pill');
             if (!pill) return;
+            if (pill.id === 'create-playlist-btn') return;
+            if (pill.hasAttribute('data-pl-id')) {
+              this.selectPlaylist(pill.getAttribute('data-pl-id'));
+              return;
+            }
             const allPills = musicPillsContainer.querySelectorAll('.folder-pill');
             allPills.forEach(p => p.classList.remove('active'));
             pill.classList.add('active');
             this.activeMusicFolder = pill.getAttribute('data-music-folder') || 'all';
+            this.activePlaylistId = null;
+            if (this.activePlaylistToolbar) this.activePlaylistToolbar.style.display = 'none';
+            if (this.playlistDropZone) this.playlistDropZone.style.display = 'none';
             this.renderSpotifyMusicTable();
           });
         }
@@ -2877,7 +3040,12 @@
           btn.className = 'folder-pill playlist-pill ' + (isActive ? 'active' : '');
           btn.setAttribute('data-pl-id', pl.id);
           btn.title = '點擊檢視歌單，或按住歌曲左側 ⠿ 拖曳至此直接加入！';
-          btn.innerHTML = pl.name + ' (<span class="pl-count">' + count + '</span>)';
+          btn.innerHTML = '<span>' + pl.name + '</span> <span class="pl-count pill-badge">' + count + '</span>';
+
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.selectPlaylist(pl.id);
+          });
 
           // Drag-and-drop song into this playlist pill
           btn.addEventListener('dragover', (e) => {
@@ -3194,7 +3362,7 @@
           } else if (folder.toLowerCase() === 'kline') {
             emptyMsg = '📈 <strong>KLine 資料夾目前尚無音檔</strong><br><span style="font-size:12px;color:rgba(255,255,255,0.5);display:inline-block;margin-top:6px;">請將 MP3 音樂放入 Google Drive 中的「KLine」資料夾，點擊「重新掃描雲端」即可同步！</span>';
           }
-          emptyTr.innerHTML = '<td colspan="6" style="text-align: center; padding: 40px 20px; color: var(--sp-light-gray);">' + emptyMsg + '</td>';
+          emptyTr.innerHTML = '<td colspan="5" style="text-align: center; padding: 40px 20px; color: var(--sp-light-gray);">' + emptyMsg + '</td>';
           this.musicTableBody.appendChild(emptyTr);
           this.renderQueueDrawerList(filteredAudios);
           return;
@@ -3249,9 +3417,6 @@
                   '</div>' +
                 '</div>' +
               '</div>' +
-            '</td>' +
-            '<td class="track-source-cell">' +
-              'Google Drive 雲端音樂' +
             '</td>' +
             '<td class="track-badge-cell">' +
               '<span class="' + statusClass + '">' +
