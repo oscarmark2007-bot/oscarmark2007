@@ -1946,10 +1946,10 @@
         this.activeArticleFolder = 'all';
         this.activeMusicFolder = 'all';
 
-        this.initDOM();
-        this.initEvents();
-        this.loadVocabFromStorage();
-        this.loadDriveAssets();
+        try { this.initDOM(); } catch(e) { console.error('initDOM err:', e); }
+        try { this.initEvents(); } catch(e) { console.error('initEvents err:', e); }
+        try { this.loadVocabFromStorage(); } catch(e) { console.error('loadVocab err:', e); }
+        try { this.loadDriveAssets(); } catch(e) { console.error('loadDriveAssets err:', e); }
       }
 
       initDOM() {
@@ -2083,7 +2083,7 @@
         this.navItems.forEach((btn) => {
           btn.addEventListener('click', () => this.switchView(btn.getAttribute('data-view')));
         });
-        this.jumpToFcBtn.addEventListener('click', () => this.switchView('flashcards-view'));
+        if (this.jumpToFcBtn) this.jumpToFcBtn.addEventListener('click', () => this.switchView('flashcards-view'));
 
         // Bottom Player
         this.audio.addEventListener('timeupdate', () => this.onTimeUpdate());
@@ -2258,47 +2258,56 @@
         if (this.ytPreviewPlayBtn) {
           this.ytPreviewPlayBtn.addEventListener('click', () => this.playYouTubeAudioInBar());
         }
-        this.prevBtn.addEventListener('click', () => this.jumpSentence(-1));
-        this.nextBtn.addEventListener('click', () => this.jumpSentence(1));
+        // (Duplicate jump listeners removed to prevent event conflict)
 
         // Popups
-        this.dictCloseBtn.addEventListener('click', () => this.closeDict());
-        this.dictBackdrop.addEventListener('click', () => this.closeDict());
-        this.dictVoiceBtn.addEventListener('click', () => this.speak(this.dictTitle.textContent));
+        if (this.dictCloseBtn) this.dictCloseBtn.addEventListener('click', () => this.closeDict());
+        if (this.dictBackdrop) this.dictBackdrop.addEventListener('click', () => this.closeDict());
+        if (this.dictVoiceBtn) this.dictVoiceBtn.addEventListener('click', () => this.speak(this.dictTitle ? this.dictTitle.textContent : ''));
 
-        this.dictSaveBtn.addEventListener('click', () => {
-          const item = {
-            word: this.dictTitle.textContent,
-            phonetic: this.dictPhonetic.textContent,
-            meaning: this.dictMeaning.textContent,
-            example_en: this.currentExampleEn || this.dictContext.textContent,
-            example_zh: this.currentExampleZh || ''
-          };
-          this.saveWord(item);
-        });
+        if (this.dictSaveBtn) {
+          this.dictSaveBtn.addEventListener('click', () => {
+            const item = {
+              word: this.dictTitle ? this.dictTitle.textContent : '',
+              phonetic: this.dictPhonetic ? this.dictPhonetic.textContent : '',
+              meaning: this.dictMeaning ? this.dictMeaning.textContent : '',
+              example_en: this.currentExampleEn || (this.dictContext ? this.dictContext.textContent : ''),
+              example_zh: this.currentExampleZh || ''
+            };
+            this.saveWord(item);
+          });
+        }
 
-        this.initTextSelection();
+        try { this.initTextSelection(); } catch(e) { console.warn('initTextSelection err:', e); }
 
         // Flashcards 3D
-        this.activeFcCard.addEventListener('click', () => this.flipFlashcard());
-        this.fcFlipBtn.addEventListener('click', () => this.flipFlashcard());
-        this.fcPrevBtn.addEventListener('click', () => this.jumpFlashcard(-1));
-        this.fcNextBtn.addEventListener('click', () => this.jumpFlashcard(1));
-        this.fcMasterBtn.addEventListener('click', () => this.toggleMasterActiveCard());
+        if (this.activeFcCard) this.activeFcCard.addEventListener('click', () => this.flipFlashcard());
+        if (this.fcFlipBtn) this.fcFlipBtn.addEventListener('click', () => this.flipFlashcard());
+        if (this.fcPrevBtn) this.fcPrevBtn.addEventListener('click', () => this.jumpFlashcard(-1));
+        if (this.fcNextBtn) this.fcNextBtn.addEventListener('click', () => this.jumpFlashcard(1));
+        if (this.fcMasterBtn) this.fcMasterBtn.addEventListener('click', () => this.toggleMasterActiveCard());
 
-        this.fcSpeakWordBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.speak(this.fcWordFront.textContent);
-        });
-        this.fcSpeakWordBackBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          this.speak(this.fcWordFront.textContent);
-        });
-        this.fcSpeakExampleBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const cleanText = this.fcExampleEnBack.textContent.replace(/["”]/g, '');
-          this.speak(cleanText);
-        });
+        if (this.fcSpeakWordBtn) {
+          this.fcSpeakWordBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (this.fcWordFront) this.speak(this.fcWordFront.textContent);
+          });
+        }
+        if (this.fcSpeakWordBackBtn) {
+          this.fcSpeakWordBackBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (this.fcWordFront) this.speak(this.fcWordFront.textContent);
+          });
+        }
+        if (this.fcSpeakExampleBtn) {
+          this.fcSpeakExampleBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (this.fcExampleEnBack) {
+              const cleanText = this.fcExampleEnBack.textContent.replace(/["”]/g, '');
+              this.speak(cleanText);
+            }
+          });
+        }
 
         window.addEventListener('keydown', (e) => {
           if (e.code === 'Space' && document.getElementById('flashcards-view').classList.contains('active')) {
@@ -2308,8 +2317,10 @@
         });
 
         this.initShadowing();
-        document.getElementById('export-csv-btn').addEventListener('click', () => this.exportAnkiCSV());
-        document.getElementById('clear-vault-btn').addEventListener('click', () => {
+        const expBtn = document.getElementById('export-csv-btn');
+        if (expBtn) expBtn.addEventListener('click', () => this.exportAnkiCSV());
+        const clrBtn = document.getElementById('clear-vault-btn');
+        if (clrBtn) clrBtn.addEventListener('click', () => {
           if (confirm('確定要清空所有收藏的生字卡嗎？')) {
             this.vocab = [];
             this.syncVocabToStorage();
@@ -2331,19 +2342,48 @@
       // ==================== GOOGLE DRIVE ASSET LOADER ====================
 
       loadDriveAssets() {
-        this.driveStatsText.innerHTML = '⏳ 正在掃描雲端硬碟 (English_voice ＆ KLine)...';
+        if (this.driveStatsText) {
+          this.driveStatsText.innerHTML = '<span style="color:var(--sp-green); animation: pulse 1.5s infinite;">⏳ 正在連線雲端硬碟 (English_voice ＆ KLine)...</span>';
+        }
 
-        if (typeof google !== 'undefined' && google.script && google.script.run) {
-          google.script.run
-            .withSuccessHandler((assets) => {
-              this.handleLoadedAssets(assets);
-            })
-            .withFailureHandler((err) => {
-              this.driveStatsText.textContent = '⚠️ 雲端讀取異常，切換至本機備用庫';
-              this.renderSampleLesson('sample-1');
-            })
-            .getFolderAssets();
-        } else {
+        let assetsLoaded = false;
+        let calledGas = false;
+
+        // 12 秒安全保護：若 Google Apps Script 逾時，自動啟動備援示範庫，絕不卡死
+        const safetyTimer = setTimeout(() => {
+          if (!assetsLoaded && (!this.driveAudios || this.driveAudios.length === 0)) {
+            console.warn('Drive scan safety timeout reached, activating fallback.');
+            if (this.driveStatsText) {
+              this.driveStatsText.innerHTML = '⚡ 雲端回應較慢，已啟用本地快顯備用庫';
+            }
+            this.handleLoadedAssets(this.getSampleFallbackAssets());
+          }
+        }, 12000);
+
+        try {
+          if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.getFolderAssets === 'function') {
+            google.script.run
+              .withSuccessHandler((assets) => {
+                assetsLoaded = true;
+                clearTimeout(safetyTimer);
+                this.handleLoadedAssets(assets);
+              })
+              .withFailureHandler((err) => {
+                assetsLoaded = true;
+                clearTimeout(safetyTimer);
+                console.error('getFolderAssets error:', err);
+                if (this.driveStatsText) this.driveStatsText.textContent = '⚠️ 雲端讀取異常，切換至本機備用庫';
+                this.handleLoadedAssets(this.getSampleFallbackAssets());
+              })
+              .getFolderAssets();
+            calledGas = true;
+          }
+        } catch(e) {
+          console.error('loadDriveAssets GAS call error:', e);
+        }
+
+        if (!calledGas) {
+          clearTimeout(safetyTimer);
           // GitHub Pages mode / Local Preview mode
           this.driveStatsText.textContent = '☁️ 雲端已連線 (雙目錄備份示範庫已啟動)';
           this.handleLoadedAssets({
@@ -2950,20 +2990,40 @@
 
       parseAndRenderRawArticle(rawText) {
         this.currentLessonSubtitle = document.getElementById('current-lesson-subtitle');
-        this.currentLessonSubtitle.textContent = 'Google 官方 LanguageApp 即時雙語解析';
-
-        if (typeof google !== 'undefined' && google.script && google.script.run) {
-          google.script.run
-            .withSuccessHandler((res) => {
-              this.renderSentenceStream(res.sentences, res.translations);
-            })
-            .processArticle(rawText);
-        } else {
-          // Fallback parser
-          const cleanText = rawText.replace(/\n+/g, ' ');
-          const matches = cleanText.match(/[^.!?]+[.!?]+/g) || [cleanText];
-          this.renderSentenceStream(matches, matches.map(() => ''));
+        if (this.currentLessonSubtitle) {
+          this.currentLessonSubtitle.textContent = 'Google 官方 LanguageApp 即時雙語解析';
         }
+
+        let calledGas = false;
+        try {
+          if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.processArticle === 'function') {
+            google.script.run
+              .withSuccessHandler((res) => {
+                if (res && res.sentences) {
+                  this.renderSentenceStream(res.sentences, res.translations || []);
+                }
+              })
+              .withFailureHandler((err) => {
+                console.warn('processArticle error fallback:', err);
+                this.fallbackParseArticle(rawText);
+              })
+              .processArticle(rawText);
+            calledGas = true;
+          }
+        } catch(e) {
+          console.warn('parseAndRenderRawArticle error:', e);
+        }
+
+        if (!calledGas) {
+          this.fallbackParseArticle(rawText);
+        }
+      }
+
+      fallbackParseArticle(rawText) {
+        if (!rawText) return;
+        const cleanText = rawText.replace(/\n+/g, ' ');
+        const matches = cleanText.match(/[^.!?]+[.!?]+/g) || [cleanText];
+        this.renderSentenceStream(matches, matches.map(() => ''));
       }
 
       saveArticleToCloud() {
@@ -3255,25 +3315,41 @@
       // ==================== STORAGE & SYNC ====================
 
       loadVocabFromStorage() {
-        if (typeof google !== 'undefined' && google.script && google.script.run) {
-          google.script.run
-            .withSuccessHandler((res) => {
-              if (res.success && res.data) {
-                this.vocab = res.data;
-                this.sidebarFcCount.textContent = this.vocab.length;
-                this.renderFlashcard();
-              }
-            })
-            .apiGetVocabList();
-        } else {
-          try {
-            const raw = localStorage.getItem('oscarmark_fc_vault');
-            this.vocab = raw ? JSON.parse(raw) : [];
-            this.sidebarFcCount.textContent = this.vocab.length;
-            this.renderFlashcard();
-          } catch {
-            this.vocab = [];
+        let loadedGas = false;
+        try {
+          if (typeof google !== 'undefined' && google.script && google.script.run && typeof google.script.run.apiGetVocabList === 'function') {
+            google.script.run
+              .withSuccessHandler((res) => {
+                if (res && res.success && res.data) {
+                  this.vocab = res.data;
+                  if (this.sidebarFcCount) this.sidebarFcCount.textContent = this.vocab.length;
+                  this.renderFlashcard();
+                }
+              })
+              .withFailureHandler((err) => {
+                console.warn('apiGetVocabList fallback:', err);
+                this.loadVocabFromLocal();
+              })
+              .apiGetVocabList();
+            loadedGas = true;
           }
+        } catch(e) {
+          console.warn('loadVocabFromStorage GAS error:', e);
+        }
+
+        if (!loadedGas) {
+          this.loadVocabFromLocal();
+        }
+      }
+
+      loadVocabFromLocal() {
+        try {
+          const raw = localStorage.getItem('oscarmark_fc_vault');
+          this.vocab = raw ? JSON.parse(raw) : [];
+          if (this.sidebarFcCount) this.sidebarFcCount.textContent = this.vocab.length;
+          this.renderFlashcard();
+        } catch {
+          this.vocab = [];
         }
       }
 
@@ -3653,9 +3729,23 @@
       }
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      window.app = new AppManager();
-    });
+    function startAppInstance() {
+      if (!window.app) {
+        try {
+          window.app = new AppManager();
+          console.log('AppManager instance initialized successfully.');
+        } catch (err) {
+          console.error('Fatal AppManager instantiation error:', err);
+        }
+      }
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      startAppInstance();
+    } else {
+      window.addEventListener('DOMContentLoaded', startAppInstance);
+      window.addEventListener('load', startAppInstance);
+    }
   </script>
 </body>
 </html>
