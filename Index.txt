@@ -1030,8 +1030,8 @@
     /* ==================== 4.1 SPOTIFY 雙欄式版面 (左側音樂庫清單 + 右側直式搜尋與分類歌單) ==================== */
     .sp-main-layout {
       display: grid;
-      grid-template-columns: 1fr 280px;
-      gap: 24px;
+      grid-template-columns: minmax(0, 1fr) 260px;
+      gap: 18px;
       align-items: start;
       margin-top: 10px;
     }
@@ -1179,16 +1179,17 @@
       background: rgba(18, 18, 18, 0.6);
       border: 1px solid var(--sp-border);
       border-radius: 12px;
-      overflow: hidden;
+      overflow-x: auto;
       margin-bottom: 24px;
     }
     .sp-track-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13.5px;
+      min-width: 520px;
     }
     .sp-track-table th {
-      padding: 12px 16px;
+      padding: 10px 12px;
       text-align: left;
       font-size: 11.5px;
       font-weight: 700;
@@ -1197,6 +1198,7 @@
       letter-spacing: 0.8px;
       border-bottom: 1px solid var(--sp-border);
       background: rgba(255, 255, 255, 0.03);
+      white-space: nowrap;
     }
     .sp-track-row {
       cursor: pointer;
@@ -1213,11 +1215,11 @@
       font-weight: 700;
     }
     .sp-track-row td {
-      padding: 12px 16px;
+      padding: 10px 12px;
       vertical-align: middle;
     }
     .track-num-cell {
-      width: 48px;
+      width: 44px;
       text-align: center;
       font-family: var(--font-mono);
       color: var(--sp-light-gray);
@@ -1249,27 +1251,28 @@
       display: inline-block;
       transition: transform 0.2s;
     }
-    .track-source-cell {
-      color: var(--sp-light-gray);
-      font-size: 12px;
-    }
     .track-badge-cell {
       text-align: center;
+      width: 95px;
+      white-space: nowrap;
     }
     .track-status-pill {
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      padding: 3px 11px;
+      padding: 3px 10px;
       border-radius: 12px;
       font-size: 11px;
       font-weight: 700;
       background: rgba(255, 255, 255, 0.06);
       color: var(--sp-light-gray);
       transition: all 0.2s ease;
+      white-space: nowrap;
     }
     .track-action-cell {
       text-align: right;
+      width: 90px;
+      white-space: nowrap;
     }
     .row-play-btn {
       background: transparent;
