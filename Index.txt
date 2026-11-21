@@ -3298,7 +3298,7 @@
             });
           }
 
-          // Click row to play
+          // Click row to play / toggle pause
           tr.addEventListener('click', (e) => {
             if (e.target.closest('.drag-handle') || e.target.closest('.song-checkbox') || e.target.closest('.row-add-pl-btn') || e.target.closest('.row-remove-pl-btn')) return;
             if (isPlaylist) {
@@ -3306,6 +3306,17 @@
             } else {
               this.activePlayQueue = null;
             }
+
+            // 若點擊的是目前正在播放的歌曲，切換暫停/繼續播放
+            if (realIdx === this.currentAudioIndex && this.audio.src) {
+              if (this.audio.paused) {
+                this.audio.play();
+              } else {
+                this.audio.pause();
+              }
+              return;
+            }
+
             this.playDriveAudio(realIdx);
           });
 
@@ -3444,6 +3455,14 @@
           item.addEventListener('click', (e) => {
             if (e.target.closest('.drag-handle')) return;
             e.stopPropagation();
+            if (realIdx === this.currentAudioIndex && this.audio.src) {
+              if (this.audio.paused) {
+                this.audio.play();
+              } else {
+                this.audio.pause();
+              }
+              return;
+            }
             this.playDriveAudio(realIdx);
           });
 
