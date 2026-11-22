@@ -1971,6 +1971,28 @@
       background: var(--sp-green-hover);
       transform: scale(1.03);
     }
+    .song-picker-list {
+      max-height: 52vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      background: #181818;
+    }
+    .song-picker-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: #fff;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .song-picker-item:hover { background: rgba(255, 255, 255, 0.07); }
+    .song-picker-item.checked { background: rgba(29, 185, 84, 0.14); }
+    .song-picker-item.in-pl { opacity: 0.45; cursor: default; }
+    .song-picker-item .sp-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .song-picker-item .sp-tag { font-size: 11px; color: var(--sp-light-gray); white-space: nowrap; }
 
   </style>
 </head>
@@ -2026,6 +2048,28 @@
       <div class="sp-modal-footer">
         <button class="sp-modal-btn cancel" id="playlist-modal-cancel">取消</button>
         <button class="sp-modal-btn confirm" id="playlist-modal-confirm">建立歌單</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Song Picker Modal (add songs to the active playlist) -->
+  <div id="song-picker-modal" class="sp-modal-backdrop" style="display: none;">
+    <div class="sp-modal-card" style="max-width: 640px;">
+      <div class="sp-modal-header">
+        <h3 id="song-picker-title">➕ 加入歌曲</h3>
+        <button class="sp-modal-close" id="song-picker-close">&times;</button>
+      </div>
+      <div class="sp-modal-body" style="padding: 16px 22px;">
+        <input type="text" id="song-picker-search" class="sp-modal-input" placeholder="🔍 搜尋歌名..." autocomplete="off">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin:10px 2px 6px;font-size:12px;color:var(--sp-light-gray);">
+          <label style="display:flex;align-items:center;gap:6px;cursor:pointer;"><input type="checkbox" id="song-picker-all" class="song-checkbox"> 全選目前列表</label>
+          <span id="song-picker-count">已選 0 首</span>
+        </div>
+        <div id="song-picker-list" class="song-picker-list"></div>
+      </div>
+      <div class="sp-modal-footer">
+        <button class="sp-modal-btn cancel" id="song-picker-cancel">取消</button>
+        <button class="sp-modal-btn confirm" id="song-picker-confirm">加入 0 首</button>
       </div>
     </div>
   </div>
@@ -2276,6 +2320,7 @@
               </div>
               <div class="playlist-toolbar-actions">
                 <button class="vt-btn gold" id="play-active-pl-btn" style="font-weight: 700;">▶ 播放此歌單</button>
+                <button class="vt-btn" id="add-songs-active-pl-btn" style="font-size: 12px; padding: 6px 12px; color: var(--sp-green); border-color: var(--sp-green); font-weight: 700;">➕ 加入歌曲</button>
                 <button class="vt-btn" id="rename-active-pl-btn" style="font-size: 12px; padding: 6px 12px;">✏️ 重新命名</button>
                 <button class="vt-btn" id="delete-active-pl-btn" style="font-size: 12px; padding: 6px 12px; color: var(--danger);">🗑️ 刪除歌單</button>
                 <button class="vt-btn" id="back-all-songs-btn" style="font-size: 12px; padding: 6px 12px;">返回全部 ✕</button>
@@ -2285,7 +2330,7 @@
             <!-- Dedicated Playlist Drop Zone Banner -->
             <div class="playlist-drop-zone" id="playlist-drop-zone" style="display: none;">
               <span>📥</span>
-              <span>按住歌曲左側 <strong>⠿</strong> 拖曳至此（或直接拖至右側歌單），立即為此清單增歌！</span>
+              <span>點上方 <strong style="color:var(--sp-green);">➕ 加入歌曲</strong> 勾選新歌，或從「全部歌曲」按住 <strong>⠿</strong> 拖曳到右側歌單按鈕，即可為此清單增歌！</span>
             </div>
 
             <!-- Toolbar: Controls for Table (重設排序、現正播放清單、批次操作) -->
@@ -2931,6 +2976,11 @@
         }
         if (this.renameActivePlBtn) {
           this.renameActivePlBtn.addEventListener('click', () => this.renameCurrentPlaylist());
+        }
+        const addSongsBtn = document.getElementById('add-songs-active-pl-btn');
+        if (addSongsBtn) {
+          addSongsBtn.addEventListener('click', () => this.openSongPicker());
+        }
         }
         if (this.deleteActivePlBtn) {
           this.deleteActivePlBtn.addEventListener('click', () => this.deleteCurrentPlaylist());
@@ -3750,6 +3800,118 @@
         });
       }
 
+      openSongPicker() {
+        const pl = this.playlists.find(p => p.id === this.activePlaylistId);
+        if (!pl) return;
+        const modal = document.getElementById('song-picker-modal');
+        const titleEl = document.getElementById('song-picker-title');
+        const searchEl = document.getElementById('song-picker-search');
+        const listEl = document.getElementById('song-picker-list');
+        const allEl = document.getElementById('song-picker-all');
+        const countEl = document.getElementById('song-picker-count');
+        const confirmBtn = document.getElementById('song-picker-confirm');
+        const cancelBtn = document.getElementById('song-picker-cancel');
+        const closeBtn = document.getElementById('song-picker-close');
+        if (!modal || !listEl) return;
+
+        const inPl = new Set(pl.songIds || []);
+        const picked = new Set();
+        titleEl.textContent = '➕ 加入歌曲到【' + pl.name + '】';
+        searchEl.value = '';
+        allEl.checked = false;
+
+        const updateCount = () => {
+          countEl.textContent = '已選 ' + picked.size + ' 首';
+          confirmBtn.textContent = '加入 ' + picked.size + ' 首';
+          confirmBtn.disabled = picked.size === 0;
+          confirmBtn.style.opacity = picked.size === 0 ? '0.5' : '1';
+        };
+
+        let visible = [];
+        const render = () => {
+          const kw = searchEl.value.trim().toLowerCase();
+          visible = this.driveAudios.filter(a => !kw || a.name.toLowerCase().includes(kw));
+          listEl.innerHTML = '';
+          if (visible.length === 0) {
+            listEl.innerHTML = '<div style="padding:24px;text-align:center;color:var(--sp-light-gray);font-size:13px;">找不到符合的歌曲</div>';
+          }
+          visible.forEach(audio => {
+            const already = inPl.has(audio.id);
+            const row = document.createElement('div');
+            row.className = 'song-picker-item' + (already ? ' in-pl' : '') + (picked.has(audio.id) ? ' checked' : '');
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.className = 'song-checkbox';
+            cb.checked = already || picked.has(audio.id);
+            cb.disabled = already;
+            const name = document.createElement('span');
+            name.className = 'sp-name';
+            name.textContent = audio.name;
+            name.title = audio.name;
+            const tag = document.createElement('span');
+            tag.className = 'sp-tag';
+            tag.textContent = already ? '✓ 已在歌單' : ((audio.folder || '').toLowerCase() === 'kline' ? '📈 KLine' : '📘 Englishvoice');
+            row.appendChild(cb);
+            row.appendChild(name);
+            row.appendChild(tag);
+            if (!already) {
+              const toggle = () => {
+                if (picked.has(audio.id)) picked.delete(audio.id); else picked.add(audio.id);
+                cb.checked = picked.has(audio.id);
+                row.classList.toggle('checked', cb.checked);
+                updateCount();
+              };
+              row.addEventListener('click', (e) => { if (e.target !== cb) toggle(); });
+              cb.addEventListener('change', () => {
+                if (cb.checked) picked.add(audio.id); else picked.delete(audio.id);
+                row.classList.toggle('checked', cb.checked);
+                updateCount();
+              });
+            }
+            listEl.appendChild(row);
+          });
+          const selectable = visible.filter(a => !inPl.has(a.id));
+          allEl.checked = selectable.length > 0 && selectable.every(a => picked.has(a.id));
+        };
+
+        const close = () => {
+          modal.style.display = 'none';
+          searchEl.oninput = null;
+          allEl.onchange = null;
+          confirmBtn.onclick = null;
+          cancelBtn.onclick = null;
+          closeBtn.onclick = null;
+          modal.onclick = null;
+          document.removeEventListener('keydown', onKey, true);
+        };
+        const onKey = (e) => { if (e.key === 'Escape') close(); };
+
+        searchEl.oninput = render;
+        allEl.onchange = () => {
+          visible.forEach(a => {
+            if (inPl.has(a.id)) return;
+            if (allEl.checked) picked.add(a.id); else picked.delete(a.id);
+          });
+          render();
+          updateCount();
+        };
+        confirmBtn.onclick = () => {
+          if (picked.size === 0) return;
+          const ids = Array.from(picked);
+          close();
+          this.addSongsToPlaylist(pl.id, ids);
+        };
+        cancelBtn.onclick = close;
+        closeBtn.onclick = close;
+        modal.onclick = (e) => { if (e.target === modal) close(); };
+        document.addEventListener('keydown', onKey, true);
+
+        render();
+        updateCount();
+        modal.style.display = 'flex';
+        setTimeout(() => searchEl.focus(), 50);
+      }
+
       deleteCurrentPlaylist() {
         if (!this.activePlaylistId) return;
         this.deletePlaylistById(this.activePlaylistId);
@@ -3927,7 +4089,7 @@
           const emptyTr = document.createElement('tr');
           let emptyMsg = '找不到符合條件的歌曲';
           if (isPlaylist && currentPl) {
-            emptyMsg = '📥 <strong>此播放清單【' + currentPl.name + '】目前尚無歌曲</strong><br><span style="font-size:12px;color:rgba(255,255,255,0.6);display:inline-block;margin-top:8px;">請點擊上方「🎵 全部歌曲」，按住歌曲左側 <strong>⠿</strong> 拖曳至此歌單按鈕，或點擊每首歌右側「➕」即可快速加歌！</span>';
+            emptyMsg = '📥 <strong>此播放清單【' + currentPl.name + '】目前尚無歌曲</strong><br><span style="font-size:12px;color:rgba(255,255,255,0.6);display:inline-block;margin-top:8px;">請點擊上方「<strong style="color:var(--sp-green);">➕ 加入歌曲</strong>」勾選想加的歌，或在「🎵 全部歌曲」點每首歌右側「➕」即可快速加歌！</span>';
           } else if (folder.toLowerCase() === 'kline') {
             emptyMsg = '📈 <strong>KLine 資料夾目前尚無音檔</strong><br><span style="font-size:12px;color:rgba(255,255,255,0.5);display:inline-block;margin-top:6px;">請將 MP3 音樂放入 Google Drive 中的「KLine」資料夾，點擊「重新掃描雲端」即可同步！</span>';
           }
