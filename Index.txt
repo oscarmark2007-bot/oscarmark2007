@@ -4882,18 +4882,13 @@
             const nextQIdx = (qIdx + 1) % queue.length;
             nextAudio = queue[nextQIdx];
           }
-          if (nextAudio && nextAudio.id) {
-            const nextStreamUrl = nextAudio.streamUrl || ('https://drive.google.com/uc?export=download&id=' + nextAudio.id + '&confirm=t');
-            let preloader = document.getElementById('audio-preloader-link');
-            if (!preloader) {
-              preloader = document.createElement('link');
-              preloader.id = 'audio-preloader-link';
-              preloader.rel = 'preload';
-              preloader.as = 'fetch';
-              preloader.crossOrigin = 'anonymous';
-              document.head.appendChild(preloader);
+          if (nextAudio && (nextAudio.streamUrl || nextAudio.url || nextAudio.id)) {
+            const nextUrl = nextAudio.url || nextAudio.streamUrl || ('https://drive.google.com/uc?export=download&id=' + nextAudio.id + '&confirm=t');
+            if (!this._audioPreloader) {
+              this._audioPreloader = new Audio();
+              this._audioPreloader.preload = 'auto';
             }
-            preloader.href = nextStreamUrl;
+            this._audioPreloader.src = nextUrl;
           }
         } catch(e) {
           console.log('preload note:', e);
