@@ -1813,6 +1813,116 @@
       accent-color: var(--sp-green);
     }
 
+    /* ==================== SPOTIFY CUSTOM MODAL ==================== */
+    .sp-modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.15s ease;
+    }
+    .sp-modal-card {
+      background: #242424;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 18px;
+      width: 90%;
+      max-width: 440px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.85);
+      overflow: hidden;
+      animation: modalScaleUp 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes modalScaleUp {
+      from { opacity: 0; transform: scale(0.92); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    .sp-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .sp-modal-header h3 {
+      font-size: 17px;
+      font-weight: 800;
+      color: #fff;
+      margin: 0;
+    }
+    .sp-modal-close {
+      background: transparent;
+      border: none;
+      color: var(--sp-light-gray);
+      font-size: 22px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+      border-radius: 6px;
+      transition: color 0.2s;
+    }
+    .sp-modal-close:hover {
+      color: #fff;
+    }
+    .sp-modal-body {
+      padding: 22px;
+    }
+    .sp-modal-input {
+      width: 100%;
+      padding: 13px 16px;
+      background: #141414;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 14.5px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-sizing: border-box;
+    }
+    .sp-modal-input:focus {
+      border-color: var(--sp-green);
+      box-shadow: 0 0 0 3px var(--sp-green-glow);
+    }
+    .sp-modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 14px 22px 18px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(0, 0, 0, 0.2);
+    }
+    .sp-modal-btn {
+      padding: 10px 22px;
+      border-radius: 24px;
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+    }
+    .sp-modal-btn.cancel {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .sp-modal-btn.cancel:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .sp-modal-btn.confirm {
+      background: var(--sp-green);
+      color: #000;
+    }
+    .sp-modal-btn.confirm:hover {
+      background: var(--sp-green-hover);
+      transform: scale(1.03);
+    }
+
   </style>
 </head>
 <body>
@@ -1848,6 +1958,26 @@
       <button class="dict-btn-save" id="dict-save-btn">
         <span>📇 存為生字卡 (含例句)</span>
       </button>
+    </div>
+  </div>
+
+  <!-- Custom In-App Modal for Playlist (Prompt / Confirm) -->
+  <div id="playlist-modal" class="sp-modal-backdrop" style="display: none;">
+    <div class="sp-modal-card">
+      <div class="sp-modal-header">
+        <h3 id="playlist-modal-title">➕ 建立新播放清單</h3>
+        <button class="sp-modal-close" id="playlist-modal-close">&times;</button>
+      </div>
+      <div class="sp-modal-body">
+        <label id="playlist-modal-label" for="playlist-modal-input" style="font-size: 13px; color: var(--sp-light-gray); display: block; margin-bottom: 8px;">清單名稱：</label>
+        <input type="text" id="playlist-modal-input" class="sp-modal-input" placeholder="例如：晚間放鬆、運動節奏、KLine精選..." maxlength="40" autocomplete="off">
+        <div id="playlist-modal-desc" style="font-size: 13.5px; color: #e5e5e5; line-height: 1.5; display: none;"></div>
+        <div id="playlist-modal-hint" style="font-size: 12px; color: var(--sp-green); margin-top: 8px; display: none;"></div>
+      </div>
+      <div class="sp-modal-footer">
+        <button class="sp-modal-btn cancel" id="playlist-modal-cancel">取消</button>
+        <button class="sp-modal-btn confirm" id="playlist-modal-confirm">建立歌單</button>
+      </div>
     </div>
   </div>
 
@@ -2702,7 +2832,12 @@
           musicPillsContainer.addEventListener('click', (e) => {
             const pill = e.target.closest('.folder-pill');
             if (!pill) return;
-            if (pill.id === 'create-playlist-btn') return;
+            if (pill.id === 'create-playlist-btn' || pill.classList.contains('add-playlist-btn')) {
+              e.preventDefault();
+              e.stopPropagation();
+              this.handleCreatePlaylist();
+              return;
+            }
             if (pill.hasAttribute('data-pl-id')) {
               this.selectPlaylist(pill.getAttribute('data-pl-id'));
               return;
@@ -2715,6 +2850,81 @@
             if (this.activePlaylistToolbar) this.activePlaylistToolbar.style.display = 'none';
             if (this.playlistDropZone) this.playlistDropZone.style.display = 'none';
             this.renderSpotifyMusicTable();
+          });
+        }
+
+        // ==================== CUSTOM PLAYLIST CONTROLS & DROP ZONES ====================
+        if (this.createPlaylistBtn) {
+          this.createPlaylistBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.handleCreatePlaylist();
+          });
+          this.createPlaylistBtn.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            this.createPlaylistBtn.classList.add('drag-target-hover');
+          });
+          this.createPlaylistBtn.addEventListener('dragleave', () => {
+            this.createPlaylistBtn.classList.remove('drag-target-hover');
+          });
+          this.createPlaylistBtn.addEventListener('drop', (e) => {
+            e.preventDefault();
+            this.createPlaylistBtn.classList.remove('drag-target-hover');
+            const songIds = window._draggedSongIds || (window._draggedSongId ? [window._draggedSongId] : []);
+            this.handleCreatePlaylist(songIds);
+          });
+        }
+
+        if (this.playActivePlBtn) {
+          this.playActivePlBtn.addEventListener('click', () => this.playCurrentPlaylist());
+        }
+        if (this.renameActivePlBtn) {
+          this.renameActivePlBtn.addEventListener('click', () => this.renameCurrentPlaylist());
+        }
+        if (this.deleteActivePlBtn) {
+          this.deleteActivePlBtn.addEventListener('click', () => this.deleteCurrentPlaylist());
+        }
+        if (this.backAllSongsBtn) {
+          this.backAllSongsBtn.addEventListener('click', () => this.selectPlaylist(null));
+        }
+
+        if (this.playlistDropZone) {
+          this.playlistDropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            this.playlistDropZone.classList.add('drag-over');
+          });
+          this.playlistDropZone.addEventListener('dragleave', () => {
+            this.playlistDropZone.classList.remove('drag-over');
+          });
+          this.playlistDropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            this.playlistDropZone.classList.remove('drag-over');
+            if (!this.activePlaylistId) return;
+            const songIds = window._draggedSongIds || (window._draggedSongId ? [window._draggedSongId] : []);
+            if (songIds.length > 0) {
+              this.addSongsToPlaylist(this.activePlaylistId, songIds);
+            }
+          });
+        }
+
+        // ==================== BATCH SELECTION CONTROLS ====================
+        if (this.selectAllSongs) {
+          this.selectAllSongs.addEventListener('change', (e) => {
+            this.toggleSelectAllSongs(e.target.checked);
+          });
+        }
+        if (this.batchAddBtn) {
+          this.batchAddBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (this.selectedSongIds.size === 0) return alert('請先勾選歌曲！');
+            this.openQuickPlaylistMenu(this.batchAddBtn, Array.from(this.selectedSongIds));
+          });
+        }
+        if (this.batchClearBtn) {
+          this.batchClearBtn.addEventListener('click', () => {
+            this.clearSelectedSongs();
           });
         }
 
@@ -3095,24 +3305,192 @@
         });
       }
 
-      createPlaylist(name) {
+      // ==================== IN-APP MODAL HELPERS (PROMPT & CONFIRM) ====================
+      showPromptModal({ title, label, placeholder, initialValue, hint, confirmText, onConfirm }) {
+        const modal = document.getElementById('playlist-modal');
+        if (!modal) {
+          const val = window.prompt(title || '請輸入：', initialValue || '');
+          if (val && val.trim() && typeof onConfirm === 'function') onConfirm(val.trim());
+          return;
+        }
+        const titleEl = document.getElementById('playlist-modal-title');
+        const labelEl = document.getElementById('playlist-modal-label');
+        const inputEl = document.getElementById('playlist-modal-input');
+        const descEl = document.getElementById('playlist-modal-desc');
+        const hintEl = document.getElementById('playlist-modal-hint');
+        const confirmBtn = document.getElementById('playlist-modal-confirm');
+        const cancelBtn = document.getElementById('playlist-modal-cancel');
+        const closeBtn = document.getElementById('playlist-modal-close');
+
+        if (titleEl) titleEl.textContent = title || '➕ 建立新播放清單';
+        if (labelEl) {
+          labelEl.textContent = label || '清單名稱：';
+          labelEl.style.display = 'block';
+        }
+        if (descEl) descEl.style.display = 'none';
+        if (inputEl) {
+          inputEl.style.display = 'block';
+          inputEl.placeholder = placeholder || '例如：晚間放鬆、運動節奏、KLine精選...';
+          inputEl.value = initialValue || '';
+        }
+        if (confirmBtn) {
+          confirmBtn.textContent = confirmText || '建立歌單';
+          confirmBtn.style.background = 'var(--sp-green)';
+          confirmBtn.style.color = '#000';
+        }
+        if (hintEl) {
+          if (hint) {
+            hintEl.textContent = hint;
+            hintEl.style.display = 'block';
+          } else {
+            hintEl.style.display = 'none';
+          }
+        }
+
+        const closeModal = () => {
+          modal.style.display = 'none';
+          cleanup();
+        };
+
+        const doConfirm = () => {
+          const val = inputEl ? inputEl.value.trim() : '';
+          if (val) {
+            closeModal();
+            if (typeof onConfirm === 'function') onConfirm(val);
+          } else {
+            if (inputEl) inputEl.focus();
+          }
+        };
+
+        const onKeyDown = (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            doConfirm();
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            closeModal();
+          }
+        };
+
+        const cleanup = () => {
+          if (confirmBtn) confirmBtn.removeEventListener('click', doConfirm);
+          if (cancelBtn) cancelBtn.removeEventListener('click', closeModal);
+          if (closeBtn) closeBtn.removeEventListener('click', closeModal);
+          if (inputEl) inputEl.removeEventListener('keydown', onKeyDown);
+        };
+
+        if (confirmBtn) confirmBtn.addEventListener('click', doConfirm);
+        if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        if (inputEl) inputEl.addEventListener('keydown', onKeyDown);
+
+        modal.style.display = 'flex';
+        setTimeout(() => {
+          if (inputEl) {
+            inputEl.focus();
+            inputEl.select();
+          }
+        }, 60);
+      }
+
+      showConfirmModal({ title, message, confirmText, danger = true, onConfirm }) {
+        const modal = document.getElementById('playlist-modal');
+        if (!modal) {
+          if (window.confirm(title + '\n' + message) && typeof onConfirm === 'function') onConfirm();
+          return;
+        }
+        const titleEl = document.getElementById('playlist-modal-title');
+        const labelEl = document.getElementById('playlist-modal-label');
+        const inputEl = document.getElementById('playlist-modal-input');
+        const descEl = document.getElementById('playlist-modal-desc');
+        const hintEl = document.getElementById('playlist-modal-hint');
+        const confirmBtn = document.getElementById('playlist-modal-confirm');
+        const cancelBtn = document.getElementById('playlist-modal-cancel');
+        const closeBtn = document.getElementById('playlist-modal-close');
+
+        if (titleEl) titleEl.textContent = title || '確認操作';
+        if (labelEl) labelEl.style.display = 'none';
+        if (inputEl) inputEl.style.display = 'none';
+        if (descEl) {
+          descEl.innerHTML = message || '確定要執行此操作嗎？';
+          descEl.style.display = 'block';
+        }
+        if (hintEl) hintEl.style.display = 'none';
+        if (confirmBtn) {
+          confirmBtn.textContent = confirmText || '確定';
+          confirmBtn.style.background = danger ? '#ef4444' : 'var(--sp-green)';
+          confirmBtn.style.color = '#fff';
+        }
+
+        const closeModal = () => {
+          modal.style.display = 'none';
+          cleanup();
+        };
+
+        const doConfirm = () => {
+          closeModal();
+          if (typeof onConfirm === 'function') onConfirm();
+        };
+
+        const onKeyDown = (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            doConfirm();
+          } else if (e.key === 'Escape') {
+            e.preventDefault();
+            closeModal();
+          }
+        };
+
+        const cleanup = () => {
+          if (confirmBtn) confirmBtn.removeEventListener('click', doConfirm);
+          if (cancelBtn) cancelBtn.removeEventListener('click', closeModal);
+          if (closeBtn) closeBtn.removeEventListener('click', closeModal);
+          window.removeEventListener('keydown', onKeyDown);
+        };
+
+        if (confirmBtn) confirmBtn.addEventListener('click', doConfirm);
+        if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+        if (closeBtn) closeBtn.addEventListener('click', closeModal);
+        window.addEventListener('keydown', onKeyDown);
+
+        modal.style.display = 'flex';
+      }
+
+      handleCreatePlaylist(initialSongIds = []) {
+        this.showPromptModal({
+          title: '➕ 建立新播放清單',
+          label: '請輸入清單名稱：',
+          placeholder: '例如：晚間放鬆、運動節奏、KLine精選...',
+          hint: initialSongIds && initialSongIds.length > 0 ? ('📌 將自動加入已選取的 ' + initialSongIds.length + ' 首歌曲') : '',
+          confirmText: '建立歌單',
+          onConfirm: (name) => {
+            this.createPlaylist(name, initialSongIds);
+          }
+        });
+      }
+
+      createPlaylist(name, initialSongIds = []) {
         if (!name) return;
         const newPl = {
           id: 'pl_' + Date.now(),
           name: name.startsWith('🎵') || name.startsWith('⭐') || name.startsWith('📈') ? name : '🎵 ' + name,
           icon: '🎵',
-          songIds: []
+          songIds: Array.isArray(initialSongIds) ? [...initialSongIds] : []
         };
         this.playlists.push(newPl);
         this.savePlaylistsToStorage();
+        this.renderPlaylistPills();
         this.selectPlaylist(newPl.id);
-        this.showToast('🎉 已成功建立播放清單【' + newPl.name + '】！');
+        const countMsg = newPl.songIds.length > 0 ? ('，並已加入 ' + newPl.songIds.length + ' 首歌') : '';
+        this.showToast('🎉 已成功建立播放清單【' + newPl.name + '】' + countMsg + '！');
       }
 
       selectPlaylist(plId) {
         this.activePlaylistId = plId;
-        const allPills = document.querySelectorAll('#music-folder-pills .folder-pill');
-        allPills.forEach(p => p.classList.remove('active'));
+        this.renderPlaylistPills();
+        const allFolderPills = document.querySelectorAll('#music-folder-pills .folder-pill:not(.playlist-pill):not(.add-playlist-btn)');
+        allFolderPills.forEach(p => p.classList.remove('active'));
 
         if (!plId) {
           // Return to all songs
@@ -3127,10 +3505,6 @@
 
         const pl = this.playlists.find(p => p.id === plId);
         if (!pl) return;
-
-        // Activate pill
-        const plPill = document.querySelector('#music-folder-pills [data-pl-id="' + plId + '"]');
-        if (plPill) plPill.classList.add('active');
 
         // Show toolbar and drop zone
         if (this.activePlaylistToolbar) {
@@ -3159,6 +3533,7 @@
         });
 
         this.savePlaylistsToStorage();
+        this.renderPlaylistPills();
         if (this.activePlaylistId === plId) {
           if (this.activePlCountText) this.activePlCountText.textContent = '共 ' + pl.songIds.length + ' 首歌曲';
           this.renderSpotifyMusicTable();
@@ -3181,6 +3556,7 @@
         if (idx !== -1) {
           pl.songIds.splice(idx, 1);
           this.savePlaylistsToStorage();
+          this.renderPlaylistPills();
           if (this.activePlCountText) this.activePlCountText.textContent = '共 ' + pl.songIds.length + ' 首歌曲';
           this.renderSpotifyMusicTable();
           this.showToast('🗑️ 已將歌曲移出【' + pl.name + '】');
@@ -3217,13 +3593,19 @@
         const pl = this.playlists.find(p => p.id === this.activePlaylistId);
         if (!pl) return;
 
-        const newName = prompt('請輸入歌單新名稱：', pl.name);
-        if (newName && newName.trim()) {
-          pl.name = newName.trim();
-          this.savePlaylistsToStorage();
-          if (this.activePlTitle) this.activePlTitle.textContent = pl.name;
-          this.showToast('✏️ 歌單已更名為【' + pl.name + '】！');
-        }
+        this.showPromptModal({
+          title: '✏️ 重新命名播放清單',
+          label: '請輸入新名稱：',
+          initialValue: pl.name,
+          confirmText: '儲存名稱',
+          onConfirm: (newName) => {
+            pl.name = newName;
+            this.savePlaylistsToStorage();
+            this.renderPlaylistPills();
+            if (this.activePlTitle) this.activePlTitle.textContent = pl.name;
+            this.showToast('✏️ 歌單已更名為【' + pl.name + '】！');
+          }
+        });
       }
 
       deleteCurrentPlaylist() {
@@ -3231,12 +3613,20 @@
         const pl = this.playlists.find(p => p.id === this.activePlaylistId);
         if (!pl) return;
 
-        if (confirm('確定要刪除播放清單【' + pl.name + '】嗎？（雲端原始音檔不會被刪除）')) {
-          this.playlists = this.playlists.filter(p => p.id !== this.activePlaylistId);
-          this.savePlaylistsToStorage();
-          this.selectPlaylist(null);
-          this.showToast('🗑️ 已刪除歌單！');
-        }
+        this.showConfirmModal({
+          title: '🗑️ 刪除播放清單',
+          message: '確定要刪除播放清單【<strong>' + pl.name + '</strong>】嗎？<br><span style="font-size:12px;color:rgba(255,255,255,0.6);margin-top:6px;display:inline-block;">（雲端 Google Drive 原始音檔不會被刪除）</span>',
+          confirmText: '確定刪除',
+          danger: true,
+          onConfirm: () => {
+            const oldName = pl.name;
+            this.playlists = this.playlists.filter(p => p.id !== this.activePlaylistId);
+            this.savePlaylistsToStorage();
+            this.renderPlaylistPills();
+            this.selectPlaylist(null);
+            this.showToast('🗑️ 已刪除歌單【' + oldName + '】！');
+          }
+        });
       }
 
       openQuickPlaylistMenu(anchorEl, songIds) {
@@ -3269,17 +3659,7 @@
         createItem.addEventListener('click', (e) => {
           e.stopPropagation();
           this.closeQuickPlaylistMenu();
-          const name = prompt('請輸入新播放清單名稱：');
-          if (name && name.trim()) {
-            const newPl = {
-              id: 'pl_' + Date.now(),
-              name: '🎵 ' + name.trim(),
-              icon: '🎵',
-              songIds: []
-            };
-            this.playlists.push(newPl);
-            this.addSongsToPlaylist(newPl.id, songIds);
-          }
+          this.handleCreatePlaylist(songIds);
         });
         menu.appendChild(createItem);
 
