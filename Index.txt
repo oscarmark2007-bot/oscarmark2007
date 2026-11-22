@@ -1291,9 +1291,10 @@
     }
     .track-action-cell {
       text-align: right;
-      width: 80px;
+      width: 124px;
       white-space: nowrap;
-      padding: 10px 8px 10px 4px !important;
+      overflow: visible !important;
+      padding: 10px 12px 10px 4px !important;
     }
     .row-play-btn {
       background: transparent;
@@ -1785,7 +1786,8 @@
       justify-content: center;
       font-size: 12px;
       transition: var(--transition);
-      margin-left: 6px;
+      margin-left: 4px;
+      vertical-align: middle;
     }
     .row-add-pl-btn:hover {
       background: var(--sp-green);
@@ -2374,7 +2376,7 @@
                     <th style="width: auto;">歌曲名稱 (Track Title)</th>
                     <!-- 「來源 (Storage)」欄位已依要求移除 -->
                     <th class="track-badge-cell" style="width: 95px;">播放狀態</th>
-                    <th class="track-action-cell" style="width: 80px;">操作</th>
+                    <th class="track-action-cell" style="width: 124px;">操作</th>
                   </tr>
                 </thead>
                 <tbody id="drive-music-table-body">
