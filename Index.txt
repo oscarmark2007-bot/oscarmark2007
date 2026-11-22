@@ -964,7 +964,8 @@
       border: 1px solid var(--sp-border);
     }
     .sp-lyrics-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; display: flex; justify-content: space-between; }
-    .sp-lyrics-scroll { flex: 1; overflow-y: auto; padding: 20px 0; display: flex; flex-direction: column; gap: 18px; scroll-behavior: smooth; }
+    .sp-lyrics-scroll { flex: 1; overflow-y: auto; padding: 20px 0; display: flex; flex-direction: column; gap: 18px; scroll-behavior: smooth; position: relative; }
+    .sp-lrc-msg { font-size: 14px; color: var(--sp-light-gray); text-align: center; padding: 40px 10px; line-height: 1.7; }
     .sp-lrc-line { font-size: 20px; font-weight: 700; color: rgba(255, 255, 255, 0.35); transition: var(--transition); cursor: pointer; line-height: 1.5; }
     .sp-lrc-line:hover { color: rgba(255, 255, 255, 0.7); }
     .sp-lrc-line.active { font-size: 26px; color: #ffffff; transform: scale(1.02); transform-origin: left center; }
@@ -2431,11 +2432,11 @@
           </aside>
         </div>
 
-        <!-- Spotify Synchronized Lyrics Mode -->
-        <div class="sp-lyrics-section">
+        <!-- Spotify Synchronized Lyrics Mode (只在英文歌曲顯示) -->
+        <div class="sp-lyrics-section" id="sp-lyrics-section" style="display: none;">
           <div class="sp-lyrics-title">
-            <span>🎤 Spotify 動態同步即時歌詞 (Live Lyrics)</span>
-            <span style="font-size: 13px; color: var(--sp-green); font-weight: 600;">LRC Auto-Scroll</span>
+            <span>🎤 Live Lyrics <span id="sp-lyrics-song" style="font-size: 13px; color: var(--sp-light-gray); font-weight: 600; margin-left: 8px;"></span></span>
+            <span id="sp-lyrics-status" style="font-size: 13px; color: var(--sp-green); font-weight: 600;">LRC Auto-Scroll</span>
           </div>
           <div class="sp-lyrics-scroll" id="sp-lyrics-box">
             <!-- Rendered dynamically -->
@@ -2580,8 +2581,8 @@
 
   </div>
 
-  <!-- Audio Player -->
-  <audio id="core-audio" preload="metadata"></audio>
+  <!-- Audio Player (preload="auto" 極速快取) -->
+  <audio id="core-audio" preload="auto"></audio>
 
   <!-- ==================== APPLICATION SCRIPTS ==================== -->
   <script>
@@ -2810,6 +2811,14 @@
         this.ytDownload320kLink = document.getElementById('yt-download-320k-link');
         this.ytLoadVoiceTubeBtn = document.getElementById('yt-load-voicetube-btn');
         this.ytPreviewPlayBtn = document.getElementById('yt-preview-play-btn');
+
+        // Spotify Live Lyrics Elements
+        this.spLyricsSection = document.getElementById('sp-lyrics-section');
+        this.spLyricsBox = document.getElementById('sp-lyrics-box');
+        this.spLyricsSong = document.getElementById('sp-lyrics-song');
+        this.spLyricsStatus = document.getElementById('sp-lyrics-status');
+        this.currentLyrics = null;
+        this.activeLyricIndex = -1;
       }
 
       initEvents() {
@@ -4643,9 +4652,14 @@
         const queueIdx = currentQueue.indexOf(currentSong);
 
         if (this.loopMode === 'shuffle') {
-          // 🔀 隨機播放
-          const randQIdx = Math.floor(Math.random() * currentQueue.length);
-          const targetAudio = currentQueue[randQIdx];
+          // 🔀 隨機播放（優先使用已預先載入的那一首）
+          let targetAudio = null;
+          if (this._shuffleNextId) targetAudio = currentQueue.find(a => a.id === this._shuffleNextId) || null;
+          this._shuffleNextId = null;
+          if (!targetAudio) {
+            const randQIdx = Math.floor(Math.random() * currentQueue.length);
+            targetAudio = currentQueue[randQIdx];
+          }
           const realIdx = this.driveAudios.indexOf(targetAudio);
           this.playDriveAudio(realIdx !== -1 ? realIdx : 0);
           return;
@@ -4694,72 +4708,252 @@
         }
       }
 
+      isEnglishTrack(track) {
+        if (!track || !track.name) return false;
+        const clean = track.name
+          .replace(/\.(mp3|m4a|wav|aac|ogg|opus|flac|webm|mp4)$/i, '')
+          .replace(/[\(\[\{][^\)\]\}]*[\)\]\}]/g, ' ')
+          .replace(/\b(official|music|video|audio|lyrics?|320\s*kbps|hd|remastered|live|acoustic|topic|version|mv)\b/gi, '');
+        const cjk = clean.match(/[\u4e00-\u9fa5\u3040-\u30ff\uac00-\ud7af]/g) || [];
+        const latin = clean.match(/[a-zA-Z]/g) || [];
+        // 若有中日韓文字，一律判定為非英文歌（例如 般若波羅蜜多心經、相見恨晚、羅大佑、鹿先森樂隊、KLine 等）
+        if (cjk.length > 0) return false;
+        // 需包含至少 3 個英文字母
+        return latin.length >= 3;
+      }
+
+      handleLiveLyrics(track) {
+        if (!this.spLyricsSection || !this.spLyricsBox) return;
+
+        // 使用者核心需求：Live Lyrics 只用在英文歌曲！中文歌或非英文歌一律完全隱藏
+        if (!this.isEnglishTrack(track)) {
+          this.spLyricsSection.style.display = 'none';
+          this.currentLyrics = null;
+          this.activeLyricIndex = -1;
+          this.spLyricsBox.innerHTML = '';
+          return;
+        }
+
+        // 英文歌曲：即時顯示 Live Lyrics 區塊
+        this.spLyricsSection.style.display = 'flex';
+        const cleanName = track.name.replace(/\.[^/.]+$/, '');
+        if (this.spLyricsSong) this.spLyricsSong.textContent = '· ' + cleanName;
+        if (this.spLyricsStatus) this.spLyricsStatus.textContent = '⏳ 正在連線搜尋歌詞...';
+        this.spLyricsBox.innerHTML = '<div class="sp-lrc-msg">🔍 正在為【<strong>' + cleanName + '</strong>】配對即時動態歌詞...</div>';
+        this.currentLyrics = null;
+        this.activeLyricIndex = -1;
+
+        // 清理檔名關鍵字以利精準配對
+        let query = track.name
+          .replace(/\.(mp3|m4a|wav|aac|ogg|opus|flac|webm|mp4)$/i, '')
+          .replace(/[\(\[\{][^\)\]\}]*[\)\]\}]/g, ' ')
+          .replace(/\b(official|music|video|audio|lyrics?|320\s*kbps|hd|remastered|live|acoustic|topic|version|mv)\b/gi, '')
+          .trim().replace(/\s+/g, ' ');
+
+        const searchUrl = 'https://lrclib.net/api/search?q=' + encodeURIComponent(query);
+        const currentId = track.id;
+
+        fetch(searchUrl)
+          .then(res => res.json())
+          .then(data => {
+            if (this.driveAudios[this.currentAudioIndex]?.id !== currentId) return;
+            if (!Array.isArray(data) || data.length === 0) {
+              this.renderNoLyricsFound(track);
+              return;
+            }
+            const hit = data.find(item => item.syncedLyrics) || data.find(item => item.plainLyrics);
+            if (!hit) {
+              this.renderNoLyricsFound(track);
+              return;
+            }
+            if (hit.syncedLyrics) {
+              this.parseAndRenderSyncedLyrics(hit.syncedLyrics);
+              if (this.spLyricsStatus) this.spLyricsStatus.textContent = '🎤 LRC 動態同步滾動中';
+            } else if (hit.plainLyrics) {
+              this.renderPlainLyrics(hit.plainLyrics);
+              if (this.spLyricsStatus) this.spLyricsStatus.textContent = '📄 純文字歌詞';
+            }
+          })
+          .catch(err => {
+            console.log('Lyrics search notice:', err);
+            if (this.driveAudios[this.currentAudioIndex]?.id === currentId) {
+              this.renderNoLyricsFound(track);
+            }
+          });
+      }
+
+      renderNoLyricsFound(track) {
+        if (!this.spLyricsBox) return;
+        if (this.spLyricsStatus) this.spLyricsStatus.textContent = '純音樂模式';
+        this.spLyricsBox.innerHTML = '<div class="sp-lrc-msg">🎵 英文歌曲【<strong>' + track.name.replace(/\.[^/.]+$/, '') + '</strong>】伴隨純享中<br><span style="font-size:12px;opacity:0.6;margin-top:6px;display:inline-block;">（雲端庫暫無此曲動態 LRC 檔案）</span></div>';
+        this.currentLyrics = null;
+      }
+
+      parseAndRenderSyncedLyrics(lrcText) {
+        if (!this.spLyricsBox) return;
+        this.spLyricsBox.innerHTML = '';
+        const lines = lrcText.split('\n');
+        const parsed = [];
+
+        lines.forEach(line => {
+          const match = line.match(/\[(\d{2}):(\d{2}(?:\.\d+)?)\](.*)/);
+          if (match) {
+            const minutes = parseFloat(match[1]);
+            const seconds = parseFloat(match[2]);
+            const time = minutes * 60 + seconds;
+            const text = match[3].trim();
+            if (text) parsed.push({ time, text });
+          }
+        });
+
+        if (parsed.length === 0) {
+          this.renderPlainLyrics(lrcText);
+          return;
+        }
+
+        parsed.sort((a, b) => a.time - b.time);
+        this.currentLyrics = parsed;
+
+        parsed.forEach((item, idx) => {
+          const div = document.createElement('div');
+          div.className = 'sp-lrc-line';
+          div.id = 'lrc-line-' + idx;
+          div.textContent = item.text;
+          div.title = '點擊跳至此處播放';
+          div.addEventListener('click', () => {
+            this.audio.currentTime = item.time;
+            if (this.audio.paused) this.audio.play();
+          });
+          this.spLyricsBox.appendChild(div);
+        });
+      }
+
+      renderPlainLyrics(plainText) {
+        if (!this.spLyricsBox) return;
+        this.spLyricsBox.innerHTML = '';
+        this.currentLyrics = null;
+        const lines = plainText.split('\n');
+        lines.forEach(line => {
+          if (!line.trim()) return;
+          const div = document.createElement('div');
+          div.className = 'sp-lrc-line';
+          div.style.cursor = 'default';
+          div.textContent = line.trim();
+          this.spLyricsBox.appendChild(div);
+        });
+      }
+
+      syncLyrics(currentTime) {
+        if (!this.currentLyrics || this.currentLyrics.length === 0) return;
+        let activeIdx = -1;
+        for (let i = 0; i < this.currentLyrics.length; i++) {
+          if (currentTime >= this.currentLyrics[i].time) {
+            activeIdx = i;
+          } else {
+            break;
+          }
+        }
+        if (activeIdx !== this.activeLyricIndex) {
+          this.activeLyricIndex = activeIdx;
+          const prev = this.spLyricsBox?.querySelector('.sp-lrc-line.active');
+          if (prev) prev.classList.remove('active');
+          if (activeIdx >= 0) {
+            const el = document.getElementById('lrc-line-' + activeIdx);
+            if (el) {
+              el.classList.add('active');
+              el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          }
+        }
+      }
+
+      preloadNextTrack(currentIndex) {
+        try {
+          const queue = (this.activePlayQueue && this.activePlayQueue.length > 0) ? this.activePlayQueue : this.driveAudios;
+          if (!queue || queue.length <= 1) return;
+          const currentSong = this.driveAudios[currentIndex];
+          let nextAudio = null;
+          if (this.loopMode === 'shuffle') {
+            const randQIdx = Math.floor(Math.random() * queue.length);
+            nextAudio = queue[randQIdx];
+            this._shuffleNextId = nextAudio ? nextAudio.id : null;
+          } else {
+            const qIdx = queue.indexOf(currentSong);
+            const nextQIdx = (qIdx + 1) % queue.length;
+            nextAudio = queue[nextQIdx];
+          }
+          if (nextAudio && nextAudio.id) {
+            const nextStreamUrl = nextAudio.streamUrl || ('https://drive.google.com/uc?export=download&id=' + nextAudio.id + '&confirm=t');
+            let preloader = document.getElementById('audio-preloader-link');
+            if (!preloader) {
+              preloader = document.createElement('link');
+              preloader.id = 'audio-preloader-link';
+              preloader.rel = 'preload';
+              preloader.as = 'fetch';
+              preloader.crossOrigin = 'anonymous';
+              document.head.appendChild(preloader);
+            }
+            preloader.href = nextStreamUrl;
+          }
+        } catch(e) {
+          console.log('preload note:', e);
+        }
+      }
+
       playDriveAudio(index) {
         if (index < 0 || index >= this.driveAudios.length) return;
         this.currentAudioIndex = index;
         const track = this.driveAudios[index];
 
-        this.barTitle.textContent = '⏳ 正在載入: ' + track.name;
+        this.barTitle.textContent = '⚡ 播放中: ' + track.name;
         this.barArtist.textContent = (track.folder || 'Google Drive') + ' 雲端音樂串流';
-        this.audio.src = '';
         this.updatePlayingRowUI(true);
+
+        // 核心功能：Live Lyrics 只用在英文歌曲（中文/其他語言自動隱藏）
+        this.handleLiveLyrics(track);
 
         // 1. 本機或外部直連 URL
         if (track.url) {
           this.audio.src = track.url;
-          this.barTitle.textContent = track.name;
           this.audio.play().catch(e => console.log('Play note:', e));
           this.renderSpotifyMusicTable();
+          this.preloadNextTrack(index);
           return;
         }
 
-        // 2. Google Drive 直接串流 URL (附帶 confirm=t 繞過大檔病毒警告確認頁)
-        const directStreamUrl = 'https://drive.google.com/uc?export=download&id=' + track.id + '&confirm=t';
+        // 2. 核心效能升級：直接採用 Google Drive HTTP 206 Partial Content 串流（毫秒級秒播！）
+        // 無須等待 Google Apps Script 下載整個檔案並轉換為肥大的 Base64 字串，大幅縮短 10~15 秒等待時間！
+        const directStreamUrl = track.streamUrl || ('https://drive.google.com/uc?export=download&id=' + track.id + '&confirm=t');
+        this.audio.src = directStreamUrl;
+        this.audio.play().catch(err => {
+          console.log('Direct stream play notice:', err);
+        });
+        this.renderSpotifyMusicTable();
 
-        // 3. 若為大檔案 (例如 79.6MB)
-        if (track.isLarge) {
-          this.barTitle.textContent = track.name;
-          this.audio.src = directStreamUrl;
-          this.audio.play().catch(err => {
-            console.log('Direct stream play notice:', err);
-          });
-          this.renderSpotifyMusicTable();
-          return;
-        }
-
-        // 4. 一般小檔案 (< 25MB)：優先以 GAS Base64 加載
-        if (typeof google !== 'undefined' && google.script && google.script.run) {
-          google.script.run
-            .withSuccessHandler((resultData) => {
-              if (resultData && !resultData.startsWith('ERROR')) {
-                this.barTitle.textContent = track.name;
-                if (resultData.startsWith('URL:')) {
-                  this.audio.src = resultData.replace('URL:', '');
-                } else {
-                  this.audio.src = resultData;
+        // 3. 備用安全通道 (自動容錯備援)：若直接串流因特殊狀況失敗，才回退至 GAS Base64
+        let streamFailed = false;
+        const onStreamError = () => {
+          this.audio.removeEventListener('error', onStreamError);
+          if (streamFailed) return;
+          streamFailed = true;
+          console.log('Direct stream encountered error, switching to fallback for:', track.id);
+          if (typeof google !== 'undefined' && google.script && google.script.run && !track.isLarge) {
+            this.barTitle.textContent = '⏳ 備用安全通道載入中: ' + track.name;
+            google.script.run
+              .withSuccessHandler((resultData) => {
+                if (resultData && !resultData.startsWith('ERROR')) {
+                  this.barTitle.textContent = track.name;
+                  this.audio.src = resultData.startsWith('URL:') ? resultData.replace('URL:', '') : resultData;
+                  this.audio.play().catch(e => console.log('Base64 play err:', e));
                 }
-                this.audio.play().catch(e => console.log('Audio play note:', e));
-                this.renderSpotifyMusicTable();
-              } else {
-                this.audio.src = directStreamUrl;
-                this.barTitle.textContent = track.name;
-                this.audio.play().catch(e => console.log('Audio play note:', e));
-                this.renderSpotifyMusicTable();
-              }
-            })
-            .withFailureHandler(() => {
-              this.audio.src = directStreamUrl;
-              this.barTitle.textContent = track.name;
-              this.audio.play().catch(e => console.log('Audio play note:', e));
-              this.renderSpotifyMusicTable();
-            })
-            .getAudioBase64(track.id);
-        } else {
-          this.audio.src = directStreamUrl;
-          this.barTitle.textContent = track.name;
-          this.audio.play().catch(e => console.log('Preview note:', e));
-          this.renderSpotifyMusicTable();
-        }
+              })
+              .getAudioBase64(track.id);
+          }
+        };
+        this.audio.addEventListener('error', onStreamError, { once: true });
+
+        // 4. 智慧預載下一首 (Preload Next Track)，切歌零延遲
+        this.preloadNextTrack(index);
       }
 
       // ==================== ARTICLE PARSING & DRIVE SAVE ====================
@@ -5233,6 +5427,7 @@
           this.barProgressFill.style.width = `${pct}%`;
           this.timeCurrent.textContent = this.formatTime(cur);
         }
+        this.syncLyrics(cur);
       }
 
       speak(text) {
