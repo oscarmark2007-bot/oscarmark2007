@@ -1826,6 +1826,22 @@
       background: rgba(255, 255, 255, 0.1);
       color: var(--sp-green);
     }
+    .quick-pl-close {
+      width: 22px;
+      height: 22px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--sp-light-gray);
+      transition: background 0.15s, color 0.15s;
+    }
+    .quick-pl-close:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
     .quick-pl-item.create-new {
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       margin-top: 4px;
@@ -3740,14 +3756,32 @@
       }
 
       openQuickPlaylistMenu(anchorEl, songIds) {
+        // Toggle: clicking the same ➕ button again closes the menu
+        if (this._quickMenuAnchor === anchorEl && document.getElementById('quick-pl-menu')) {
+          this.closeQuickPlaylistMenu();
+          return;
+        }
         this.closeQuickPlaylistMenu();
+        this._quickMenuAnchor = anchorEl;
         const menu = document.createElement('div');
         menu.className = 'quick-pl-menu';
         menu.id = 'quick-pl-menu';
+        menu.addEventListener('click', (e) => e.stopPropagation());
 
         const titleDiv = document.createElement('div');
-        titleDiv.style.cssText = 'padding:6px 16px 8px;font-size:11px;font-weight:700;color:var(--sp-light-gray);border-bottom:1px solid rgba(255,255,255,0.08);';
-        titleDiv.textContent = '➕ 選擇要加入的播放清單：';
+        titleDiv.style.cssText = 'padding:6px 8px 8px 16px;font-size:11px;font-weight:700;color:var(--sp-light-gray);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;gap:8px;';
+        const titleText = document.createElement('span');
+        titleText.textContent = '➕ 選擇要加入的播放清單：';
+        const closeX = document.createElement('span');
+        closeX.className = 'quick-pl-close';
+        closeX.title = '關閉';
+        closeX.textContent = '✕';
+        closeX.addEventListener('click', (e) => {
+          e.stopPropagation();
+          this.closeQuickPlaylistMenu();
+        });
+        titleDiv.appendChild(titleText);
+        titleDiv.appendChild(closeX);
         menu.appendChild(titleDiv);
 
         this.playlists.forEach(pl => {
@@ -3775,19 +3809,40 @@
 
         document.body.appendChild(menu);
 
-        // Position menu
+        // Position menu (position: fixed → viewport coordinates)
         const rect = anchorEl.getBoundingClientRect();
-        let top = rect.bottom + window.scrollY + 6;
-        let left = rect.left + window.scrollX - 100;
+        let top = rect.bottom + 6;
+        let left = rect.left - 100;
         if (left < 10) left = 10;
-        if (left + 220 > window.innerWidth) left = window.innerWidth - 230;
+        if (left + 230 > window.innerWidth) left = window.innerWidth - 240;
+        const menuH = menu.offsetHeight;
+        if (top + menuH > window.innerHeight - 10) top = Math.max(10, rect.top - menuH - 6);
         menu.style.top = top + 'px';
         menu.style.left = left + 'px';
+
+        // Close on outside click / Esc / scroll
+        this._quickMenuOutside = (e) => {
+          if (!menu.contains(e.target) && e.target !== anchorEl && !anchorEl.contains(e.target)) {
+            this.closeQuickPlaylistMenu();
+          }
+        };
+        this._quickMenuKey = (e) => { if (e.key === 'Escape') this.closeQuickPlaylistMenu(); };
+        this._quickMenuScroll = (e) => { if (!menu.contains(e.target)) this.closeQuickPlaylistMenu(); };
+        setTimeout(() => {
+          document.addEventListener('mousedown', this._quickMenuOutside, true);
+          document.addEventListener('keydown', this._quickMenuKey, true);
+          window.addEventListener('scroll', this._quickMenuScroll, true);
+        }, 0);
       }
 
       closeQuickPlaylistMenu() {
         const existing = document.getElementById('quick-pl-menu');
         if (existing) existing.remove();
+        this._quickMenuAnchor = null;
+        if (this._quickMenuOutside) document.removeEventListener('mousedown', this._quickMenuOutside, true);
+        if (this._quickMenuKey) document.removeEventListener('keydown', this._quickMenuKey, true);
+        if (this._quickMenuScroll) window.removeEventListener('scroll', this._quickMenuScroll, true);
+        this._quickMenuOutside = this._quickMenuKey = this._quickMenuScroll = null;
       }
 
       toggleSelectAllSongs(checked) {
