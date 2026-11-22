@@ -193,6 +193,101 @@
       background: var(--sp-green);
       color: #000;
     }
+    .ambient-open-btn.active {
+      background: var(--sp-green);
+      color: #000;
+      border-color: var(--sp-green);
+      font-weight: 800;
+      box-shadow: 0 0 14px var(--sp-green-glow);
+      animation: pulseGreenGlow 2s infinite alternate ease-in-out;
+    }
+    @keyframes pulseGreenGlow {
+      from { box-shadow: 0 0 6px var(--sp-green-glow); transform: scale(1); }
+      to { box-shadow: 0 0 16px rgba(29, 185, 84, 0.7); transform: scale(1.02); }
+    }
+    .ambient-track-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #1e1e1e;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+    .ambient-track-row:hover {
+      background: #252525;
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+    .ambient-track-row.playing {
+      border-color: var(--sp-green);
+      background: rgba(29, 185, 84, 0.08);
+    }
+    .ambient-track-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 140px;
+    }
+    .ambient-track-icon {
+      font-size: 22px;
+      line-height: 1;
+    }
+    .ambient-track-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .ambient-track-desc {
+      font-size: 11px;
+      color: var(--sp-light-gray);
+    }
+    .ambient-track-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      justify-content: flex-end;
+    }
+    .ambient-track-toggle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .ambient-track-toggle:hover {
+      transform: scale(1.1);
+      background: rgba(255, 255, 255, 0.18);
+    }
+    .ambient-track-row.playing .ambient-track-toggle {
+      background: var(--sp-green);
+      color: #000;
+      border-color: var(--sp-green);
+      box-shadow: 0 0 10px var(--sp-green-glow);
+    }
+    .ambient-slider {
+      width: 100px;
+      accent-color: var(--sp-green);
+      cursor: pointer;
+      height: 4px;
+    }
+    .ambient-vol-label {
+      font-size: 11.5px;
+      font-family: var(--font-mono);
+      color: var(--sp-light-gray);
+      width: 32px;
+      text-align: right;
+    }
 
     /* ==================== MAIN VIEWPORT ==================== */
     .main-view {
@@ -2077,6 +2172,43 @@
     </div>
   </div>
 
+  <!-- Ambient Sound Mixer Modal (專注白噪音伴讀混音器) -->
+  <div id="ambient-mixer-modal" class="sp-modal-backdrop" style="display: none;">
+    <div class="sp-modal-card" style="max-width: 520px;">
+      <div class="sp-modal-header">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:24px;">🌧️</span>
+          <div>
+            <h3 style="margin:0;font-size:16px;font-weight:800;">專注白噪音伴讀混音器</h3>
+            <span style="font-size:12px;color:var(--sp-light-gray);">疊加多種自然環境音，讀書伴讀、深度專注與舒緩放鬆</span>
+          </div>
+        </div>
+        <button class="sp-modal-close" id="ambient-modal-close">&times;</button>
+      </div>
+      <div class="sp-modal-body" style="padding: 18px 20px;">
+        <!-- Master Toolbar -->
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#181818;border:1px solid rgba(255,255,255,0.08);border-radius:12px;margin-bottom:14px;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <button class="vt-btn gold" id="ambient-master-btn" style="padding:6px 14px;font-size:12px;font-weight:700;">▶ 啟動混音</button>
+            <span id="ambient-active-badge" style="font-size:12px;color:var(--sp-light-gray);">未播放音效</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:12px;color:var(--sp-light-gray);">總音量</span>
+            <input type="range" id="ambient-master-vol" min="0" max="1" step="0.05" value="0.7" class="ambient-slider" style="width:85px;">
+          </div>
+        </div>
+        <!-- Ambient Sound Tracks List -->
+        <div id="ambient-tracks-list" style="display:flex;flex-direction:column;gap:9px;">
+          <!-- Track rows populated dynamically -->
+        </div>
+      </div>
+      <div class="sp-modal-footer" style="justify-content:space-between;">
+        <span style="font-size:11.5px;color:rgba(255,255,255,0.5);">💡 混音器在背景持續循環播放，可同時聽 Spotify 或 VoiceTube</span>
+        <button class="sp-modal-btn confirm" id="ambient-modal-done" style="padding:7px 18px;font-size:13px;">完成關閉</button>
+      </div>
+    </div>
+  </div>
+
   <!-- App Shell -->
   <div class="app-shell">
 
@@ -2629,6 +2761,315 @@
       'articulate': { ipa: '/ɑːˈtɪk.jə.lət/', meaning: '【動】清晰闡明、表達；【形】咬字清晰的' }
     };
 
+    // ==================== 專注白噪音伴讀混音器 (Web Audio API Procedural Engine) ====================
+    class AmbientMixer {
+      constructor(app) {
+        this.app = app;
+        this.ctx = null;
+        this.masterGain = null;
+        this.masterVolume = 0.7;
+        this.tracks = [
+          { id: 'rain', icon: '🌧️', name: '自然雨聲', desc: '窗外綿綿細雨', vol: 0.5, active: false, node: null, gain: null },
+          { id: 'waves', icon: '🌊', name: '寧靜海浪', desc: '海潮規律起伏', vol: 0.5, active: false, node: null, gain: null },
+          { id: 'cafe', icon: '☕', name: '文青咖啡館', desc: '溫暖環境人聲底噪', vol: 0.4, active: false, node: null, gain: null },
+          { id: 'fire', icon: '🔥', name: '壁爐柴火', desc: '木柴輕微劈啪爆裂', vol: 0.4, active: false, node: null, gain: null },
+          { id: 'pink', icon: '🍃', name: '粉紅專注噪音', desc: '深層學習遮蔽干擾', vol: 0.35, active: false, node: null, gain: null }
+        ];
+      }
+
+      ensureContext() {
+        if (!this.ctx) {
+          const AudioCtx = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioCtx();
+          this.masterGain = this.ctx.createGain();
+          this.masterGain.gain.setValueAtTime(this.masterVolume, this.ctx.currentTime);
+          this.masterGain.connect(this.ctx.destination);
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      createNoiseBuffer(type) {
+        const sampleRate = this.ctx.sampleRate;
+        const duration = 5;
+        const buffer = this.ctx.createBuffer(2, sampleRate * duration, sampleRate);
+        const left = buffer.getChannelData(0);
+        const right = buffer.getChannelData(1);
+
+        if (type === 'pink') {
+          for (let ch = 0; ch < 2; ch++) {
+            const data = ch === 0 ? left : right;
+            let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+            for (let i = 0; i < data.length; i++) {
+              const white = Math.random() * 2 - 1;
+              b0 = 0.99886 * b0 + white * 0.0555179;
+              b1 = 0.99332 * b1 + white * 0.0750759;
+              b2 = 0.96900 * b2 + white * 0.1538520;
+              b3 = 0.86650 * b3 + white * 0.3104856;
+              b4 = 0.55000 * b4 + white * 0.5329522;
+              b5 = -0.7616 * b5 - white * 0.0168980;
+              data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362) * 0.09;
+              b6 = white * 0.115926;
+            }
+          }
+        } else if (type === 'brown') {
+          for (let ch = 0; ch < 2; ch++) {
+            const data = ch === 0 ? left : right;
+            let last = 0;
+            for (let i = 0; i < data.length; i++) {
+              const white = Math.random() * 2 - 1;
+              data[i] = (last + (0.02 * white)) / 1.02;
+              last = data[i];
+              data[i] *= 2.8;
+            }
+          }
+        } else if (type === 'rain') {
+          for (let ch = 0; ch < 2; ch++) {
+            const data = ch === 0 ? left : right;
+            let b0 = 0, b1 = 0;
+            for (let i = 0; i < data.length; i++) {
+              const white = Math.random() * 2 - 1;
+              b0 = 0.99 * b0 + white * 0.08;
+              b1 = 0.95 * b1 + white * 0.06;
+              let s = (b0 + b1) * 0.28;
+              if (Math.random() < 0.0008) {
+                s += (Math.random() - 0.5) * 0.5;
+              }
+              data[i] = s;
+            }
+          }
+        } else if (type === 'fire') {
+          for (let ch = 0; ch < 2; ch++) {
+            const data = ch === 0 ? left : right;
+            let last = 0;
+            for (let i = 0; i < data.length; i++) {
+              const white = Math.random() * 2 - 1;
+              last = (last + 0.03 * white) / 1.03;
+              let s = last * 1.5;
+              if (Math.random() < 0.0003) {
+                s += (Math.random() > 0.5 ? 0.7 : -0.7) * (Math.random() * 0.8 + 0.2);
+              }
+              data[i] = s;
+            }
+          }
+        } else if (type === 'cafe') {
+          for (let ch = 0; ch < 2; ch++) {
+            const data = ch === 0 ? left : right;
+            let b0 = 0, b1 = 0;
+            for (let i = 0; i < data.length; i++) {
+              const white = Math.random() * 2 - 1;
+              b0 = 0.992 * b0 + white * 0.05;
+              b1 = 0.985 * b1 + white * 0.04;
+              data[i] = (b0 + b1) * 0.35;
+            }
+          }
+        }
+        return buffer;
+      }
+
+      startTrack(trackId) {
+        this.ensureContext();
+        const t = this.tracks.find(x => x.id === trackId);
+        if (!t || t.active) return;
+
+        const source = this.ctx.createBufferSource();
+        let filter = null;
+        let lfo = null;
+
+        if (trackId === 'rain') {
+          source.buffer = this.createNoiseBuffer('rain');
+          source.loop = true;
+          filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = 1800;
+        } else if (trackId === 'waves') {
+          source.buffer = this.createNoiseBuffer('brown');
+          source.loop = true;
+          filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = 500;
+          filter.Q.value = 1.2;
+
+          lfo = this.ctx.createOscillator();
+          const lfoGain = this.ctx.createGain();
+          lfo.frequency.value = 0.12;
+          lfoGain.gain.value = 350;
+          lfo.connect(lfoGain);
+          lfoGain.connect(filter.frequency);
+          lfo.start();
+          t.lfo = lfo;
+        } else if (trackId === 'cafe') {
+          source.buffer = this.createNoiseBuffer('cafe');
+          source.loop = true;
+          filter = this.ctx.createBiquadFilter();
+          filter.type = 'bandpass';
+          filter.frequency.value = 650;
+          filter.Q.value = 0.9;
+        } else if (trackId === 'fire') {
+          source.buffer = this.createNoiseBuffer('fire');
+          source.loop = true;
+          filter = this.ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = 1400;
+        } else if (trackId === 'pink') {
+          source.buffer = this.createNoiseBuffer('pink');
+          source.loop = true;
+        }
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(t.vol, this.ctx.currentTime);
+
+        if (filter) {
+          source.connect(filter);
+          filter.connect(gain);
+        } else {
+          source.connect(gain);
+        }
+        gain.connect(this.masterGain);
+        source.start();
+
+        t.node = source;
+        t.gain = gain;
+        t.filter = filter;
+        t.active = true;
+        this.updateUI();
+      }
+
+      stopTrack(trackId) {
+        const t = this.tracks.find(x => x.id === trackId);
+        if (!t || !t.active) return;
+        try {
+          if (t.node) t.node.stop();
+          if (t.lfo) t.lfo.stop();
+        } catch(e) {}
+        t.node = null;
+        t.gain = null;
+        t.filter = null;
+        t.lfo = null;
+        t.active = false;
+        this.updateUI();
+      }
+
+      setTrackVolume(trackId, val) {
+        const t = this.tracks.find(x => x.id === trackId);
+        if (!t) return;
+        t.vol = Math.max(0, Math.min(1, val));
+        if (t.gain && this.ctx) {
+          t.gain.gain.setValueAtTime(t.vol, this.ctx.currentTime);
+        }
+      }
+
+      setMasterVolume(val) {
+        this.masterVolume = Math.max(0, Math.min(1, val));
+        if (this.masterGain && this.ctx) {
+          this.masterGain.gain.setValueAtTime(this.masterVolume, this.ctx.currentTime);
+        }
+      }
+
+      toggleAll() {
+        const anyActive = this.tracks.some(t => t.active);
+        if (anyActive) {
+          this.tracks.forEach(t => this.stopTrack(t.id));
+        } else {
+          this.startTrack('rain');
+          this.startTrack('cafe');
+        }
+        this.updateUI();
+      }
+
+      updateUI() {
+        const activeCount = this.tracks.filter(t => t.active).length;
+        if (this.app.ambientActiveBadge) {
+          this.app.ambientActiveBadge.textContent = activeCount > 0 ? ('已啟用 ' + activeCount + ' 種音效') : '未播放音效';
+        }
+        if (this.app.ambientMasterBtn) {
+          this.app.ambientMasterBtn.textContent = activeCount > 0 ? '⏸ 全部暫停' : '▶ 啟動混音';
+          this.app.ambientMasterBtn.className = activeCount > 0 ? 'vt-btn' : 'vt-btn gold';
+        }
+        if (this.app.ambientToggleBtn) {
+          if (activeCount > 0) {
+            this.app.ambientToggleBtn.className = 'ambient-open-btn active';
+            this.app.ambientToggleBtn.innerHTML = '🌧️ 混音中 (' + activeCount + ')';
+          } else {
+            this.app.ambientToggleBtn.className = 'ambient-open-btn';
+            this.app.ambientToggleBtn.textContent = '開啟混音器';
+          }
+        }
+        this.tracks.forEach(t => {
+          const row = document.getElementById('ambient-row-' + t.id);
+          const btn = document.getElementById('ambient-btn-' + t.id);
+          if (row) row.classList.toggle('playing', t.active);
+          if (btn) btn.textContent = t.active ? '⏸' : '▶';
+        });
+      }
+
+      renderUI() {
+        if (!this.app.ambientTracksList) return;
+        this.app.ambientTracksList.innerHTML = '';
+        this.tracks.forEach(t => {
+          const row = document.createElement('div');
+          row.className = 'ambient-track-row' + (t.active ? ' playing' : '');
+          row.id = 'ambient-row-' + t.id;
+
+          const info = document.createElement('div');
+          info.className = 'ambient-track-info';
+          info.innerHTML = '<span class="ambient-track-icon">' + t.icon + '</span><div><div class="ambient-track-title">' + t.name + '</div><div class="ambient-track-desc">' + t.desc + '</div></div>';
+
+          const controls = document.createElement('div');
+          controls.className = 'ambient-track-controls';
+
+          const slider = document.createElement('input');
+          slider.type = 'range';
+          slider.min = '0';
+          slider.max = '1';
+          slider.step = '0.05';
+          slider.value = t.vol;
+          slider.className = 'ambient-slider';
+
+          const volLabel = document.createElement('span');
+          volLabel.className = 'ambient-vol-label';
+          volLabel.textContent = Math.round(t.vol * 100) + '%';
+
+          slider.addEventListener('input', (e) => {
+            const v = parseFloat(e.target.value);
+            this.setTrackVolume(t.id, v);
+            volLabel.textContent = Math.round(v * 100) + '%';
+          });
+
+          const toggleBtn = document.createElement('button');
+          toggleBtn.className = 'ambient-track-toggle';
+          toggleBtn.id = 'ambient-btn-' + t.id;
+          toggleBtn.textContent = t.active ? '⏸' : '▶';
+          toggleBtn.title = t.active ? '暫停音效' : '播放音效';
+          toggleBtn.addEventListener('click', () => {
+            if (t.active) this.stopTrack(t.id);
+            else this.startTrack(t.id);
+          });
+
+          controls.appendChild(slider);
+          controls.appendChild(volLabel);
+          controls.appendChild(toggleBtn);
+
+          row.appendChild(info);
+          row.appendChild(controls);
+          this.app.ambientTracksList.appendChild(row);
+        });
+
+        if (this.app.ambientMasterVol) {
+          this.app.ambientMasterVol.value = this.masterVolume;
+          this.app.ambientMasterVol.oninput = (e) => {
+            this.setMasterVolume(parseFloat(e.target.value));
+          };
+        }
+        if (this.app.ambientMasterBtn) {
+          this.app.ambientMasterBtn.onclick = () => this.toggleAll();
+        }
+
+        this.updateUI();
+      }
+    }
+
     class AppManager {
       constructor() {
         this.audio = document.getElementById('core-audio');
@@ -2819,6 +3260,17 @@
         this.spLyricsStatus = document.getElementById('sp-lyrics-status');
         this.currentLyrics = null;
         this.activeLyricIndex = -1;
+
+        // Ambient Sound Mixer Elements
+        this.ambientToggleBtn = document.getElementById('ambient-toggle-btn');
+        this.ambientModal = document.getElementById('ambient-mixer-modal');
+        this.ambientCloseBtn = document.getElementById('ambient-modal-close');
+        this.ambientDoneBtn = document.getElementById('ambient-modal-done');
+        this.ambientMasterBtn = document.getElementById('ambient-master-btn');
+        this.ambientMasterVol = document.getElementById('ambient-master-vol');
+        this.ambientActiveBadge = document.getElementById('ambient-active-badge');
+        this.ambientTracksList = document.getElementById('ambient-tracks-list');
+        this.ambientMixer = new AmbientMixer(this);
       }
 
       initEvents() {
@@ -2826,6 +3278,27 @@
           btn.addEventListener('click', () => this.switchView(btn.getAttribute('data-view')));
         });
         if (this.jumpToFcBtn) this.jumpToFcBtn.addEventListener('click', () => this.switchView('flashcards-view'));
+
+        // Ambient Sound Mixer Events
+        if (this.ambientToggleBtn) {
+          this.ambientToggleBtn.addEventListener('click', () => this.openAmbientModal());
+        }
+        if (this.ambientCloseBtn) {
+          this.ambientCloseBtn.addEventListener('click', () => this.closeAmbientModal());
+        }
+        if (this.ambientDoneBtn) {
+          this.ambientDoneBtn.addEventListener('click', () => this.closeAmbientModal());
+        }
+        if (this.ambientModal) {
+          this.ambientModal.addEventListener('click', (e) => {
+            if (e.target === this.ambientModal) this.closeAmbientModal();
+          });
+        }
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && this.ambientModal && this.ambientModal.style.display === 'flex') {
+            this.closeAmbientModal();
+          }
+        });
 
         // Bottom Player
         this.audio.addEventListener('timeupdate', () => this.onTimeUpdate());
@@ -3808,6 +4281,21 @@
             this.showToast('🗑️ 已成功刪除歌單【' + oldName + '】！');
           }
         });
+      }
+
+      openAmbientModal() {
+        if (!this.ambientModal) return;
+        if (!this.ambientMixer) {
+          this.ambientMixer = new AmbientMixer(this);
+        }
+        this.ambientMixer.renderUI();
+        this.ambientModal.style.display = 'flex';
+      }
+
+      closeAmbientModal() {
+        if (this.ambientModal) {
+          this.ambientModal.style.display = 'none';
+        }
       }
 
       openSongPicker() {
