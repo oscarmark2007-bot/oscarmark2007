@@ -3230,10 +3230,10 @@
           this.handleLoadedAssets({
             folders: ['Englishvoice', 'KLine'],
             audios: [
-              { name: 'Rainy Night Lofi Study.mp3', id: 'sample_rain', url: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg', folder: 'Englishvoice', fullPath: 'Englishvoice / Rainy Night Lofi Study.mp3' },
-              { name: 'Warm Coffee Shop Acoustic.mp3', id: 'sample_cafe', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg', folder: 'Englishvoice', fullPath: 'Englishvoice / Warm Coffee Shop Acoustic.mp3' },
-              { name: 'Forest Birds Meditation.mp3', id: 'sample_forest', url: 'https://actions.google.com/sounds/v1/ambiences/outdoor_morning.ogg', folder: 'Englishvoice', fullPath: 'Englishvoice / Forest Birds Meditation.mp3' },
-              { name: 'K-Line Technical Analysis & Price Action Trading Guide.mp3', id: 'sample_kline', url: 'https://actions.google.com/sounds/v1/weather/gentle_rain.ogg', folder: 'KLine', fullPath: 'KLine / K-Line Technical Analysis & Price Action Trading Guide.mp3' }
+              { name: 'Miley Cyrus - Flowers (Backyard Sessions).mp3', id: 'sample_flowers', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg', folder: 'Englishvoice', fullPath: 'Englishvoice / Miley Cyrus - Flowers (Backyard Sessions).mp3' },
+              { name: 'Ed Sheeran - Shivers [Official Acoustic Video].mp3', id: 'sample_shivers', url: 'https://actions.google.com/sounds/v1/ambiences/coffee_shop.ogg', folder: 'Englishvoice', fullPath: 'Englishvoice / Ed Sheeran - Shivers [Official Acoustic Video].mp3' },
+              { name: '般若波羅蜜多心經__ 真如恭誦Official MV.mp3', id: 'sample_heart_sutra', url: 'https://actions.google.com/sounds/v1/weather/thunderstorm.ogg', folder: 'Englishvoice', fullPath: 'Englishvoice / 般若波羅蜜多心經__ 真如恭誦Official MV.mp3' },
+              { name: '為什麼你的 K線永遠滯後？主力根本不看均線！.mp3', id: 'sample_kline', url: 'https://actions.google.com/sounds/v1/weather/thunderstorm.ogg', folder: 'KLine', fullPath: 'KLine / 為什麼你的 K線永遠滯後？主力根本不看均線！.mp3' }
             ],
             articles: [
               { name: '01. Mixed Conditionals & Modern Business', folder: 'Englishvoice', fullName: 'Englishvoice / 01. Mixed Conditionals & Modern Business.txt', content: "Shrinkflation occurs when the price of a product remains the same, but the packaging size gets smaller.\nSkimpflation happens when a company uses cheaper ingredients to make the same product.\nGreedflation describes when corporations raise prices excessively under the guise of general inflation." },
