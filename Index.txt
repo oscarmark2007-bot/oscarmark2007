@@ -3367,12 +3367,7 @@
           }
         });
 
-        // Loop / Speed / Jumps
-        this.vtRepeatBtn.addEventListener('click', () => {
-          this.isLoopingSentence = !this.isLoopingSentence;
-          this.vtRepeatBtn.classList.toggle('active', this.isLoopingSentence);
-          this.updateLoopTag();
-        });
+        // Speed / Jumps
 
         this.vtSpeedBtn.addEventListener('click', () => {
           const speeds = [0.75, 0.9, 1.0, 1.25];
@@ -5560,9 +5555,7 @@
               this.handleWordLookup(e.target.dataset.word, s.en, s.zh);
               return;
             }
-            this.activeSentenceIndex = idx;
-            this.highlightSentence(idx);
-            this.speak(s.en);
+            this.playSentenceAtIndex(idx);
           });
 
           this.subtitlesContainer.appendChild(row);
@@ -5586,11 +5579,9 @@
       }
 
       jumpSentence(delta) {
-        if (this.currentArticleSentences.length === 0) return;
+        if (!this.currentArticleSentences || this.currentArticleSentences.length === 0) return;
         const targetIdx = Math.max(0, Math.min(this.currentArticleSentences.length - 1, this.activeSentenceIndex + delta));
-        this.activeSentenceIndex = targetIdx;
-        this.highlightSentence(targetIdx);
-        this.speak(this.currentArticleSentences[targetIdx].en);
+        this.playSentenceAtIndex(targetIdx);
       }
 
       // ==================== WORD SELECTION & FLASHCARDS ====================
@@ -5945,11 +5936,12 @@
           this.audio.pause();
         }
 
-        this.speakSentenceSequence(this.activeSentenceIndex);
+        this.playSentenceAtIndex(this.activeSentenceIndex || 0);
       }
 
       stopAutoReading() {
         this.isPlayingAllSentences = false;
+        if (this._repeatTimer) clearTimeout(this._repeatTimer);
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
         }
@@ -5962,10 +5954,17 @@
       }
 
       speakSentenceSequence(idx) {
-        if (!this.isPlayingAllSentences) return;
+        this.playSentenceAtIndex(idx);
+      }
+
+      playSentenceAtIndex(idx) {
+        if (!this.currentArticleSentences || this.currentArticleSentences.length === 0) return;
+        if (this._repeatTimer) clearTimeout(this._repeatTimer);
+
         if (idx < 0 || idx >= this.currentArticleSentences.length) {
-          if (this.isLoopingArticle) {
+          if (this.isLoopingArticle && this.isPlayingAllSentences) {
             idx = 0;
+            this.showToast('🔁 全課朗讀完畢，重新由第 1 句循環朗讀');
           } else {
             this.stopAutoReading();
             return;
@@ -5979,7 +5978,7 @@
 
         // Update Bottom Bar info
         this.barTitle.textContent = `🎙️ 英語精讀朗讀中：第 ${idx + 1} / ${this.currentArticleSentences.length} 句`;
-        this.barArtist.textContent = sentence.en.slice(0, 40) + '...';
+        this.barArtist.textContent = sentence.en.slice(0, 45) + '...';
 
         if ('speechSynthesis' in window) {
           window.speechSynthesis.cancel();
@@ -5990,20 +5989,39 @@
           u.onend = () => {
             this.clearSpeakingHighlight();
 
+            // 1. 若開啟「單句重複」：暫停 750ms 後持續重複朗讀該句
             if (this.isLoopingSentence) {
-              // 🔂 單句重複：停 700ms 後重複同一句
-              setTimeout(() => {
-                if (this.isLoopingSentence && this.isPlayingAllSentences) {
-                  this.speakSentenceSequence(idx);
+              this._repeatTimer = setTimeout(() => {
+                if (this.isLoopingSentence) {
+                  this.playSentenceAtIndex(this.activeSentenceIndex);
                 }
-              }, 700);
-            } else if (this.isPlayingAllSentences) {
-              // ➡️ 全文連續跑：停 600ms 後自動進入下一句！
-              setTimeout(() => {
-                if (this.isPlayingAllSentences) {
-                  this.speakSentenceSequence(idx + 1);
+              }, 750);
+              return;
+            }
+
+            // 2. 若為「全文連續朗讀 (英文跑起來)」：推進至下一句
+            if (this.isPlayingAllSentences) {
+              const nextIdx = idx + 1;
+              if (nextIdx >= this.currentArticleSentences.length) {
+                // 讀到最後一句時，檢查「全課循環」
+                if (this.isLoopingArticle) {
+                  this.showToast('🔁 全課讀畢，1 秒後重新由第 1 句循環');
+                  this._repeatTimer = setTimeout(() => {
+                    if (this.isPlayingAllSentences) {
+                      this.playSentenceAtIndex(0);
+                    }
+                  }, 1200);
+                } else {
+                  this.stopAutoReading();
+                  this.showToast('🎉 全課朗讀完畢！');
                 }
-              }, 600);
+              } else {
+                this._repeatTimer = setTimeout(() => {
+                  if (this.isPlayingAllSentences) {
+                    this.playSentenceAtIndex(nextIdx);
+                  }
+                }, 600);
+              }
             }
           };
 
@@ -6037,9 +6055,22 @@
         if (this.isLoopingSentence) {
           this.vtRepeatBtn.className = 'vt-btn player-pill-control active-repeat';
           this.vtSingleRepeatStatus.textContent = '開';
+          this.showToast('🔂 單句重複：已開啟');
+          this.updateLoopTag();
+          // 若有載入句子，立刻開始重複朗讀當前句子
+          if (this.currentArticleSentences && this.currentArticleSentences.length > 0) {
+            this.playSentenceAtIndex(this.activeSentenceIndex || 0);
+          }
         } else {
           this.vtRepeatBtn.className = 'vt-btn player-pill-control';
           this.vtSingleRepeatStatus.textContent = '關';
+          this.showToast('單句重複：已關閉');
+          this.updateLoopTag();
+          if (this._repeatTimer) clearTimeout(this._repeatTimer);
+          if (!this.isPlayingAllSentences) {
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            this.clearSpeakingHighlight();
+          }
         }
       }
 
@@ -6048,9 +6079,11 @@
         if (this.isLoopingArticle) {
           this.vtLoopArticleBtn.className = 'vt-btn player-pill-control active-loop';
           this.vtAllLoopStatus.textContent = '開';
+          this.showToast('🔁 全課循環：已開啟');
         } else {
           this.vtLoopArticleBtn.className = 'vt-btn player-pill-control';
           this.vtAllLoopStatus.textContent = '關';
+          this.showToast('全課循環：已關閉');
         }
       }
 
